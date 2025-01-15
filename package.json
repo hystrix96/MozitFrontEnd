@@ -10,8 +10,9 @@
     "@mui/material": "^6.4.0",
     "@mui/styled-engine-sc": "^6.4.0",
     "cra-template": "1.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^7.1.1",
     "react-scripts": "5.0.1",
     "styled-components": "^6.1.14",
     "web-vitals": "^4.2.4"
@@ -41,7 +42,7 @@
     ]
   },
   "peerDependencies": {
-  "react": "^17.0.0 || ^18.0.0",
-  "react-dom": "^17.0.0 || ^18.0.0"
-}
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0"
+  }
 }
