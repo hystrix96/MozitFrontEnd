@@ -106,7 +106,7 @@ export default function AppAppBar() {
               alignItems: 'center',
             }}
           >
-            <Button color="primary" variant="text" size="small">
+            <Button color="primary" variant="text" size="small" component={Link} to="/sign-in">
               로그인
             </Button>
             <Button color="primary" variant="contained" size="small">
