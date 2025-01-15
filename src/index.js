@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import MarketingPage from './marketing-page/MarketingPage'; 
 
@@ -11,7 +10,7 @@ root.render(
  <BrowserRouter>
     <Routes>
       <Route path="/" exact element={<MarketingPage />} />
-  
+      <Route path="*" element={<Navigate to="/" replace />} /> 
     </Routes>
   </BrowserRouter>
 );
