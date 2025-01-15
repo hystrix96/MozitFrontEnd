@@ -83,7 +83,7 @@ export default function Pricing() {
           gutterBottom
           sx={{ color: 'text.primary' }}
         >
-          Pricing
+          요금제
         </Typography>
         <Typography variant="body1" sx={{ color: 'text.secondary' }}>
           Quickly build an effective pricing table for your potential customers with
