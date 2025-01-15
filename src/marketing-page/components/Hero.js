@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import visuallyHidden from '@mui/utils/visuallyHidden';
 import { styled } from '@mui/material/styles';
+import SitemarkIcon from './SitemarkIcon';
 
 const StyledBox = styled('div')(({ theme }) => ({
   alignSelf: 'center',
@@ -35,7 +36,7 @@ const StyledBox = styled('div')(({ theme }) => ({
   }),
 }));
 
-export default function Hero() {
+export default function Hero({onPricingButtonClick }) {
   return (
     <Box
       id="hero"
@@ -64,7 +65,7 @@ export default function Hero() {
           useFlexGap
           sx={{ alignItems: 'center', width: { xs: '100%', sm: '70%' } }}
         >
-          <Typography
+          {/* <Typography
             variant="h1"
             sx={{
               display: 'flex',
@@ -87,7 +88,12 @@ export default function Hero() {
             >
               products
             </Typography>
-          </Typography>
+          </Typography> */}
+          <SitemarkIcon></SitemarkIcon>
+          <img
+                  alt="..."
+                  src="./image/mozit2.png"
+          />
           <Typography
             sx={{
               textAlign: 'center',
@@ -95,11 +101,9 @@ export default function Hero() {
               width: { sm: '100%', md: '80%' },
             }}
           >
-            Explore our cutting-edge dashboard, delivering high-quality solutions
-            tailored to your needs. Elevate your experience with top-tier features
-            and services.
+            간략한 소개
           </Typography>
-          <Stack
+          {/* <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={1}
             useFlexGap
@@ -142,8 +146,34 @@ export default function Hero() {
               Terms & Conditions
             </Link>
             .
-          </Typography>
+          </Typography> */}
         </Stack>
+        <Stack
+          spacing={3}
+          useFlexGap
+          sx={{ alignItems: 'center', width: { xs: '100%', sm: '70%' },
+        pt: { xs: 5, sm: 5 }}}
+        >
+           <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              sx={{ minWidth: 'fit-content' }}
+              href="/"
+            >
+              로그인 하고 시작
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{ minWidth: 'fit-content' }}
+              onClick={onPricingButtonClick}
+            >
+              요금제 알아보기
+            </Button>
+        </Stack>
+
         <StyledBox id="image" />
       </Container>
     </Box>

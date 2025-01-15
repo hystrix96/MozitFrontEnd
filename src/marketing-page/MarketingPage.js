@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useRef} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import AppTheme from '../shared-theme/AppTheme';
@@ -13,11 +13,18 @@ import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 
 export default function MarketingPage(props) {
+  const pricingRef = useRef(null); // Create a ref for Pricing component
+
+  const scrollToPricing = () => {
+    if (pricingRef.current) {
+      pricingRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <AppAppBar />
-      <Hero />
+      <Hero onPricingButtonClick={scrollToPricing} />
       <div>
         <LogoCollection />
         <Features />
@@ -26,7 +33,9 @@ export default function MarketingPage(props) {
         <Divider />
         <Highlights />
         <Divider />
-        <Pricing />
+        <div ref={pricingRef}>
+          <Pricing />
+        </div>
         <Divider />
         <FAQ />
         <Divider />
