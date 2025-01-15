@@ -89,11 +89,7 @@ export default function Hero({onPricingButtonClick }) {
               products
             </Typography>
           </Typography> */}
-          <SitemarkIcon></SitemarkIcon>
-          <img
-                  alt="..."
-                  src="./image/mozit2.png"
-          />
+          <SitemarkIcon height={70}></SitemarkIcon>
           <Typography
             sx={{
               textAlign: 'center',
