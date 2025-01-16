@@ -1,15 +1,17 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
+import { FormControl, FormLabel, TextField, Box, Typography } from '@mui/material';
+// import Box from '@mui/material/Box';
+// import FormLabel from '@mui/material/FormLabel';
+// import FormControl from '@mui/material/FormControl';
+// import TextField from '@mui/material/TextField';
+// import Typography from '@mui/material/Typography';
+import { Button, CssBaseline, Divider, Stack, styled } from '@mui/material';
+// import Button from '@mui/material/Button';
+// import CssBaseline from '@mui/material/CssBaseline';
+// import Divider from '@mui/material/Divider';
+// import Stack from '@mui/material/Stack';
+// import { styled } from '@mui/material/styles';
 import MuiCard from '@mui/material/Card';
-import { styled } from '@mui/material/styles';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons';
@@ -70,6 +72,14 @@ export default function SignUp(props) {
   const [detailAddress, setDetailAddress] = React.useState('');
   const [isPostcodeOpen, setIsPostcodeOpen] = React.useState(false);
 
+  // 인증 관련 상태 추가
+  const [isCodeSent, setIsCodeSent] = React.useState(false);
+  const [authCode, setAuthCode] = React.useState('');
+  const [authCodeError, setAuthCodeError] = React.useState(false);
+  const [timer, setTimer] = React.useState(0); // 인증 시간 (초)
+  const [isCodeExpired, setIsCodeExpired] = React.useState(false);
+
+// 주소찾기 관련
   const handlePostcodeComplete = (data) => {
     setAddress(data.address);
     setIsPostcodeOpen(false); // Close the postcode popup after selecting address
@@ -79,10 +89,26 @@ export default function SignUp(props) {
     setIsPostcodeOpen(true);
   };
 
+// Email인증관련
+  const handleSendCode = () => {
+    // 여기에서 실제 인증 코드 보내는 API 호출 로직을 넣을 수 있습니다
+    setIsCodeSent(true);
+    setTimer(180); // 3분 (180초)
+    setIsCodeExpired(false);
+  };
+
+  const handleVerifyCode = () => {
+    if (authCode === '123456') { // 인증 코드 검증 (예시)
+      setAuthCodeError(false);
+      alert('인증 성공');
+    } else {
+      setAuthCodeError(true);
+    }
+  };
+
   const validateInputs = () => {
     const email = document.getElementById('email');
     const name = document.getElementById('name');
-
     let isValid = true;
 
     // Email validation
@@ -125,6 +151,7 @@ export default function SignUp(props) {
     return isValid;
   };
 
+  //전화번호 유효성 검사
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
@@ -170,12 +197,13 @@ export default function SignUp(props) {
             <FormControl>
               <FormLabel htmlFor="name">이름</FormLabel>
               <TextField
-                autoComplete="name"
-                name="name"
                 required
                 fullWidth
-                id="name"
+                name="name"
                 placeholder="Name"
+                // type="email"
+                id="name"
+                autoComplete="off"
                 error={nameError}
                 helperText={nameErrorMessage}
                 color={nameError ? 'error' : 'primary'}
@@ -183,31 +211,63 @@ export default function SignUp(props) {
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                required
-                fullWidth
-                name="email"
-                placeholder="email@example.com"
-                type="email"
-                id="email"
-                autoComplete="email"
-                error={emailError}
-                helperText={emailErrorMessage}
-              />
+              <Box display="flex" alignItems="center" gap={1}>
+                <TextField
+                  required
+                  fullWidth
+                  name="email"
+                  placeholder="Your Email"
+                  type="email"
+                  id="email"
+                  autoComplete="off"
+                  error={emailError}
+                  helperText={emailErrorMessage}
+                />
+                  <Button
+                  variant="contained"
+                  onClick={handleSendCode}
+                  disabled={isCodeSent || isCodeExpired}
+                >
+                  {isCodeSent 
+                    ? `인증 시간: ${Math.floor(timer / 60)}:${timer % 60 < 10 ? '0' : ''}${timer % 60} 남음`
+                    : '인증'}
+                </Button>
+              </Box>
             </FormControl>
+
+            {/* 인증 코드 입력 */}
+            {isCodeSent && !isCodeExpired && (
+              <FormControl>
+                <FormLabel htmlFor="auth-code">인증 코드</FormLabel>
+                <TextField
+                  required
+                  name="auth-code"
+                  placeholder="인증 코드"
+                  id="auth-code"
+                  autoComplete="off"
+                  error={authCodeError}
+                  helperText={authCodeError ? '인증 코드가 일치하지 않습니다.' : ''}
+                  value={authCode}
+                  onChange={(e) => setAuthCode(e.target.value)}
+                />
+                <Button variant="contained" onClick={handleVerifyCode}>확인</Button>
+              </FormControl>
+            )}
+
             <Divider>
               <Typography sx={{ color: 'text.secondary' }}></Typography>
             </Divider>
+
             <FormControl>
               <FormLabel htmlFor="email">ID</FormLabel>
               <Box display="flex" alignItems="center" gap={1}>
                 <TextField
                   required
                   name="ID"
-                  placeholder="ID"
+                  placeholder="ID(ID@example.com)"
                   type="email"
                   id="ID"
-                  autoComplete="email"
+                  autoComplete="off"
                   error={emailError}
                   helperText={emailErrorMessage}
                   sx={{ width: '280px' }}
@@ -273,6 +333,7 @@ export default function SignUp(props) {
                 fullWidth
                 name="co-num"
                 placeholder="대표번호"
+                type="tel"
               // value={detailAddress}
               // onChange={(e) => setDetailAddress(e.target.value)}
               />
@@ -289,7 +350,11 @@ export default function SignUp(props) {
                     readOnly: true,
                   }}
                 />
-                <Button color="primary" onClick={handleOpenPostcode}>
+                <Button color="primary" onClick={handleOpenPostcode}
+                  sx={{
+                    width: '150px'
+                  }}
+                >
                   주소 찾기
                 </Button>
               </Stack>

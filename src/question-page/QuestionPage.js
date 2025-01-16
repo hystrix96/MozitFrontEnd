@@ -1,7 +1,7 @@
 import React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from './components/AppAppBar';
+import AppAppBar from '../marketing-page/components/AppAppBar';
 import Footer from './components/Footer';
 import { TextField, Button, Box, Typography, Grid2 } from '@mui/material';
 

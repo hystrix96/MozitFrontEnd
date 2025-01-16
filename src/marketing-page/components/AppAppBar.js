@@ -110,9 +110,9 @@ export default function AppAppBar() {
               <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }} component={Link} to="/question">
                 문의하기
               </Button>
-              <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
+              {/* <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
                 Blog
-              </Button>
+              </Button> */}
             </Box>
           </Box>
           <Box
@@ -215,6 +215,7 @@ export default function AppAppBar() {
                 <MenuItem>Blog</MenuItem>
                 <Divider sx={{ my: 3 }} />
                 <MenuItem>
+                  
                   <Button color="primary" variant="contained" fullWidth component={Link} to="/sign-in">
                     로그인
                   </Button>
