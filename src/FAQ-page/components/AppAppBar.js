@@ -125,7 +125,7 @@ export default function AppAppBar() {
             <Button color="primary" variant="text" size="small" component={Link} to="/sign-in">
               로그인
             </Button>
-            <Button color="primary" variant="contained" size="small" component={Link} to="/agree">
+            <Button color="primary" variant="contained" size="small">
               회원가입
             </Button>
             <ColorModeIconDropdown />
@@ -176,7 +176,7 @@ export default function AppAppBar() {
                   </Button>
                 </MenuItem>
                 <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth component={Link} to="/signup">
+                  <Button color="primary" variant="outlined" fullWidth>
                     회원가입
                   </Button>
                 </MenuItem>
