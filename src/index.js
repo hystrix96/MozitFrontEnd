@@ -4,6 +4,9 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import MarketingPage from './marketing-page/MarketingPage'; 
+import SignUp from './sign-up/SignUp';
+import Agree from './sign-up/Agree'
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -11,6 +14,8 @@ root.render(
     <Routes>
       <Route path="/" exact element={<MarketingPage />} />
       <Route path="*" element={<Navigate to="/" replace />} /> 
+      <Route path="/agree" element={<Agree />} />
+      <Route path="/signup" element={<SignUp />} />
     </Routes>
   </BrowserRouter>
 );

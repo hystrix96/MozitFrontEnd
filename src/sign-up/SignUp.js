@@ -1,13 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
@@ -16,6 +13,7 @@ import { styled } from '@mui/material/styles';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons';
+import { DaumPostcodeEmbed } from 'react-daum-postcode';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -37,7 +35,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
+  height: '100vh)',
   minHeight: '100%',
   padding: theme.spacing(2),
   [theme.breakpoints.up('sm')]: {
@@ -62,18 +60,32 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 export default function SignUp(props) {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+  const [address, setAddress] = React.useState('');
+  const [detailAddress, setDetailAddress] = React.useState('');
+  const [isPostcodeOpen, setIsPostcodeOpen] = React.useState(false);
+
+  const handlePostcodeComplete = (data) => {
+    setAddress(data.address);
+    setIsPostcodeOpen(false); // Close the postcode popup after selecting address
+  };
+
+  const handleOpenPostcode = () => {
+    setIsPostcodeOpen(true);
+  };
 
   const validateInputs = () => {
     const email = document.getElementById('email');
-    const password = document.getElementById('password');
     const name = document.getElementById('name');
 
     let isValid = true;
 
+    // Email validation
     if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
       setEmailError(true);
       setEmailErrorMessage('Please enter a valid email address.');
@@ -82,16 +94,26 @@ export default function SignUp(props) {
       setEmailError(false);
       setEmailErrorMessage('');
     }
+    // ID유효성 검사
 
-    if (!password.value || password.value.length < 6) {
+    // 비밀번호 유효성 검사
+    // 영어, 숫자, 특수문자 중 두 가지 유형 이상 포함, 길이는 10자 이상 16자 이하
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*+=\-_])[a-zA-Z\d!@#$%^&*+=\-_]{10,16}$/;
+    const specialCharRegex = /^[a-zA-Z0-9!@#$%^&*+=\-_]*$/;  // 허용되지 않는 특수문자 제외
+    if (!password || password.length < 8 || password.length > 16 || !passwordRegex.test(password)) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('비밀번호는 10자 이상 16자 이하로 영어, 숫자 또는 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
+      isValid = false;
+    } else if (password !== confirmPassword) {
+      setPasswordError(true);
+      setPasswordErrorMessage('비밀번호가 서로 다릅니다.');
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
 
+    // Name validation
     if (!name.value || name.value.length < 1) {
       setNameError(true);
       setNameErrorMessage('Name is required.');
@@ -100,8 +122,15 @@ export default function SignUp(props) {
       setNameError(false);
       setNameErrorMessage('');
     }
-
     return isValid;
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
+  const handleConfirmPasswordChange = (event) => {
+    setConfirmPassword(event.target.value);
   };
 
   const handleSubmit = (event) => {
@@ -112,9 +141,10 @@ export default function SignUp(props) {
     const data = new FormData(event.currentTarget);
     console.log({
       name: data.get('name'),
-      lastName: data.get('lastName'),
       email: data.get('email'),
       password: data.get('password'),
+      address,
+      detailAddress,
     });
   };
 
@@ -130,7 +160,7 @@ export default function SignUp(props) {
             variant="h4"
             sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
           >
-            Sign up
+            회원가입
           </Typography>
           <Box
             component="form"
@@ -138,14 +168,14 @@ export default function SignUp(props) {
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
             <FormControl>
-              <FormLabel htmlFor="name">Full name</FormLabel>
+              <FormLabel htmlFor="name">이름</FormLabel>
               <TextField
                 autoComplete="name"
                 name="name"
                 required
                 fullWidth
                 id="name"
-                placeholder="Jon Snow"
+                placeholder="Name"
                 error={nameError}
                 helperText={nameErrorMessage}
                 color={nameError ? 'error' : 'primary'}
@@ -156,15 +186,34 @@ export default function SignUp(props) {
               <TextField
                 required
                 fullWidth
-                id="email"
-                placeholder="your@email.com"
                 name="email"
+                placeholder="email@example.com"
+                type="email"
+                id="email"
                 autoComplete="email"
-                variant="outlined"
                 error={emailError}
                 helperText={emailErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
               />
+            </FormControl>
+            <Divider>
+              <Typography sx={{ color: 'text.secondary' }}></Typography>
+            </Divider>
+            <FormControl>
+              <FormLabel htmlFor="email">ID</FormLabel>
+              <Box display="flex" alignItems="center" gap={1}>
+                <TextField
+                  required
+                  name="ID"
+                  placeholder="ID"
+                  type="email"
+                  id="ID"
+                  autoComplete="email"
+                  error={emailError}
+                  helperText={emailErrorMessage}
+                  sx={{ width: '280px' }}
+                />
+                <Button variant="contained">중복 확인</Button>
+              </Box>
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="password">Password</FormLabel>
@@ -176,16 +225,87 @@ export default function SignUp(props) {
                 type="password"
                 id="password"
                 autoComplete="new-password"
-                variant="outlined"
+                value={password}
+                onChange={handlePasswordChange}
                 error={passwordError}
                 helperText={passwordErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="allowExtraEmails" color="primary" />}
-              label="I want to receive updates via email."
-            />
+            <FormControl>
+              <FormLabel htmlFor="confirm-password">PW확인</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="confirm-password"
+                placeholder="••••••"
+                type="password"
+                id="confirm-password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+                error={passwordError && password !== confirmPassword}
+                helperText={passwordError && password !== confirmPassword ? '비밀번호가 다릅니다다!' : ''}
+              />
+              {password && confirmPassword && password !== confirmPassword && (
+                <div style={{ color: 'red', marginTop: '8px' }}>
+                  <small>비밀번호가 다릅니다!</small>
+                </div>
+              )}
+            </FormControl>
+            <Divider>
+              <Typography sx={{ color: 'text.secondary' }}></Typography>
+            </Divider>
+            <FormControl>
+              <FormLabel htmlFor="address">회사명</FormLabel>
+              {/* 회사명 */}
+              <TextField
+                fullWidth
+                name="co-name"
+                placeholder="회사명"
+              // value={detailAddress}
+              // onChange={(e) => setDetailAddress(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="address">대표번호</FormLabel>
+              {/* 대표번호 */}
+              <TextField
+                fullWidth
+                name="co-num"
+                placeholder="대표번호"
+              // value={detailAddress}
+              // onChange={(e) => setDetailAddress(e.target.value)}
+              />
+            </FormControl>
+            {/* Address Section */}
+            <FormControl>
+              <FormLabel htmlFor="address">주소</FormLabel>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <TextField
+                  fullWidth
+                  value={address}
+                  placeholder="Address"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                <Button color="primary" onClick={handleOpenPostcode}>
+                  주소 찾기
+                </Button>
+              </Stack>
+            </FormControl>
+            <FormControl>
+              {/* <FormLabel htmlFor="detail-address">Detail Address</FormLabel> */}
+              <TextField
+                fullWidth
+                name="detail-address"
+                placeholder="세부주소"
+                value={detailAddress}
+                onChange={(e) => setDetailAddress(e.target.value)}
+                sx={{ maxWidth: '40%' }}
+              />
+            </FormControl>
+
             <Button
               type="submit"
               fullWidth
@@ -195,39 +315,64 @@ export default function SignUp(props) {
               Sign up
             </Button>
           </Box>
-          <Divider>
-            <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-          </Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign up with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign up with Facebook
-            </Button>
-            <Typography sx={{ textAlign: 'center' }}>
-              Already have an account?{' '}
-              <Link
-                href="/material-ui/getting-started/templates/sign-in/"
-                variant="body2"
-                sx={{ alignSelf: 'center' }}
-              >
-                Sign in
-              </Link>
-            </Typography>
-          </Box>
         </Card>
       </SignUpContainer>
+
+
+
+      {isPostcodeOpen && (
+        <Box sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',  // 반투명 배경
+          zIndex: 9999,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <Box sx={{
+            background: 'white',
+            padding: 3,
+            borderRadius: 2,
+            maxWidth: '90%',
+            maxHeight: '80%',
+            overflow: 'auto',
+            position: 'relative', // 닫기 버튼 위치 조정용
+          }}>
+            {/* 닫기 버튼 */}
+            <Button
+              onClick={() => setIsPostcodeOpen(false)} // 팝업 닫기
+              sx={{
+                position: 'absolute',
+                top: 10,
+                right: 10,
+                padding: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                borderRadius: '50%',
+                minWidth: '30px',
+                minHeight: '30px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                },
+              }}
+            >
+              <Typography variant="body2" sx={{ color: 'white' }}>X</Typography>
+            </Button>
+            {/* Daum 우편번호 서비스 컴포넌트 */}
+            <DaumPostcodeEmbed
+              onComplete={handlePostcodeComplete}
+              autoClose={false}
+              defaultQuery=""
+            />
+          </Box>
+        </Box>
+      )}
     </AppTheme>
   );
 }
