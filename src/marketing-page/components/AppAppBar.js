@@ -101,7 +101,7 @@ export default function AppAppBar() {
           </Box>
         )}
       </Box>
-              <Button variant="text" color="info" size="small">
+              <Button variant="text" color="info" size="small" component={Link} to="/notice">
                 공지사항
               </Button>
               <Button variant="text" color="info" size="small" component={Link} to="/faq">
