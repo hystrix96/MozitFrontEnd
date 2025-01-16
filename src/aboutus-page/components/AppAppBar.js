@@ -62,7 +62,7 @@ export default function AppAppBar() {
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
             <Sitemark height={20}/>
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <Button variant="text" color="info" size="small" component={Link} to="/aboutus">
+              <Button variant="text" color="info" size="small">
                 About us
               </Button>
               <Box
@@ -84,15 +84,15 @@ export default function AppAppBar() {
               position: 'absolute', // 부모 박스 기준 위치
               top: '100%', // 버튼 아래에 배치
               left: 0, // 왼쪽 정렬
-              backgroundColor: (theme) => theme.palette.background.paper, // 라이트 모드에 맞는 밝은 배경색
-              color: (theme) => theme.palette.text.primary, // 텍스트 색상
+              backgroundColor: '#333', // 어두운 배경색
+              color: '#fff', // 흰색 텍스트
               boxShadow: 1, // 그림자 추가
               borderRadius: 1, // 메뉴 모서리 둥글게
               zIndex: 10, // 다른 요소 위로 올림
               padding: 1, // 메뉴 내부 여백 추가
-              }}
+            }}
           >
-            <Button variant="text" color="info" size="small" component={Link} to="/edit" >
+            <Button variant="text" color="info" size="small">
               동영상
             </Button>
             <Button variant="text" color="info" size="small">
@@ -101,7 +101,7 @@ export default function AppAppBar() {
           </Box>
         )}
       </Box>
-              <Button variant="text" color="info" size="small" component={Link} to="/notice">
+              <Button variant="text" color="info" size="small">
                 공지사항
               </Button>
               <Button variant="text" color="info" size="small" component={Link} to="/faq">
@@ -110,9 +110,9 @@ export default function AppAppBar() {
               <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }} component={Link} to="/question">
                 문의하기
               </Button>
-              {/* <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
+              <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
                 Blog
-              </Button> */}
+              </Button>
             </Box>
           </Box>
           <Box
@@ -125,7 +125,7 @@ export default function AppAppBar() {
             <Button color="primary" variant="text" size="small" component={Link} to="/sign-in">
               로그인
             </Button>
-            <Button color="primary" variant="contained" size="small" component={Link} to="/agree">
+            <Button color="primary" variant="contained" size="small">
               회원가입
             </Button>
             <ColorModeIconDropdown />
@@ -157,71 +157,26 @@ export default function AppAppBar() {
                   </IconButton>
                 </Box>
 
-                <MenuItem>
-                <Button variant="text" color="info" size="small" component={Link} to="/aboutus">
-                Aboutus
-              </Button>
-              </MenuItem>
-              <MenuItem>
-                <Box
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        sx={{ position: 'relative' }} // 상대 위치로 서브 메뉴 배치
-      >
-        <Button variant="text" color="info" size="small">
-          작업
-        </Button>
-        {openSubMenu && (
-          <Box
-            sx={{
-              paddingLeft: 2,
-              paddingTop: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1,
-              position: 'absolute', // 부모 박스 기준 위치
-              top: '100%', // 버튼 아래에 배치
-              left: 0, // 왼쪽 정렬
-              backgroundColor: (theme) => theme.palette.background.paper, // 라이트 모드에 맞는 밝은 배경색
-              color: (theme) => theme.palette.text.primary, // 텍스트 색상
-              boxShadow: 1, // 그림자 추가
-              borderRadius: 1, // 메뉴 모서리 둥글게
-              zIndex: 10, // 다른 요소 위로 올림
-              padding: 1, // 메뉴 내부 여백 추가
-              }}
-          >
-            <Button variant="text" color="info" size="small" component={Link} to="/edit" >
-              동영상
-            </Button>
-            <Button variant="text" color="info" size="small">
-              라이브
-            </Button>
-          </Box>
-        )}
-            </Box>
-            </MenuItem>
-              
-                <MenuItem><Button variant="text" color="info" size="small">
-              공지사항
-            </Button></MenuItem>
-                <MenuItem>
-                <Button variant="text" color="info" size="small" component={Link} to="/faq">
-                FAQ
-              </Button>
-              </MenuItem>
-              <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }} component={Link} to="/question">
-                문의하기
-              </Button>
+                <MenuItem>About us</MenuItem>
+                <MenuItem onClick={toggleSubMenu}>작업</MenuItem>
+                {openSubMenu && (  // 하위 메뉴 열리면 아래 항목들을 표시
+                  <Box sx={{ paddingLeft: 2, paddingTop: 1 }}>
+                    <MenuItem>동영상</MenuItem>
+                    <MenuItem>라이브</MenuItem>
+                  </Box>
+                )}
+                <MenuItem>공지사항</MenuItem>
+                <MenuItem>FAQ</MenuItem>
+                <MenuItem>문의하기</MenuItem>
                 <MenuItem>Blog</MenuItem>
                 <Divider sx={{ my: 3 }} />
                 <MenuItem>
-                  
-                  <Button color="primary" variant="contained" fullWidth component={Link} to="/sign-in">
+                  <Button color="primary" variant="contained" fullWidth>
                     로그인
                   </Button>
                 </MenuItem>
                 <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth component={Link} to="/signup">
+                  <Button color="primary" variant="outlined" fullWidth>
                     회원가입
                   </Button>
                 </MenuItem>
