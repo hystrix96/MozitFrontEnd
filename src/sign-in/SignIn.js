@@ -4,7 +4,6 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import Link from '@mui/material/Link';
@@ -16,7 +15,9 @@ import { styled } from '@mui/material/styles';
 import ForgotPassword from './components/ForgotPassword';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons';
+import SitemarkIcon from '../marketing-page/components/SitemarkIcon';
+import axios from 'axios'; // axios를 import합니다.
+
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -75,17 +76,49 @@ export default function SignIn(props) {
     setOpen(false);
   };
 
-  const handleSubmit = (event) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
+  // const handleSubmit = (event) => {
+  //   if (emailError || passwordError) {
+  //     event.preventDefault();
+  //     return;
+  //   }
+  //   const data = new FormData(event.currentTarget);
+  //   console.log({
+  //     email: data.get('email'),
+  //     password: data.get('password'),
+  //   });
+  // };
+  const handleSubmit = async (event) => {
+  event.preventDefault(); // 기본 폼 제출 동작을 방지.
+
+  // 입력값 가져오기
+  const data = new FormData(event.currentTarget);
+  const email = data.get('email');
+  const password = data.get('password');
+
+  // 입력값 검증
+  if (!validateInputs()) return;
+
+  try {
+    // 백엔드 서버로 요청
+    const response = await axios.post('https://your-backend-url.com/login', {
+      email,
+      password,
     });
-  };
+
+    // 성공 응답 처리
+    if (response.status === 200) {
+      alert('로그인 성공!'); // 성공 메시지
+      // 추가 작업: 페이지 이동 등
+    } else {
+      throw new Error('Invalid response');
+    }
+  } catch (error) {
+    // 실패 응답 처리
+    setEmailError(true);
+    setEmailErrorMessage('유효하지 않은 계정입니다.');
+    console.error(error);
+  }
+};
 
   const validateInputs = () => {
     const email = document.getElementById('email');
@@ -120,7 +153,7 @@ export default function SignIn(props) {
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
-          <SitemarkIcon />
+          <SitemarkIcon height={20} />
           <Typography
             component="h1"
             variant="h4"
@@ -196,9 +229,9 @@ export default function SignIn(props) {
               Forgot your password?
             </Link>
           </Box>
-          <Divider>or</Divider>
+          {/* <Divider>or</Divider> */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
+            {/* <Button
               fullWidth
               variant="outlined"
               onClick={() => alert('Sign in with Google')}
@@ -213,11 +246,11 @@ export default function SignIn(props) {
               startIcon={<FacebookIcon />}
             >
               Sign in with Facebook
-            </Button>
+            </Button> */}
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
               <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+                href="/sign-up"
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >

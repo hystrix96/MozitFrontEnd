@@ -5,6 +5,8 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import MarketingPage from './marketing-page/MarketingPage';
 import SignIn from './sign-in/SignIn';
+import SignUp from './sign-up/SignUp';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -12,6 +14,8 @@ root.render(
     <Routes>
       <Route path="/" exact element={<MarketingPage />} />
       <Route path="/sign-in" element={<SignIn />} />
+      <Route path="/sign-up" element={<SignUp />} />
+
       <Route path="*" element={<Navigate to="/" replace />} /> 
     </Routes>
   </BrowserRouter>

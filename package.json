@@ -9,6 +9,7 @@
     "@mui/icons-material": "^6.4.0",
     "@mui/material": "^6.4.0",
     "@mui/styled-engine-sc": "^6.4.0",
+    "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
