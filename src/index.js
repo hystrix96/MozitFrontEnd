@@ -9,6 +9,8 @@ import SignUp from './sign-up/SignUp';
 import Agree from './sign-up/Agree';
 import FAQPage from './FAQ-page/FAQPage';
 import QuestionPage from './question-page/QuestionPage';
+import AboutUs from './aboutus-page/aboutus';
+import Edit from './edit-page/EditPage'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -21,6 +23,10 @@ root.render(
       <Route path="*" element={<Navigate to="/" replace />} /> 
       <Route path="/agree" element={<Agree />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/aboutus" element={<AboutUs />} />
+      <Route path="/edit" element={<Edit />} />
+
+      
     </Routes>
   </BrowserRouter>
 );
