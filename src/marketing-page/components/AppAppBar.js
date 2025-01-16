@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
@@ -35,6 +35,9 @@ export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
   const [openSubMenu, setOpenSubMenu] = React.useState(false);
 
+    const handleMouseEnter = () => setOpenSubMenu(true); // 서브 메뉴 표시
+  const handleMouseLeave = () => setOpenSubMenu(false); // 서브 메뉴 숨김
+
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
@@ -62,29 +65,42 @@ export default function AppAppBar() {
               <Button variant="text" color="info" size="small">
                 About us
               </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                onClick={toggleSubMenu}
-              >
-                작업
-              </Button>
-              {openSubMenu && (  // openSubMenu가 true일 때 하위 메뉴 표시
-                <Box sx={{ paddingLeft: 2, 
-                paddingTop: 1, 
-                display: 'flex', 
-                flexDirection: 'column',
-                gap: 1 }}
-                >
-                  <Button variant="text" color="info" size="small">
-                    동영상
-                  </Button>
-                  <Button variant="text" color="info" size="small">
-                    라이브
-                  </Button>
-                </Box>
-              )}
+              <Box
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        sx={{ position: 'relative' }} // 상대 위치로 서브 메뉴 배치
+      >
+        <Button variant="text" color="info" size="small">
+          작업
+        </Button>
+        {openSubMenu && (
+          <Box
+            sx={{
+              paddingLeft: 2,
+              paddingTop: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              position: 'absolute', // 부모 박스 기준 위치
+              top: '100%', // 버튼 아래에 배치
+              left: 0, // 왼쪽 정렬
+              backgroundColor: '#333', // 어두운 배경색
+              color: '#fff', // 흰색 텍스트
+              boxShadow: 1, // 그림자 추가
+              borderRadius: 1, // 메뉴 모서리 둥글게
+              zIndex: 10, // 다른 요소 위로 올림
+              padding: 1, // 메뉴 내부 여백 추가
+            }}
+          >
+            <Button variant="text" color="info" size="small">
+              동영상
+            </Button>
+            <Button variant="text" color="info" size="small">
+              라이브
+            </Button>
+          </Box>
+        )}
+      </Box>
               <Button variant="text" color="info" size="small">
                 공지사항
               </Button>
@@ -106,7 +122,7 @@ export default function AppAppBar() {
               alignItems: 'center',
             }}
           >
-            <Button color="primary" variant="text" size="small">
+            <Button color="primary" variant="text" size="small" component={Link} to="/sign-in">
               로그인
             </Button>
             <Button color="primary" variant="contained" size="small" component={Link} to="/agree">

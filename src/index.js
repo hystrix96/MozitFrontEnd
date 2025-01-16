@@ -13,6 +13,7 @@ root.render(
  <BrowserRouter>
     <Routes>
       <Route path="/" exact element={<MarketingPage />} />
+      <Route path="/sign-in" element={<SignIn />} />
       <Route path="*" element={<Navigate to="/" replace />} /> 
       <Route path="/agree" element={<Agree />} />
       <Route path="/signup" element={<SignUp />} />
