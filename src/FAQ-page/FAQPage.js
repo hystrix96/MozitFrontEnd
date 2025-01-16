@@ -2,7 +2,7 @@ import React, {useRef} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from './components/AppAppBar';
+import AppAppBar from '../marketing-page/components/AppAppBar';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 
