@@ -64,8 +64,8 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn(props) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
+  const [userIdError, setUserIdError] = React.useState(false);
+  const [userIdErrorMessage, setUserIdErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -94,47 +94,54 @@ export default function SignIn(props) {
 
   // 입력값 가져오기
   const data = new FormData(event.currentTarget);
-  const email = data.get('email');
+  const userId = data.get('userId');
   const password = data.get('password');
 
   // 입력값 검증
   if (!validateInputs()) return;
-
   try {
-    // 백엔드 서버로 요청
-    const response = await axios.post('https://your-backend-url.com/login', {
-      email,
-      password,
+    // FormData 생성
+    const formData = new FormData();
+    formData.append('username', userId); // 백엔드의 username 키에 맞게 수정
+    formData.append('password', password);
+
+    // Axios 요청
+    const response = await axios.post('/users/login', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data', // form-data 형식 지정
+        },
+        withCredentials: true,
     });
 
-    // 성공 응답 처리
+    console.log(response);
+    // 응답 처리
     if (response.status === 200) {
-      alert('로그인 성공!'); // 성공 메시지
-      // 추가 작업: 페이지 이동 등
+        alert('로그인 성공!');
+        window.location.href = '/dashboard'; // 성공 시 페이지 이동
     } else {
-      throw new Error('Invalid response');
+        throw new Error('로그인 실패');
     }
   } catch (error) {
-    // 실패 응답 처리
-    setEmailError(true);
-    setEmailErrorMessage('유효하지 않은 계정입니다.');
-    console.error(error);
+      // 실패 처리
+      setUserIdError(true);
+      setUserIdErrorMessage('유효하지 않은 계정입니다.');
+      console.error(error);
   }
-};
+  };
 
   const validateInputs = () => {
-    const email = document.getElementById('email');
+    const userId = document.getElementById('userId');
     const password = document.getElementById('password');
 
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
+    if (!userId) {
+      setUserIdError(true);
+      setUserIdErrorMessage('Please enter a valid userId address.');
       isValid = false;
     } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
+      setUserIdError(false);
+      setUserIdErrorMessage('');
     }
 
     if (!password.value || password.value.length < 6) {
@@ -175,20 +182,19 @@ export default function SignIn(props) {
             }}
           >
             <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
+              <FormLabel htmlFor="userId">ID</FormLabel>
               <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
-                id="email"
-                type="email"
-                name="email"
-                placeholder="your@email.com"
-                autoComplete="email"
+                error={userIdError}
+                helperText={userIdErrorMessage}
+                id="userId"
+                type="text"
+                name="userId"
+                placeholder="Enter your Id"
                 autoFocus
                 required
                 fullWidth
                 variant="outlined"
-                color={emailError ? 'error' : 'primary'}
+                color={userIdError ? 'error' : 'primary'}
               />
             </FormControl>
             <FormControl>
