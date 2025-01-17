@@ -13,6 +13,10 @@ import AboutUs from './aboutus-page/aboutus';
 import Edit from './edit-page/EditPage'
 import NoticePage from './notice-page/NoticePage';
 import NoticeDetailPage from './notice-page/NoticeDetailPage';
+import MyQuestionPage from './my-page/MyQuestionPage';
+import QuestionListPage from './admin-page/QuestionListPage';
+import MyQuestionDetailPage from './my-page/MyQuestionDetailPage';
+import AnswerPage from './admin-page/AnswerPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -29,6 +33,11 @@ root.render(
       <Route path="/signup" element={<SignUp />} />
       <Route path="/aboutus" element={<AboutUs />} />
       <Route path="/edit" element={<Edit />} />
+      <Route path="/myquestion" element={<MyQuestionPage />} />
+      <Route path="/myquestion/:id" element={<MyQuestionDetailPage />} />
+      <Route path="/questionlist" element={<QuestionListPage />} />
+      <Route path="/questionlist/:id" element={<AnswerPage />} />
+
 
       
     </Routes>
