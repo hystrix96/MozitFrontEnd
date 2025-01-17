@@ -17,6 +17,10 @@ import MyQuestionPage from './my-page/MyQuestionPage';
 import QuestionListPage from './admin-page/QuestionListPage';
 import MyQuestionDetailPage from './my-page/MyQuestionDetailPage';
 import AnswerPage from './admin-page/AnswerPage';
+import NoticeListPage from './admin-page/NoticeListPage';
+import NoticeUpdatePage from './admin-page/NoticeUpdatePage';
+import NoticeEditPage from './admin-page/NoticeEditPage';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -37,7 +41,9 @@ root.render(
       <Route path="/myquestion/:id" element={<MyQuestionDetailPage />} />
       <Route path="/questionlist" element={<QuestionListPage />} />
       <Route path="/questionlist/:id" element={<AnswerPage />} />
-
+      <Route path="/noticelist" element={<NoticeListPage />} />
+      <Route path="/noticelist/:id" element={<NoticeUpdatePage />} />
+      <Route path="/noticelist/:id/edit" element={<NoticeEditPage />} />
 
       
     </Routes>
