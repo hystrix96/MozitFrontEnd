@@ -20,6 +20,7 @@ import AnswerPage from './admin-page/AnswerPage';
 import NoticeListPage from './admin-page/NoticeListPage';
 import NoticeUpdatePage from './admin-page/NoticeUpdatePage';
 import NoticeEditPage from './admin-page/NoticeEditPage';
+import NoticeCreatePage from './admin-page/NoticeCreatePage';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -44,6 +45,7 @@ root.render(
       <Route path="/noticelist" element={<NoticeListPage />} />
       <Route path="/noticelist/:id" element={<NoticeUpdatePage />} />
       <Route path="/noticelist/:id/edit" element={<NoticeEditPage />} />
+      <Route path="/noticelist/create" element={<NoticeCreatePage />} />
 
       
     </Routes>

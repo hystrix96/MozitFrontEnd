@@ -123,16 +123,42 @@ export default function NoticeListPage(props) {
                     </TableBody>
                     </Table>
                 </TableContainer>
+                
+                <Box 
+                    sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', // 자식 요소를 양쪽 끝으로 배치
+                        marginTop: 2 
+                    }}
+                    >
+                    {/* TablePagination 가운데 정렬 */}
+                    <Box sx={{ display: 'flex', justifyContent: 'center', flex: 1 }}>
+                        <TablePagination
+                        rowsPerPageOptions={[]} // Options for how many rows per page
+                        component="div"
+                        count={notices.length} // Total number of notices
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        labelDisplayedRows={() => ''} // Remove "1–7 of 7"
+                        />
+                    </Box>
 
-                <TablePagination
-                    rowsPerPageOptions={[]} // Options for how many rows per page
-                    component="div"
-                    count={notices.length} // Total number of notices
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
+                    {/* 작성 버튼 오른쪽 정렬 */}
+                    <Box sx={{ flex: 0 }}>
+                        <Button 
+                        variant="outlined" 
+                        color="secondary" 
+                        sx={{ marginLeft: 2, marginBottom: 1}} 
+                        component={Link} 
+                        to="/noticelist/create"
+                        >
+                        작성
+                        </Button>
+                    </Box>
+                </Box>
             </Box>
         </Box>
         <Footer />
