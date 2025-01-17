@@ -17,7 +17,7 @@ import MuiCard from '@mui/material/Card';
 import ForgotPassword from './components/ForgotPassword';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
-import SitemarkIcon from '../marketing-page/components/SitemarkIcon';
+import SitemarkIcon from '../components/SitemarkIcon';
 import axios from 'axios'; // axios를 import합니다.
 
 

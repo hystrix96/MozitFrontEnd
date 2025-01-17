@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import visuallyHidden from '@mui/utils/visuallyHidden';
 import { styled } from '@mui/material/styles';
-import SitemarkIcon from './SitemarkIcon';
+import SitemarkIcon from '../../components/SitemarkIcon';
 
 const StyledBox = styled('div')(({ theme }) => ({
   alignSelf: 'center',

@@ -1,9 +1,9 @@
 import React, {useRef} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from '../marketing-page/components/AppAppBar';
+import AppAppBar from '../components/AppAppBar';
 import FAQ from './components/FAQ';
-import Footer from './components/Footer';
+import Footer from '../components/Footer';
 
 export default function FAQPage(props) {
   return (

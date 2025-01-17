@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from './components/AppAppBar';
-import Footer from './components/Footer';
+import AppAppBar from '../components/AppAppBar';
+import Footer from '../components/Footer';
 
 const notices = [
   {

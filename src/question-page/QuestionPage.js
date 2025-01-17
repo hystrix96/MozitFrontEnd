@@ -1,8 +1,8 @@
 import React , { useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from '../marketing-page/components/AppAppBar';
-import Footer from './components/Footer';
+import AppAppBar from '../components/AppAppBar';
+import Footer from '../components/Footer';
 import {  TextField, Button, Box, Typography, Grid2, Switch, FormControlLabel, Collapse, FormGroup, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 export default function QuestionPage(props) {
