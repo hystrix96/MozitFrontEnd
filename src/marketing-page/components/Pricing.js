@@ -211,19 +211,20 @@
 //   );
 // }
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Container from '@mui/material/Container';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Container,
+  Divider,
+  Fab,
+  Typography
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import Chip from '@mui/material/Chip';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import CheckIcon from '@mui/icons-material/Check';
-import Fab from '@mui/material/Fab';
+import { AutoAwesome as AutoAwesomeIcon, Check as CheckIcon } from '@mui/icons-material';
 
 const tiers = [
   {
@@ -250,10 +251,10 @@ const tiers = [
       '모든 모자이크 기능\n(유해요소, 개인정보, 사람 얼굴)',
       '라이브 스트리밍 기능',
     ],
-    buttonText: 'Pro 플랜 구독하기',
+    buttonText: 'Pro 플랜 시작하기',
     buttonVariant: 'contained',
     buttonColor: 'secondary',
-    recommended: true,
+    recommended: false,
     userType: ['비즈니스 고객', '영상 컨텐츠 크리에이터'],
   },
   {
@@ -265,7 +266,7 @@ const tiers = [
       '모든 모자이크 기능\n(유해요소, 개인정보, 사람 얼굴)',
       '라이브 스트리밍 기능',
     ],
-    buttonText: 'Premium 플랜 구독하기',
+    buttonText: 'Premium 플랜 시작하기',
     buttonVariant: 'outlined',
     buttonColor: 'primary',
     recommended: false,
@@ -294,8 +295,8 @@ export default function Pricing() {
     >
       <Box
         sx={{
-          width: { sm: '100%', md: '60%' },
-          textAlign: { sm: 'left', md: 'center' },
+          width: '100%',
+          textAlign: 'center',
         }}
       >
         <Typography
@@ -309,7 +310,12 @@ export default function Pricing() {
           component="h1"
           variant="h4"
           gutterBottom
-          sx={{ color: 'text.primary', fontWeight: 'bold', whiteSpace: 'nowrap', mb: 3 }}
+          sx={{
+            color: 'text.primary',
+            fontWeight: 'bold',
+            whiteSpace: 'nowrap',
+            mb: 1
+          }}
         >
           자신에게 맞는 요금제를 선택하여 효율적으로 작업하세요.
         </Typography>
@@ -318,7 +324,7 @@ export default function Pricing() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: '8vh',
+            height: '10vh',
           }}
         >
           <Box
@@ -327,7 +333,6 @@ export default function Pricing() {
               justifyContent: 'center',
               alignItems: 'center',
               gap: 2,
-              mt: 2,
               p: 0.5,
               border: '1px solid',
               borderColor: 'grey.300',
@@ -342,6 +347,10 @@ export default function Pricing() {
               sx={{
                 flexGrow: 1,
                 boxShadow: 'none',
+                textAlign: 'center',
+                height: 'auto', // 기본 높이를 자동으로
+                minHeight: '64px', // 최소 높이 지정
+                borderRadius: '80px',
               }}
             >
               월간 플랜
@@ -353,12 +362,24 @@ export default function Pricing() {
               sx={{
                 flexGrow: 1,
                 boxShadow: 'none',
+                textAlign: 'center',
+                height: 'auto', // 기본 높이를 자동으로
+                minHeight: '64px', // 최소 높이 지정
+                borderRadius: '80px',
+                display: 'flex', // Flexbox 활성화
+                flexDirection: 'column', // 콘텐츠를 세로로 정렬
+                justifyContent: 'center', // 수직 방향 가운데 정렬
+                alignItems: 'center', // 가로 방향 가운데 정렬
               }}
             >
               연간 플랜
               <Typography
                 variant="caption"
-                sx={{ display: 'block', mt: 0.5, color: 'primary.main', whiteSpace: 'pre-line' }}
+                sx={{
+                  display: 'block',
+                  mt: 0.1,
+                  color: 'primary.main',
+                  whiteSpace: 'pre-line' }}
               >
                 20% 할인
               </Typography>
@@ -371,7 +392,8 @@ export default function Pricing() {
           wrap='nowrap'
           sx={{
             justifyContent: 'center', // 카드들이 중앙에 정렬되도록 설정
-            alignItems: 'stretch' // 카드의 높이를 맞춤
+            alignItems: 'stretch', // 카드의 높이를 맞춤
+            p: 3,
           }}
         >
           {tiers.map((tier) => (
@@ -400,12 +422,12 @@ export default function Pricing() {
                 }}
               >
                 <CardContent>
-                  <Typography component="h3" variant="h4" sx={{ mb: 2 }}>
+                  <Typography component="h3" variant="h2" sx={{ mb: 2 }}>
                     {tier.title}
                   </Typography>
                   <Box
                     sx={{
-                      mt: 1,
+                      mt: 2,
                       mb: 2,
                     }}
                   >
@@ -419,6 +441,7 @@ export default function Pricing() {
                     sx={{
                       display: 'flex',
                       alignItems: 'baseline',
+                      justifyContent: 'center',
                       mt: 2,
                     }}
                   >
@@ -476,29 +499,37 @@ export default function Pricing() {
                       {tier.buttonText}
                     </Button>
                   </CardActions>
-                  <Divider sx={{ my: 2 }} />
-                  {tier.description.map((line, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        mb: 1.5,
-                      }}
-                    >
-                      <CheckIcon
-                        sx={{ fontSize: '1.2rem', color: 'primary.main', mr: 1 }}
-                      />
-                      <Typography
-                        variant="body2"
+                  <Divider sx={{ my: 3 }} />
+                  <Box
+                    sx={{
+                      pt: 2,
+                    }}
+                  >
+                    {tier.description.map((line, index) => (
+                      <Box
+                        key={index}
                         sx={{
-                          whiteSpace: 'pre-line',
+                          display: 'flex',
+                          alignItems: 'center',
+                          mb: 1.5,
                         }}
                       >
-                        {line}
-                      </Typography>
-                    </Box>
-                  ))}
+                        <CheckIcon
+                          sx={{ fontSize: '1.2rem', color: 'primary.main', mr: 1 }}
+                        />
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            flexGrow: 1,
+                            textAlign: 'left',
+                            whiteSpace: 'pre-line',
+                          }}
+                        >
+                          {line}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
