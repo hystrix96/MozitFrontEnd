@@ -53,7 +53,7 @@ const notices = [
 ];
 
 
-export default function QuestionPage(props) {
+export default function NoticePage(props) {
   const [page, setPage] = useState(0); // Current page number
   const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
 

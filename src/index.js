@@ -13,7 +13,7 @@ import AboutUs from './aboutus-page/aboutus';
 import Edit from './edit-page/EditPage'
 import NoticePage from './notice-page/NoticePage';
 import NoticeDetailPage from './notice-page/NoticeDetailPage';
-
+import MozaicPage from './mozaic-page/MozaicPage';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
  <BrowserRouter>
@@ -29,6 +29,8 @@ root.render(
       <Route path="/signup" element={<SignUp />} />
       <Route path="/aboutus" element={<AboutUs />} />
       <Route path="/edit" element={<Edit />} />
+      <Route path="/mozaic" element={<MozaicPage />} />
+
 
       
     </Routes>
