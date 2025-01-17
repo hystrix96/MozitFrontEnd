@@ -1,219 +1,203 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
+import { useState, useRef } from 'react';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
+import Popover from '@mui/material/Popover'; // Popover 추가
+import Alert from '@mui/material/Alert'; // Alert 추가
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
-import axios from 'axios'; // axios를 import합니다.
-import {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
+const StyledBox = styled('div')(({ theme }) => ({
   alignSelf: 'center',
-  width: '100%',
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  margin: 'auto',
+  width: '60%',
+  height: '60vh',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  marginTop: theme.spacing(8),
+  borderRadius: (theme.vars || theme).shape.borderRadius,
+  outline: '6px solid',
+  outlineColor: 'hsla(220, 25%, 80%, 0.2)',
+  border: '1px solid',
+  borderColor: (theme.vars || theme).palette.grey[200],
+  boxShadow: '0 0 12px 8px hsla(220, 25%, 80%, 0.2)',
+  backgroundSize: 'cover',
+  overflow: 'auto',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
   [theme.breakpoints.up('sm')]: {
-    maxWidth: '450px',
+    marginTop: theme.spacing(10),
+    height: '70vh',
   },
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
   ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
+    boxShadow: '0 0 24px 12px hsla(210, 100%, 25%, 0.2)',
+    outlineColor: 'hsla(220, 20%, 42%, 0.1)',
+    borderColor: (theme.vars || theme).palette.grey[700],
   }),
 }));
 
-const SignInContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
-  minHeight: '100%',
-  padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(4),
-  },
-  '&::before': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
-      backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
-  },
-}));
+export default function EditPage(props) {
+  const [videoSrc, setVideoSrc] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null); // Popover 상태 추가
+  const [loading, setLoading] = useState(false); // 영상 처리 중 상태 추가
+  const editButtonRef = useRef(null); // 편집 시작 버튼 참조 추가
+   const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
 
-export default function SignIn(props) {
-  const [videoFile, setVideoFile] = useState(null);
-  const [videoUrl, setVideoUrl] = useState('');
-
-  // 파일 선택 핸들러
-  const handleFileChange = (event) => {
+  const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    const fileType = file.type;
-    if (fileType === 'video/quicktime') {
-    alert('MOV 파일은 브라우저에서 제대로 지원되지 않을 수 있습니다. MP4 파일로 변환해 주세요.');
-    return;
-  }
-    if (file) {
-      setVideoFile(file);
-      const url = URL.createObjectURL(file); // 업로드한 파일 URL 생성
-      setVideoUrl(url); // 미리보기 위한 동영상 URL 설정
+    if (file && file.type.startsWith('video/')) {
+      setVideoSrc(URL.createObjectURL(file));
+    } else {
+      alert('동영상 파일을 업로드해주세요.');
     }
   };
 
-    // 파일 선택 창 트리거
-  const triggerFileInput = () => {
-    const fileInput = document.getElementById('video-upload');
-    if (fileInput) {
-      fileInput.click(); // 파일 선택 창 열기
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file && file.type.startsWith('video/')) {
+      setVideoSrc(URL.createObjectURL(file));
+    } else {
+      alert('동영상 파일을 드롭해주세요.');
     }
   };
 
-  // "업로드" 버튼 클릭 핸들러
-  const handleUpload = () => {
-    const fileInput = document.getElementById('video-upload');
-    if (fileInput) {
-      fileInput.value = ''; // 파일 선택 창의 값을 초기화
-      fileInput.click(); // 파일 선택 창 다시 열기
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleEditStart = async () => {
+    if (!videoSrc) {
+      setAnchorEl(editButtonRef.current); // Popover 열기
+    } else {
+      navigate('/mozaic', { state: { videoUrl: videoSrc } });
+      // setLoading(true); // 영상 처리 중 상태 시작
+      // try {
+      //   // 서버로 동영상 전송 (예시: fetch를 사용하여 서버로 요청)
+      //   const formData = new FormData();
+      //   const videoFile = videoSrc; // 실제 파일을 보내야 함
+      //   formData.append('video', videoFile);
+
+      //   // 서버로 동영상 전송 (백엔드 URL로 변경)
+      //   const response = await fetch('/backend/upload', {
+      //     method: 'POST',
+      //     body: formData,
+      //   });
+
+      //   if (response.ok) {
+      //     // 서버에서 처리된 영상이 오면 처리된 영상으로 업데이트
+      //     const processedVideo = await response.blob();
+      //     const videoURL = URL.createObjectURL(processedVideo);
+      //     console.log('편집 시작! 처리 완료');
+      //     navigate('/mozaic', { state: { videoUrl: videoURL } }); // navigate()로 새 페이지로 이동
+      //   } else {
+      //     alert('서버 오류 발생');
+      //   }
+      // } catch (error) {
+      //   alert('동영상 처리 중 오류가 발생했습니다.');
+      // } finally {
+      //   setLoading(false); // 처리 완료 후 로딩 종료
+      // }
     }
   };
 
-  const handleEditStart = () => {
-    console.log('편집 시작!');
-    // 편집 시작 로직 추가
+  const handleClosePopover = () => {
+    setAnchorEl(null); // Popover 닫기
   };
- 
+
   return (
-  <AppTheme {...props} sx={{ width: '100vw', height: '100vh' }}>  {/* AppTheme의 크기 설정 */}
-  <CssBaseline enableColorScheme />
-  <SignInContainer 
-    direction="column" 
-    justifyContent="space-between" 
-    sx={{ width: '100vw', height: '100vh' }}  
-  >
-    <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
-    <SitemarkIcon height={20} />
-    <Card
-  variant="outlined"
-  sx={{
-    padding: '16px',
-    margin: 'auto',
-    width: videoFile ? '100vw' : '300px', // 영상이 업로드되면 카드의 너비를 화면 전체로 확장
-    height: videoFile ? '100vh' : '300px', // 영상이 업로드되면 카드의 높이를 화면 전체로 확장
-    transition: 'width 0.3s ease-in-out, height 0.3s ease-in-out',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: videoFile ? 'flex-start' : 'center',
-    position: 'relative',
-  }}
->
-  <div style={{ textAlign: 'center', padding: '20px', height: '100%', flexGrow: 1 }}>
-    <input
-      type="file"
-      accept="video/*"
-      onChange={handleFileChange}
-      style={{ display: 'none' }}
-      id="video-upload"
-    />
-    {!videoFile ? (
-      <div>
-        <h3>동영상 미리보기 출력 화면</h3>
-        <button
-          onClick={triggerFileInput}
-          style={{
-            backgroundColor: 'white',
-            color: 'black',
-            border: '1px solid #ccc',
-            padding: '5px 10px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
+    <AppTheme {...props} sx={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      <CssBaseline enableColorScheme />
+      <SitemarkIcon
+        sx={{
+          position: 'fixed',
+          top: '1rem',
+          left: '1rem',
+          padding: '0.5rem',
+        }}
+      />
+      <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
+
+      <StyledBox onDrop={handleDrop} onDragOver={handleDragOver}>
+        {videoSrc ? (
+          <video
+            src={videoSrc}
+            controls
+            playsInline
+            style={{ width: '100%', height: '100%', objectFit: 'fill' }}
+          />
+        ) : (
+          <Typography
+            component="h2"
+            variant="h4"
+            gutterBottom
+            sx={{
+              color: 'text.primary',
+              position: 'absolute',
+              textAlign: 'center',
+            }}
+          >
+            동영상 미리보기 출력화면
+            <br />
+            <Typography variant="body1" sx={{ color: 'text.secondary', mb: { xs: 2, sm: 4 } }}>
+              파일을 드래그하거나 업로드 버튼을 클릭하세요
+            </Typography>
+          </Typography>
+        )}
+      </StyledBox>
+
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ marginTop: 2 }}>
+        <Button variant="contained" color="primary" component="label">
+          파일 업로드
+          <input type="file" accept="video/*" hidden onChange={handleFileUpload} />
+        </Button>
+        <Button
+          ref={editButtonRef} // 버튼에 참조 추가
+          variant="contained"
+          color="primary"
+          onClick={handleEditStart}
         >
-          동영상 업로드
-        </button>
-      </div>
-    ) : (
-      <div>
-        <h3>업로드된 동영상</h3>
-        <video
-          src={videoUrl}
-          controls
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain', // 영상의 비율을 유지하며 화면에 꽉 채우기
-            marginBottom: '20px',
-          }}
-        />
-      </div>
-    )}
-  </div>
+          편집 시작
+        </Button>
+      </Stack>
 
-  {/* 파일 선택과 편집 시작 버튼을 하단에 고정, videoFile이 있을 때만 버튼을 보이도록 */}
-  {videoFile && (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '10px',
-        marginTop: '20px',
-        position: 'absolute',
-        bottom: '20px',
-        left: '50%',
-        transform: 'translateX(-50%)', // 가운데 정렬
-      }}
-    >
-      <button
-        onClick={handleUpload}
-        style={{
-          backgroundColor: 'white',
-          color: 'black',
-          border: '1px solid #ccc',
-          padding: '5px 10px',
-          borderRadius: '4px',
-          cursor: 'pointer',
+      {/* Popover 추가 */}
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleClosePopover}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'right', // 오른쪽으로 띄우기
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'left',
+        }}
+        PaperProps={{
+          style: {
+            marginLeft: '8px', // 버튼과 Popover 사이의 간격 추가
+          },
         }}
       >
-        파일 선택
-      </button>
-      <button
-        onClick={handleEditStart}
-        style={{
-          backgroundColor: 'white',
-          color: 'black',
-          border: '1px solid #ccc',
-          padding: '5px 10px',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-      >
-        편집 시작
-      </button>
-    </div>
-  )}
-</Card>
+        <Alert severity="warning" onClose={handleClosePopover}>
+          동영상을 업로드해주세요!
+        </Alert>
+      </Popover>
 
-  </SignInContainer>
-</AppTheme>
-
+      {/* 영상 처리 중 메시지 추가 */}
+      {loading && (
+        <Typography variant="h6" sx={{ textAlign: 'center', color: 'primary.main', marginTop: 2 }}>
+          영상 처리 중입니다. 대기해주세요...
+        </Typography>
+      )}
+    </AppTheme>
   );
 }

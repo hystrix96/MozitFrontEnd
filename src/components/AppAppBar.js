@@ -67,7 +67,7 @@ export default function AppAppBar() {
         <StyledToolbar variant="dense" disableGutters>
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
             <Sitemark height={20}/>
-            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' },px:5 }}>
               <Button variant="text" color="info" size="small" component={Link} to="/aboutus">
                 About us
               </Button>
