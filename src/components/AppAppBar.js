@@ -15,6 +15,8 @@ import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown';
 import Sitemark from './SitemarkIcon';
 import { Link } from 'react-router-dom';
 import { isUserLoggedIn } from '../auth/checkjwt';
+import { useAuth } from '../Context/AuthContext';
+import axios from 'axios';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -36,6 +38,26 @@ export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
   const [openSubMenu, setOpenSubMenu] = React.useState(false);
   const isLoggedIn = isUserLoggedIn();
+  const { accessToken , username, setAccessToken, setUsername } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post('/users/logout', {}, {
+        headers: {
+          Authorization: accessToken, // 액세스 토큰을 헤더에 포함
+        },
+      });
+      if (response.status === 200) {
+        alert('로그아웃 성공!');
+        window.location.reload();
+      } else {
+        throw new Error('로그아웃 실패');
+      }
+    } catch (error) {
+      console.error('로그아웃 에러:', error);
+      alert('로그아웃 요청 중 문제가 발생했습니다.');
+    }
+  };
 
   const handleMouseEnter = () => setOpenSubMenu(true); // 서브 메뉴 표시
   const handleMouseLeave = () => setOpenSubMenu(false); // 서브 메뉴 숨김
@@ -47,10 +69,6 @@ export default function AppAppBar() {
   const toggleSubMenu = () => {
     setOpenSubMenu((prev) => !prev);  // 하위 메뉴 열기/닫기
   };
-
-  const handleLogout = () => {
-    console.log('User logged out');
-  }
 
   return (
     <AppBar
@@ -128,10 +146,10 @@ export default function AppAppBar() {
               alignItems: 'center',
             }}
           >
-            {isLoggedIn ? (
+            {username ? (<><span>{`${username}`}</span>
               <Button color="primary" variant="text" size="small" onClick={handleLogout}>
                 로그아웃
-              </Button>
+              </Button></>
             ) : (
               <>
                 <Button color="primary" variant="text" size="small" component={Link} to="/sign-in">
@@ -230,10 +248,11 @@ export default function AppAppBar() {
                 <MenuItem>Blog</MenuItem>
                 <Divider sx={{ my: 3 }} />
                 <MenuItem>
-                  {isLoggedIn ? (
+                  {username ? (<>
+                    <span>{`${username}`}</span>
                     <Button color="primary" variant="contained" fullWidth onClick={handleLogout}>
                       로그아웃
-                    </Button>
+                    </Button></>
                   ) : (
                     <>
                       <Button color="primary" variant="contained" fullWidth component={Link} to="/sign-in">

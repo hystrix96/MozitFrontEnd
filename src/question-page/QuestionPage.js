@@ -3,11 +3,14 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
+import axiosInstance from '../api/axiosInstance';
 import {  TextField, Button, Box, Typography, Grid2, Switch, FormControlLabel, Collapse, FormGroup, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 export default function QuestionPage(props) {
-  const [category, setCategory] = useState('제품 및 서비스');
+  const [category, setCategory] = useState('SERVICE');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [title, setTitle] = useState('');
+  const [detail, setDetail] = useState('');
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -22,6 +25,34 @@ export default function QuestionPage(props) {
 
   const handleImageDelete = () => {
     setSelectedImage(null);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+
+    const requestBody = {
+      questionTitle: title,        
+      questionDetail: detail,      
+      questionType: category,      
+      questionImage: selectedImage || null,
+    };  
+
+    try {
+      const response = await axiosInstance.post('/questions', requestBody, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 201) {
+        alert('문의가 성공적으로 전송되었습니다!');
+        console.log('Response:', response.data);
+      }
+    } catch (error) {
+      console.error('Error submitting the question:', error);
+      alert(`문의 전송에 실패했습니다: ${error.response?.data?.message || error.message}`);
+    }
   };
   
   return (
@@ -73,9 +104,9 @@ export default function QuestionPage(props) {
                       onChange={handleCategoryChange}
                       sx = {{ width: 300}}
                     >
-                      <MenuItem value="제품 및 서비스">제품 및 서비스</MenuItem>
-                      <MenuItem value="계정 및 회원">계정 및 회원</MenuItem>
-                      <MenuItem value="일반 문의">일반 문의</MenuItem>
+                      <MenuItem value="SERVICE">제품 및 서비스</MenuItem>
+                      <MenuItem value="ACCOUNT">계정 및 회원</MenuItem>
+                      <MenuItem value="GENERAL">일반 문의</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid2>
@@ -98,11 +129,22 @@ export default function QuestionPage(props) {
                       label="문의 제목" 
                       variant="outlined" 
                       fullWidth 
-                      required 
+                      required
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
                       sx={{marginBottom: 2}}
                     />
-                    <TextField label="문의 내용" variant="outlined" fullWidth required multiline rows={10} sx={{'& .MuiInputBase-root': {height: '300px', }, marginBottom: 2}}/>
-                    
+                    <TextField 
+                      label="문의 내용" 
+                      variant="outlined" 
+                      fullWidth 
+                      required 
+                      multiline 
+                      rows={10}
+                      value={detail}
+                      onChange={(e) => setDetail(e.target.value)}
+                      sx={{'& .MuiInputBase-root': {height: '300px', }, marginBottom: 2}}/>
+
                     <Box>
                       {/* Hidden file input */}
                       <input
@@ -145,7 +187,7 @@ export default function QuestionPage(props) {
                       )}
                     </Box>
                     <Grid2 item xs={12} display="flex" justifyContent="center">
-                        <Button type="submit" variant="contained" color="primary" size="medium">
+                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit}>
                         제출
                         </Button>
                     </Grid2>
