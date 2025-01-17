@@ -2,7 +2,6 @@ import React, { useState }from 'react';
 import { Link } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button } from '@mui/material';
 
@@ -53,9 +52,9 @@ const notices = [
 ];
 
 
-export default function NoticePage(props) {
+export default function NoticeListPage(props) {
   const [page, setPage] = useState(0); // Current page number
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Number of rows per page
 
   // Handle change of page
   const handleChangePage = (event, newPage) => {
@@ -68,10 +67,14 @@ export default function NoticePage(props) {
     setPage(0); // Reset to the first page when rows per page changes
   };
 
+  const handleRowClick = (id) => {
+    // 클릭한 행의 ID에 해당하는 상세 페이지로 이동
+    window.location.href = `/noticelist/${id}`;
+  };
+
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <AppAppBar />
       <div>
         <Box 
             sx={{
@@ -100,42 +103,62 @@ export default function NoticePage(props) {
                         <TableCell align="left">번호</TableCell>
                         <TableCell align="left">제목</TableCell>
                         <TableCell align="left">날짜</TableCell>
-                        <TableCell align="center">상세보기</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {notices
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // Paginate the notices
-                        .map((notice, index) => (
-                            <TableRow key={notice.id}>
-                            <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
-                            <TableCell align="left">{notice.title}</TableCell>
-                            <TableCell align="left">{notice.date}</TableCell>
-                            <TableCell align="center">
-                                <Link to={`/notice/${notice.id}`}>
-                                    <Button 
-                                    variant="outlined" 
-                                    color="primary" 
-                                    >
-                                    보기
-                                    </Button>
-                                </Link>
-                            </TableCell>
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // Pagination
+                            .map((notice, index) => (
+                            <TableRow
+                                key={notice.id}
+                                hover
+                                sx={{ cursor: 'pointer' }} // 클릭 시 커서 변경
+                                onClick={() => handleRowClick(notice.id)} // 클릭 시 상세 페이지로 이동
+                            >
+                                <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
+                                <TableCell align="left">{notice.title}</TableCell>
+                                <TableCell align="left">{notice.date}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                     </Table>
                 </TableContainer>
+                
+                <Box 
+                    sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', // 자식 요소를 양쪽 끝으로 배치
+                        marginTop: 2 
+                    }}
+                    >
+                    {/* TablePagination 가운데 정렬 */}
+                    <Box sx={{ display: 'flex', justifyContent: 'center', flex: 1 }}>
+                        <TablePagination
+                        rowsPerPageOptions={[]} // Options for how many rows per page
+                        component="div"
+                        count={notices.length} // Total number of notices
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        labelDisplayedRows={() => ''} // Remove "1–7 of 7"
+                        />
+                    </Box>
 
-                <TablePagination
-                    rowsPerPageOptions={[]} // Options for how many rows per page
-                    component="div"
-                    count={notices.length} // Total number of notices
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
+                    {/* 작성 버튼 오른쪽 정렬 */}
+                    <Box sx={{ flex: 0 }}>
+                        <Button 
+                        variant="outlined" 
+                        color="secondary" 
+                        sx={{ marginLeft: 2, marginBottom: 1}} 
+                        component={Link} 
+                        to="/noticelist/create"
+                        >
+                        작성
+                        </Button>
+                    </Box>
+                </Box>
             </Box>
         </Box>
         <Footer />

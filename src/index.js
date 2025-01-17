@@ -13,9 +13,17 @@ import AboutUs from './aboutus-page/aboutus';
 import Edit from './edit-page/EditPage'
 import NoticePage from './notice-page/NoticePage';
 import NoticeDetailPage from './notice-page/NoticeDetailPage';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import MyQuestionPage from './my-page/MyQuestionPage';
+import QuestionListPage from './admin-page/QuestionListPage';
+import MyQuestionDetailPage from './my-page/MyQuestionDetailPage';
+import AnswerPage from './admin-page/AnswerPage';
+import NoticeListPage from './admin-page/NoticeListPage';
+import NoticeUpdatePage from './admin-page/NoticeUpdatePage';
+import NoticeEditPage from './admin-page/NoticeEditPage';
+import NoticeCreatePage from './admin-page/NoticeCreatePage';
 
+
+import MozaicPage from './mozaic-page/MozaicPage';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
  <BrowserRouter>
@@ -31,6 +39,16 @@ root.render(
       <Route path="/signup" element={<SignUp />} />
       <Route path="/aboutus" element={<AboutUs />} />
       <Route path="/edit" element={<Edit />} />
+      <Route path="/myquestion" element={<MyQuestionPage />} />
+      <Route path="/myquestion/:id" element={<MyQuestionDetailPage />} />
+      <Route path="/questionlist" element={<QuestionListPage />} />
+      <Route path="/questionlist/:id" element={<AnswerPage />} />
+      <Route path="/noticelist" element={<NoticeListPage />} />
+      <Route path="/noticelist/:id" element={<NoticeUpdatePage />} />
+      <Route path="/noticelist/:id/edit" element={<NoticeEditPage />} />
+      <Route path="/noticelist/create" element={<NoticeCreatePage />} />
+      <Route path="/mozaic" element={<MozaicPage />} />
+
 
       
     </Routes>
