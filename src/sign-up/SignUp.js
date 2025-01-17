@@ -79,7 +79,7 @@ export default function SignUp(props) {
   const [timer, setTimer] = React.useState(0); // 인증 시간 (초)
   const [isCodeExpired, setIsCodeExpired] = React.useState(false);
 
-// 주소찾기 관련
+  // 주소찾기 관련
   const handlePostcodeComplete = (data) => {
     setAddress(data.address);
     setIsPostcodeOpen(false); // Close the postcode popup after selecting address
@@ -89,7 +89,7 @@ export default function SignUp(props) {
     setIsPostcodeOpen(true);
   };
 
-// Email인증관련
+  // Email인증관련
   const handleSendCode = () => {
     // 여기에서 실제 인증 코드 보내는 API 호출 로직을 넣을 수 있습니다
     setIsCodeSent(true);
@@ -120,15 +120,22 @@ export default function SignUp(props) {
       setEmailError(false);
       setEmailErrorMessage('');
     }
-    // ID유효성 검사
+
+    // ID 유효성 검사
+
 
     // 비밀번호 유효성 검사
     // 영어, 숫자, 특수문자 중 두 가지 유형 이상 포함, 길이는 10자 이상 16자 이하
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*+=\-_])[a-zA-Z\d!@#$%^&*+=\-_]{10,16}$/;
     const specialCharRegex = /^[a-zA-Z0-9!@#$%^&*+=\-_]*$/;  // 허용되지 않는 특수문자 제외
-    if (!password || password.length < 8 || password.length > 16 || !passwordRegex.test(password)) {
+    // 비밀번호 유효성 검사
+    if (!password || password.length < 10 || password.length > 16) {
       setPasswordError(true);
-      setPasswordErrorMessage('비밀번호는 10자 이상 16자 이하로 영어, 숫자 또는 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
+      setPasswordErrorMessage('비밀번호는 10자 이상 16자 이하로 입력해야 합니다.');
+      isValid = false;
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError(true);
+      setPasswordErrorMessage('비밀번호는 영어, 숫자, 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
       isValid = false;
     } else if (password !== confirmPassword) {
       setPasswordError(true);
@@ -223,12 +230,12 @@ export default function SignUp(props) {
                   error={emailError}
                   helperText={emailErrorMessage}
                 />
-                  <Button
+                <Button
                   variant="contained"
                   onClick={handleSendCode}
                   disabled={isCodeSent || isCodeExpired}
                 >
-                  {isCodeSent 
+                  {isCodeSent
                     ? `인증 시간: ${Math.floor(timer / 60)}:${timer % 60 < 10 ? '0' : ''}${timer % 60} 남음`
                     : '인증'}
                 </Button>
@@ -259,13 +266,13 @@ export default function SignUp(props) {
             </Divider>
 
             <FormControl>
-              <FormLabel htmlFor="email">ID</FormLabel>
+              <FormLabel htmlFor="ID">ID</FormLabel>
               <Box display="flex" alignItems="center" gap={1}>
                 <TextField
                   required
                   name="ID"
-                  placeholder="ID(ID@example.com)"
-                  type="email"
+                  placeholder="ID"
+                  type="text"
                   id="ID"
                   autoComplete="off"
                   error={emailError}

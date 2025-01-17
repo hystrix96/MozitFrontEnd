@@ -253,7 +253,7 @@ const tiers = [
     buttonText: 'Pro 플랜 구독하기',
     buttonVariant: 'contained',
     buttonColor: 'secondary',
-    recommended: true,
+    recommended: false,
     userType: ['비즈니스 고객', '영상 컨텐츠 크리에이터'],
   },
   {

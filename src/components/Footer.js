@@ -60,13 +60,13 @@ export default function Footer() {
               6기_수도권_4반_13조_별거아니조
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-              빅프하는중중
+              빅프하는중
             </Typography>
             <Stack direction="row" spacing={1} useFlexGap>
             </Stack>
           </Box>
         </Box>
-        <Box
+        {/* <Box
           sx={{
             display: { xs: 'none', sm: 'flex' },
             flexDirection: 'column',
@@ -128,7 +128,7 @@ export default function Footer() {
           <Link color="text.secondary" variant="body2" href="#">
             Contact
           </Link>
-        </Box>
+        </Box> */}
       </Box>
       <Box
         sx={{

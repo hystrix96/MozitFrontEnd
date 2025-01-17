@@ -13,6 +13,8 @@ import AboutUs from './aboutus-page/aboutus';
 import Edit from './edit-page/EditPage'
 import NoticePage from './notice-page/NoticePage';
 import NoticeDetailPage from './notice-page/NoticeDetailPage';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
