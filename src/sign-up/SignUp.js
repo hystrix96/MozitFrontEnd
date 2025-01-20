@@ -65,6 +65,9 @@ export default function SignUp(props) {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [emailDisabled, setEmailDisabled] = React.useState(false);
+  const [passwordDisabled, setPasswordDisabled] = React.useState(false);
+  const [idDisabled, setIdDisabled] = React.useState(false);
+
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -195,6 +198,7 @@ export default function SignUp(props) {
         setIdError(false);
         setIdVerified(true);
         setIdErrorMessage('');
+        setIdDisabled(true);
         alert('사용 가능한 ID입니다.');
       } else {
         setIdError(true);
@@ -242,6 +246,9 @@ export default function SignUp(props) {
     } else {
       setConfirmPasswordError(false);
       setConfirmPasswordErrorMessage('');
+      if (value === password) {
+      setPasswordDisabled(true); // 비밀번호와 확인 비밀번호가 일치하면 비밀번호 입력 필드를 비활성화
+    }
     }
   };
 
@@ -395,7 +402,7 @@ export default function SignUp(props) {
 
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box display="flex" alignItems="center" gap={1} >
                 <TextField
                   required
                   fullWidth
@@ -418,13 +425,9 @@ export default function SignUp(props) {
                 <Button
                   variant="contained"
                   onClick={handleSendCode}
-                  disabled={emailDisabled}
-                  sx={{
+                 sx={{
                     minWidth: '90px',
-                    "&.Mui-disabled": {
-                      color: 'white', // 비활성화 상태에서도 흰색 글자 유지
-                      backgroundColor: 'gray', // 비활성화 상태 배경색
-                    },
+                    pointerEvents: emailDisabled ? 'none' : 'auto', // 비활성화 상태에서 클릭 방지           
                   }}
                 >
                   {emailDisabled
@@ -497,6 +500,8 @@ export default function SignUp(props) {
                   autoComplete="off"
                   error={idError}
                   helperText={idErrorMessage}
+                  disabled={idDisabled}
+
                   InputProps={{
                     endAdornment: idVerified && (
                       <InputAdornment position="end">
@@ -510,12 +515,9 @@ export default function SignUp(props) {
                   onClick={handleCheckId}
                   sx={{
                     minWidth: '90px',
-                    "&.Mui-disabled": {
-                      color: 'white', // 비활성화 상태에서도 흰색 글자 유지
-                      backgroundColor: 'gray', // 비활성화 상태 배경색
-                    },
+                    pointerEvents: idDisabled ? 'none' : 'auto', // 비활성화 상태에서 클릭 방지      
                   }}
-                >{idVerified ? '확인완료' : '중복 확인'}</Button>
+                >{idVerified ? '확인완료' : '중복확인'}</Button>
               </Box>
             </FormControl>
 
@@ -533,6 +535,7 @@ export default function SignUp(props) {
                 onChange={handlePasswordChange}
                 error={passwordError}
                 helperText={passwordErrorMessage}
+                disabled={passwordDisabled}
                 InputProps={{
                   endAdornment: confirmPassword && password == confirmPassword && (
                     <InputAdornment position="end">
@@ -557,6 +560,7 @@ export default function SignUp(props) {
                 onChange={handleConfirmPasswordChange}
                 error={confirmpasswordError}
                 helperText={confirmpasswordErrorMessage}
+                disabled={passwordDisabled}
                 InputProps={{
                   endAdornment: confirmPassword && password == confirmPassword && (
                     <InputAdornment position="end">
