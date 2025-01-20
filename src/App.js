@@ -20,7 +20,7 @@ import NoticeUpdatePage from './admin-page/NoticeUpdatePage';
 import NoticeEditPage from './admin-page/NoticeEditPage';
 import NoticeCreatePage from './admin-page/NoticeCreatePage';
 import MozaicPage from './mozaic-page/MozaicPage';
-
+import MyPageUpdate from './my-page/MyPageUpdate'
 
 
 const App = () => {
@@ -48,6 +48,7 @@ const App = () => {
           <Route path="/noticelist/:id/edit" element={<NoticeEditPage />} />
           <Route path="/noticelist/create" element={<NoticeCreatePage />} />
           <Route path="/mozaic" element={<MozaicPage />} />
+          <Route path="/mypageupdate" element={<MyPageUpdate />} />
         </Routes>
       </BrowserRouter>
     </>
