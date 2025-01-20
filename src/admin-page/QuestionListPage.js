@@ -105,7 +105,6 @@ export default function QuestionListPage(props) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <AppAppBar />
       <div>
         <Box 
             sx={{

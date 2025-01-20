@@ -20,6 +20,8 @@ import NoticeUpdatePage from './admin-page/NoticeUpdatePage';
 import NoticeEditPage from './admin-page/NoticeEditPage';
 import NoticeCreatePage from './admin-page/NoticeCreatePage';
 import MozaicPage from './mozaic-page/MozaicPage';
+import MyWorkPage from './my-page/MyWorkPage';
+import MySubPage from './my-page/MySubPage';
 
 
 
@@ -48,6 +50,8 @@ const App = () => {
           <Route path="/noticelist/:id/edit" element={<NoticeEditPage />} />
           <Route path="/noticelist/create" element={<NoticeCreatePage />} />
           <Route path="/mozaic" element={<MozaicPage />} />
+          <Route path="/mywork" element={<MyWorkPage />} />
+          <Route path="/mysub" element={<MySubPage />} />
         </Routes>
       </BrowserRouter>
     </>

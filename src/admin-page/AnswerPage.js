@@ -126,7 +126,6 @@ export default function AnswerPage(props) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <AppAppBar />
       <Box 
         sx={{
             display: 'flex',
