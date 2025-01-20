@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error('Refresh Token Error:', error);
       } finally {
-        setIsTokenFetched(true); // 상태 변경
+        setIsTokenFetched(true);
       }
     };
 

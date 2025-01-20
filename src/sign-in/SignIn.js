@@ -18,7 +18,7 @@ import ForgotPassword from './components/ForgotPassword';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
-import axios from 'axios'; // axios를 import합니다.
+import axios from 'axios';
 
 
 const Card = styled(MuiCard)(({ theme }) => ({

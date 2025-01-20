@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { FormControl, FormLabel, TextField, Box, Typography } from '@mui/material';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 // import Box from '@mui/material/Box';
 // import FormLabel from '@mui/material/FormLabel';
 // import FormControl from '@mui/material/FormControl';
 // import TextField from '@mui/material/TextField';
 // import Typography from '@mui/material/Typography';
-import { Button, CssBaseline, Divider, Stack, styled } from '@mui/material';
+import { Button, CssBaseline, Divider, Stack, styled, InputAdornment } from '@mui/material';
 // import Button from '@mui/material/Button';
 // import CssBaseline from '@mui/material/CssBaseline';
 // import Divider from '@mui/material/Divider';
@@ -16,6 +17,7 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
 import { DaumPostcodeEmbed } from 'react-daum-postcode';
+import axios from 'axios';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -62,15 +64,15 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 export default function SignUp(props) {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
+  const [emailDisabled, setEmailDisabled] = React.useState(false);
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+  const [confirmpasswordError, setConfirmPasswordError] = React.useState(false);
+  const [confirmpasswordErrorMessage, setConfirmPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [detailAddress, setDetailAddress] = React.useState('');
-  const [isPostcodeOpen, setIsPostcodeOpen] = React.useState(false);
 
   // 인증 관련 상태 추가
   const [isCodeSent, setIsCodeSent] = React.useState(false);
@@ -78,109 +80,278 @@ export default function SignUp(props) {
   const [authCodeError, setAuthCodeError] = React.useState(false);
   const [timer, setTimer] = React.useState(0); // 인증 시간 (초)
   const [isCodeExpired, setIsCodeExpired] = React.useState(false);
+  //아이디 중복확인
+  const [idError, setIdError] = React.useState(false);
+  const [idErrorMessage, setIdErrorMessage] = React.useState('');
+  const [idVerified, setIdVerified] = React.useState(false);
+  //사업자번호 확인
+  const [businessNumberError, setBusinessNumberError] = React.useState(false);
+  const [businessNumberErrorMessage, setBusinessNumberErrorMessage] = React.useState('');
+  const [isBusinessNumberVerified, setIsBusinessNumberVerified] = React.useState(false);
+  const [isCompanyNameDisabled, setIsCompanyNameDisabled] = React.useState(false);
 
-  // 주소찾기 관련
-  const handlePostcodeComplete = (data) => {
-    setAddress(data.address);
-    setIsPostcodeOpen(false); // Close the postcode popup after selecting address
-  };
-
-  const handleOpenPostcode = () => {
-    setIsPostcodeOpen(true);
-  };
-
-  // Email인증관련
-  const handleSendCode = () => {
-    // 여기에서 실제 인증 코드 보내는 API 호출 로직을 넣을 수 있습니다
-    setIsCodeSent(true);
-    setTimer(180); // 3분 (180초)
-    setIsCodeExpired(false);
-  };
-
-  const handleVerifyCode = () => {
-    if (authCode === '123456') { // 인증 코드 검증 (예시)
-      setAuthCodeError(false);
-      alert('인증 성공');
-    } else {
-      setAuthCodeError(true);
+  //타이머 설정
+  React.useEffect(() => {
+    let interval;
+    if (isCodeSent && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsCodeExpired(true);
+      clearInterval(interval);
     }
-  };
+    return () => clearInterval(interval);
+  }, [isCodeSent, timer]);
 
-  const validateInputs = () => {
-    const email = document.getElementById('email');
-    const name = document.getElementById('name');
-    let isValid = true;
+  //이메일 인증 요청
+  const handleSendCode = async () => {
+    const emailInput = document.getElementById('email');
+    const email = emailInput.value;
 
-    // Email validation
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
+    
+    if (!email || !emailRegEx.test(email)) {
       setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
+      setEmailErrorMessage('이메일 계정이 유효하지 않습니다.');
     } else {
       setEmailError(false);
       setEmailErrorMessage('');
+    
+      try {
+        // 인증 요청
+        const response = await axios.post('http://localhost:8080/users/send-email', {
+          mail: email,
+        });
+    
+        if (response.status === 200) {
+          setIsCodeExpired(false);
+          setIsCodeSent(true);
+          setTimer(180); // 3분 타이머 설정
+          setIsCodeExpired(false);
+          alert('인증 코드가 이메일로 전송되었습니다.');
+        } else {
+          setIsCodeExpired(false);
+          setIsCodeSent(false);
+          throw new Error('인증 코드 전송 실패');
+        }
+      } catch (error) {
+        console.error('Error sending email verification code:', error);
+        alert('인증 코드 전송 중 오류가 발생했습니다.');
+      }
     }
+  };
+  //인증 코드 확인
+  const handleVerifyCode = async () => {
+    const emailInput = document.getElementById('email');
+    const email = emailInput.value;
+    try {
+      // 서버에 인증 코드 검증 요청
+      const response = await axios.post('http://localhost:8080/users/verify-email', {
+        mail: email,
+        verifyCode: authCode,
+      });
+  
+      if (response.status === 200) {
+        setAuthCodeError(false);
+        setEmailDisabled(true);
+        setTimer(0);
+        alert('이메일 인증이 완료되었습니다.');
+      } else {
+        throw new Error('인증 실패');
+      }
+    } catch (error) {
+      console.error('Error verifying email code:', error);
+      setAuthCodeError(true);
+      alert('인증 코드가 잘못되었습니다.');
+    }
+  };
 
-    // ID 유효성 검사
+  //아이디 중복 확인
+  const handleCheckId = async () => {
+    const idInput = document.getElementById('ID');
+    const userId = idInput.value;
+    
+    if (!userId) {
+      setIdError(true);
+      setIdErrorMessage('ID를 입력해주세요.');
+      return;
+    }
+    
+    const idRegex = /^[a-zA-Z0-9]{4,}$/;
+    if (!idRegex.test(userId)) {
+      setIdError(true);
+      setIdErrorMessage('4글자 이상, 영어 또는 숫자만 가능합니다.');
+      return;
+    }
+  
+    try {
+      // 서버에 ID 중복 확인 요청
+      const response = await axios.get(`http://localhost:8080/users/check-id`, {
+        params: { userId },
+      });
+  
+      if (response.status === 201) {
+        setIdError(false);
+        setIdVerified(true);
+        setIdErrorMessage('');
+        alert('사용 가능한 ID입니다.');
+      } else {
+        setIdError(true);
+        setIdVerified(false);
+        setIdErrorMessage('이미 사용 중인 ID입니다.');
+      }
+    } catch (error) {
+      console.error('Error checking ID:', error);
+      setIdError(true);
+      setIdVerified(false);
+      setIdErrorMessage('이미 사용 중인 ID입니다.');
+    }
+  };
 
-
-    // 비밀번호 유효성 검사
-    // 영어, 숫자, 특수문자 중 두 가지 유형 이상 포함, 길이는 10자 이상 16자 이하
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*+=\-_])[a-zA-Z\d!@#$%^&*+=\-_]{10,16}$/;
-    const specialCharRegex = /^[a-zA-Z0-9!@#$%^&*+=\-_]*$/;  // 허용되지 않는 특수문자 제외
-    // 비밀번호 유효성 검사
-    if (!password || password.length < 10 || password.length > 16) {
+  //비번 유효성 검사
+  const handlePasswordChange = (event) => {
+    const value = event.target.value;
+    setPassword(value);
+  
+    const hasLetters = /[a-zA-Z]/.test(value);
+    const hasNumbers = /\d/.test(value);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+    const validTypes = [hasLetters, hasNumbers, hasSpecialChars].filter(Boolean).length;
+  
+    if (value.length < 8) {
       setPasswordError(true);
-      setPasswordErrorMessage('비밀번호는 10자 이상 16자 이하로 입력해야 합니다.');
-      isValid = false;
-    } else if (!passwordRegex.test(password)) {
+      setPasswordErrorMessage('비밀번호는 8자 이상이어야 합니다.');
+    } else if (validTypes < 2) {
       setPasswordError(true);
       setPasswordErrorMessage('비밀번호는 영어, 숫자, 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
-      isValid = false;
-    } else if (password !== confirmPassword) {
-      setPasswordError(true);
-      setPasswordErrorMessage('비밀번호가 서로 다릅니다.');
-      isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
+  };
+  //비번 재입력 확인
+  const handleConfirmPasswordChange = (event) => {
+    const value = event.target.value;
+    setConfirmPassword(value);
 
-    // Name validation
-    if (!name.value || name.value.length < 1) {
-      setNameError(true);
-      setNameErrorMessage('Name is required.');
-      isValid = false;
+    // 비밀번호와 확인 비밀번호를 비교
+    if (value && value !== password) {
+      setConfirmPasswordError(true);
+      setConfirmPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
     } else {
-      setNameError(false);
-      setNameErrorMessage('');
+      setConfirmPasswordError(false);
+      setConfirmPasswordErrorMessage('');
     }
+  };
+
+  //사업자번호 확인
+  const handleVerifybusinessNumber = async () => {
+    const businessNumberInput = document.getElementById('co-num').value;
+    const apiKey = 'bGVlamgwMjAyMDZAZ21haWwuY29t'; 
+  
+    if (!/^\d{10}$/.test(businessNumberInput)) {
+      setBusinessNumberError(true);
+    setBusinessNumberErrorMessage('사업자 번호는 10자리 숫자여야 합니다.');
+    return;
+    }    
+  
+    try {
+      const response = await axios.get('https://bizno.net/api/fapi', {
+        params: {
+          key: apiKey,
+          status : 'Y',
+          q: businessNumberInput, // 검색할 값 (예: 사업자번호 또는 회사명)
+          type: 'json', // 응답 타입
+        },
+      });
+  
+      if (response.status === 200) {
+        const result = response.data.items[0];
+        if (result.bstt === '계속사업자') {
+          setIsBusinessNumberVerified(true);
+          setBusinessNumberError(false);
+          setBusinessNumberErrorMessage('');
+          document.getElementById('co-name').value = result.company;
+          setIsCompanyNameDisabled(true);
+          alert('인증완료 : 유효한 사업자 번호입니다.');
+        } else {
+          setIsBusinessNumberVerified(false);
+          setBusinessNumberError(true);
+          setBusinessNumberErrorMessage('유효하지 않은 사업자 번호입니다.');
+        }
+      } else {
+        alert('응답 데이터가 올바르지 않습니다.');
+      }
+    } catch (error) {
+      console.error('사업자 번호 인증 오류:', error);
+      alert('사업자 번호 인증 중 오류가 발생했습니다.');
+    }
+  };
+
+  //마지막 유효성 검사
+  const validateInputs = () => {
+    const fields = {
+      ID: { setter: setIdError, messageSetter: setIdErrorMessage },
+      name: { setter: setNameError, messageSetter: setNameErrorMessage },
+      email: { setter: setEmailError, messageSetter: setEmailErrorMessage },
+      'co-num': { setter: setBusinessNumberError, messageSetter: setBusinessNumberErrorMessage },
+      'co-name': { setter: setNameError, messageSetter: setNameErrorMessage },
+    };
+  
+    let isValid = true;
+    Object.entries(fields).forEach(([id, { setter, messageSetter }]) => {
+      const value = document.getElementById(id)?.value;
+      if (!value) {
+        setter(true);
+        messageSetter('필수 입력 항목입니다.');
+        isValid = false;
+      } else {
+        setter(false);
+        messageSetter('');
+      }
+    });
+  
     return isValid;
   };
 
-  //전화번호 유효성 검사
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
-    if (nameError || emailError || passwordError) {
-      event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
+    if (!validateInputs()) {
       return;
     }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('name'),
-      email: data.get('email'),
-      password: data.get('password'),
-      address,
-      detailAddress,
-    });
+  
+    const userId = document.getElementById('ID').value;
+    const userName = document.getElementById('name').value;
+    const userEmail = document.getElementById('email').value;
+    const userPwd = password;
+    const enterpriseNum = document.getElementById('co-num').value;
+    const enterpriseName = document.getElementById('co-name').value;
+  
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/users/signup',{
+          userId : userId,
+          userName : userName,
+          userPwd : userPwd,
+          userEmail : userEmail,
+          enterpriseNum : parseInt(enterpriseNum, 10),
+          enterpriseName : enterpriseName,
+        });
+  
+      if (response.status === 200 || response.status === 201) {
+        alert('회원가입이 성공적으로 완료되었습니다!');
+        window.location.href = '/sign-in';
+      } else {
+        alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      console.error('Error during signup:', error);
+      alert('회원가입 중 오류가 발생했습니다.');
+    }
   };
+  
 
   return (
     <AppTheme {...props}>
@@ -216,6 +387,11 @@ export default function SignUp(props) {
                 color={nameError ? 'error' : 'primary'}
               />
             </FormControl>
+            
+            <Divider>
+              <Typography sx={{ color: 'text.secondary' }}></Typography>
+            </Divider>
+
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <Box display="flex" alignItems="center" gap={1}>
@@ -229,14 +405,31 @@ export default function SignUp(props) {
                   autoComplete="off"
                   error={emailError}
                   helperText={emailErrorMessage}
+                  disabled={emailDisabled}
+                  InputProps={{
+                    endAdornment: emailDisabled && (
+                      <InputAdornment position="end">
+                        <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 <Button
                   variant="contained"
                   onClick={handleSendCode}
-                  disabled={isCodeSent || isCodeExpired}
+                  disabled={emailDisabled}
+                  sx={{
+                    minWidth: '90px',
+                    "&.Mui-disabled": {
+                      color: 'white', // 비활성화 상태에서도 흰색 글자 유지
+                      backgroundColor: 'gray', // 비활성화 상태 배경색
+                    },
+                  }}
                 >
-                  {isCodeSent
-                    ? `인증 시간: ${Math.floor(timer / 60)}:${timer % 60 < 10 ? '0' : ''}${timer % 60} 남음`
+                  {emailDisabled
+                    ? '인증완료'
+                    : isCodeSent
+                    ? '재전송'
                     : '인증'}
                 </Button>
               </Box>
@@ -252,12 +445,37 @@ export default function SignUp(props) {
                   placeholder="인증 코드"
                   id="auth-code"
                   autoComplete="off"
-                  error={authCodeError}
-                  helperText={authCodeError ? '인증 코드가 일치하지 않습니다.' : ''}
                   value={authCode}
                   onChange={(e) => setAuthCode(e.target.value)}
+                  error={authCodeError}
+                  helperText={authCodeError ? '인증 코드가 일치하지 않습니다.' : ''}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: timer > 0 ? 'text.secondary' : 'error.main',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {timer > 0
+                            ? `${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')}`
+                            : '시간 초과'}
+                        </Typography>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
-                <Button variant="contained" onClick={handleVerifyCode}>확인</Button>
+                <Button
+                  variant="contained"
+                  onClick={handleVerifyCode}
+                  sx={{
+                    marginTop: '10px', // 위쪽 마진 추가
+                  }}
+                >
+                  확인
+                </Button>
               </FormControl>
             )}
 
@@ -270,18 +488,36 @@ export default function SignUp(props) {
               <Box display="flex" alignItems="center" gap={1}>
                 <TextField
                   required
+                  fullWidth
                   name="ID"
-                  placeholder="ID"
+                  placeholder="Your ID"
                   type="text"
                   id="ID"
                   autoComplete="off"
-                  error={emailError}
-                  helperText={emailErrorMessage}
-                  sx={{ width: '280px' }}
+                  error={idError}
+                  helperText={idErrorMessage}
+                  InputProps={{
+                    endAdornment: idVerified && (
+                      <InputAdornment position="end">
+                        <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
-                <Button variant="contained">중복 확인</Button>
+                <Button
+                  variant="contained"
+                  onClick={handleCheckId}
+                  sx={{
+                    minWidth: '90px',
+                    "&.Mui-disabled": {
+                      color: 'white', // 비활성화 상태에서도 흰색 글자 유지
+                      backgroundColor: 'gray', // 비활성화 상태 배경색
+                    },
+                  }}
+                >{idVerified ? '확인완료' : '중복 확인'}</Button>
               </Box>
             </FormControl>
+
             <FormControl>
               <FormLabel htmlFor="password">Password</FormLabel>
               <TextField
@@ -296,8 +532,16 @@ export default function SignUp(props) {
                 onChange={handlePasswordChange}
                 error={passwordError}
                 helperText={passwordErrorMessage}
+                InputProps={{
+                  endAdornment: confirmPassword && password == confirmPassword && (
+                    <InputAdornment position="end">
+                      <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </FormControl>
+            
             <FormControl>
               <FormLabel htmlFor="confirm-password">PW확인</FormLabel>
               <TextField
@@ -310,71 +554,62 @@ export default function SignUp(props) {
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
-                error={passwordError && password !== confirmPassword}
-                helperText={passwordError && password !== confirmPassword ? '비밀번호가 다릅니다다!' : ''}
+                error={confirmpasswordError}
+                helperText={confirmpasswordErrorMessage}
+                InputProps={{
+                  endAdornment: confirmPassword && password == confirmPassword && (
+                    <InputAdornment position="end">
+                      <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
+                    </InputAdornment>
+                  ),
+                }}
               />
-              {password && confirmPassword && password !== confirmPassword && (
-                <div style={{ color: 'red', marginTop: '8px' }}>
-                  <small>비밀번호가 다릅니다!</small>
-                </div>
-              )}
             </FormControl>
+            
             <Divider>
               <Typography sx={{ color: 'text.secondary' }}></Typography>
             </Divider>
+
+            <FormControl>
+              <FormLabel htmlFor="address">사업자번호</FormLabel>
+              {/* 대표번호 */}
+              <Box display="flex" alignItems="center" gap={1}>
+              <TextField
+                fullWidth
+                name="co-num"
+                placeholder="대표번호"
+                id="co-num"
+                type="tel"
+                error={businessNumberError}
+                helperText={businessNumberErrorMessage}
+                InputProps={{
+                  endAdornment: isBusinessNumberVerified && (
+                    <InputAdornment position="end">
+                      <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button
+                variant="contained"
+                onClick={handleVerifybusinessNumber}
+                sx={{
+                  minWidth: '90px',
+                }}
+              >
+                인증확인
+              </Button>
+            </Box>
+            </FormControl>
             <FormControl>
               <FormLabel htmlFor="address">회사명</FormLabel>
               {/* 회사명 */}
               <TextField
                 fullWidth
                 name="co-name"
+                id="co-name"
                 placeholder="회사명"
-              // value={detailAddress}
-              // onChange={(e) => setDetailAddress(e.target.value)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="address">대표번호</FormLabel>
-              {/* 대표번호 */}
-              <TextField
-                fullWidth
-                name="co-num"
-                placeholder="대표번호"
-                type="tel"
-              // value={detailAddress}
-              // onChange={(e) => setDetailAddress(e.target.value)}
-              />
-            </FormControl>
-            {/* Address Section */}
-            <FormControl>
-              <FormLabel htmlFor="address">주소</FormLabel>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <TextField
-                  fullWidth
-                  value={address}
-                  placeholder="Address"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <Button color="primary" onClick={handleOpenPostcode}
-                  sx={{
-                    width: '150px'
-                  }}
-                >
-                  주소 찾기
-                </Button>
-              </Stack>
-            </FormControl>
-            <FormControl>
-              {/* <FormLabel htmlFor="detail-address">Detail Address</FormLabel> */}
-              <TextField
-                fullWidth
-                name="detail-address"
-                placeholder="세부주소"
-                value={detailAddress}
-                onChange={(e) => setDetailAddress(e.target.value)}
-                sx={{ maxWidth: '40%' }}
+                disabled={isCompanyNameDisabled}
               />
             </FormControl>
 
@@ -382,69 +617,13 @@ export default function SignUp(props) {
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
+              onClick={handleSubmit}
             >
               Sign up
             </Button>
           </Box>
         </Card>
       </SignUpContainer>
-
-
-
-      {isPostcodeOpen && (
-        <Box sx={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',  // 반투명 배경
-          zIndex: 9999,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-          <Box sx={{
-            background: 'white',
-            padding: 3,
-            borderRadius: 2,
-            maxWidth: '90%',
-            maxHeight: '80%',
-            overflow: 'auto',
-            position: 'relative', // 닫기 버튼 위치 조정용
-          }}>
-            {/* 닫기 버튼 */}
-            <Button
-              onClick={() => setIsPostcodeOpen(false)} // 팝업 닫기
-              sx={{
-                position: 'absolute',
-                top: 10,
-                right: 10,
-                padding: 1,
-                backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                borderRadius: '50%',
-                minWidth: '30px',
-                minHeight: '30px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                },
-              }}
-            >
-              <Typography variant="body2" sx={{ color: 'white' }}>X</Typography>
-            </Button>
-            {/* Daum 우편번호 서비스 컴포넌트 */}
-            <DaumPostcodeEmbed
-              onComplete={handlePostcodeComplete}
-              autoClose={false}
-              defaultQuery=""
-            />
-          </Box>
-        </Box>
-      )}
     </AppTheme>
   );
 }
