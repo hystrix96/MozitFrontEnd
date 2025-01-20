@@ -14,7 +14,7 @@ import { Button, CssBaseline, Divider, Stack, styled } from '@mui/material';
 import MuiCard from '@mui/material/Card';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons';
+import SitemarkIcon from '../components/SitemarkIcon';
 import { DaumPostcodeEmbed } from 'react-daum-postcode';
 
 const Card = styled(MuiCard)(({ theme }) => ({

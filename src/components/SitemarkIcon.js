@@ -4,10 +4,13 @@ import { Box } from '@mui/material';
 
 export default function SitemarkIcon({ height = 30, sx }) {
   const theme = useTheme();
-  const imageUrl = theme.palette.mode === 'dark' 
-    ? '/assets/img/brand/mozit.png'  // 다크 모드일 때 이미지
-    : '/assets/img/brand/mozit2.png'; // 라이트 모드일 때 이미지
 
+  const imageUrlDark = '/assets/img/brand/mozit.png';  // 다크 모드 이미지 경로
+  const imageUrlLight = '/assets/img/brand/mozit2.png'; // 라이트 모드 이미지 경로
+
+  const imageUrl = theme.palette.mode === 'dark' ? imageUrlDark : imageUrlLight;
+  
+  
   return (
     <Box sx={{ 
       display: 'flex', 

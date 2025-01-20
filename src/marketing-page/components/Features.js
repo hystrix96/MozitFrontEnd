@@ -8,34 +8,31 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 
-import DevicesRoundedIcon from '@mui/icons-material/DevicesRounded';
-import EdgesensorHighRoundedIcon from '@mui/icons-material/EdgesensorHighRounded';
-import ViewQuiltRoundedIcon from '@mui/icons-material/ViewQuiltRounded';
+import PersonOffRoundedIcon from '@mui/icons-material/PersonOffRounded';
+import ContactEmergencyRoundedIcon from '@mui/icons-material/ContactEmergencyRounded';
+import SmokeFreeRoundedIcon from '@mui/icons-material/SmokeFreeRounded';
 
 const items = [
   {
-    icon: <ViewQuiltRoundedIcon />,
-    title: 'Dashboard',
+    icon: <SmokeFreeRoundedIcon />,
+    title: '유해요소',
     description:
-      'This item could provide a snapshot of the most important metrics or data points related to the product.',
-    imageLight: `url("${process.env.TEMPLATE_IMAGE_URL || 'https://mui.com'}/static/images/templates/templates-images/dash-light.png")`,
-    imageDark: `url("${process.env.TEMPLATE_IMAGE_URL || 'https://mui.com'}/static/images/templates/templates-images/dash-dark.png")`,
+      '아동 및 청소년에게 유해한 요소를 자동으로 차단하여 안전한 영상을 제공합니다.',
+    image: `url("/assets/img/brand/face.png")`, // 공통 이미지
   },
   {
-    icon: <EdgesensorHighRoundedIcon />,
-    title: 'Mobile integration',
+    icon: <ContactEmergencyRoundedIcon />,
+    title: '개인정보',
     description:
-      'This item could provide information about the mobile app version of the product.',
-    imageLight: `url("${process.env.TEMPLATE_IMAGE_URL || 'https://mui.com'}/static/images/templates/templates-images/mobile-light.png")`,
-    imageDark: `url("${process.env.TEMPLATE_IMAGE_URL || 'https://mui.com'}/static/images/templates/templates-images/mobile-dark.png")`,
+      '민증, 여권 등 개인정보가 포함된 콘텐츠를 자동으로 모자이크 처리하여 개인정보 유출을 방지합니다.',
+    image: `url("/assets/img/brand/face2.png")`, // 공통 이미지
   },
   {
-    icon: <DevicesRoundedIcon />,
-    title: 'Available on all platforms',
+    icon: <PersonOffRoundedIcon />,
+    title: '인물',
     description:
-      'This item could let users know the product is available on all platforms, such as web, mobile, and desktop.',
-    imageLight: `url("${process.env.TEMPLATE_IMAGE_URL || 'https://mui.com'}/static/images/templates/templates-images/devices-light.png")`,
-    imageDark: `url("${process.env.TEMPLATE_IMAGE_URL || 'https://mui.com'}/static/images/templates/templates-images/devices-dark.png")`,
+      '사용자가 선택한 인물을 자동으로 모자이크 처리하여 개인의 프라이버시를 보호하는 서비스를 제공합니다.',
+    image: `url("/assets/img/brand/mina.png")`, // 공통 이미지
   },
 ];
 
@@ -87,22 +84,11 @@ function MobileLayout({ selectedItemIndex, handleItemClick, selectedFeature }) {
         <Box
           sx={(theme) => ({
             mb: 2,
-            backgroundSize: 'cover',
+            backgroundSize: 'contain',
             backgroundPosition: 'center',
             minHeight: 280,
-            backgroundImage: 'var(--items-imageLight)',
-            ...theme.applyStyles('dark', {
-              backgroundImage: 'var(--items-imageDark)',
-            }),
+            backgroundImage: items[selectedItemIndex].image, // 공통 이미지 사용
           })}
-          style={
-            items[selectedItemIndex]
-              ? {
-                  '--items-imageLight': items[selectedItemIndex].imageLight,
-                  '--items-imageDark': items[selectedItemIndex].imageDark,
-                }
-              : {}
-          }
         />
         <Box sx={{ px: 2, pb: 2 }}>
           <Typography
@@ -125,8 +111,7 @@ MobileLayout.propTypes = {
   selectedFeature: PropTypes.shape({
     description: PropTypes.string.isRequired,
     icon: PropTypes.element,
-    imageDark: PropTypes.string.isRequired,
-    imageLight: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired, // image 속성으로 변경
     title: PropTypes.string.isRequired,
   }).isRequired,
   selectedItemIndex: PropTypes.number.isRequired,
@@ -145,22 +130,21 @@ export default function Features() {
 
   return (
     <Container id="features" sx={{ py: { xs: 8, sm: 16 } }}>
-      <Box sx={{ width: { sm: '100%', md: '60%' } }}>
+      <Box sx={{ width: { sm: '100%', md: '95%' } }}>
         <Typography
           component="h2"
           variant="h4"
           gutterBottom
           sx={{ color: 'text.primary' }}
         >
-          Product features
+          서비스 특징
         </Typography>
         <Typography
           variant="body1"
           sx={{ color: 'text.secondary', mb: { xs: 2, sm: 4 } }}
         >
-          Provide a brief overview of the key features of the product. For example,
-          you could list the number of features, their types or benefits, and
-          add-ons.
+          Mozit은 영상 속 유해 요소, 개인정보, 인물 등을 자동으로 모자이크 처리해주는 서비스입니다. 
+          AI 기반 기술로 민감한 정보를 빠르고 정확하게 보호하며, 직관적인 인터페이스로 누구나 쉽게 안전한 영상 콘텐츠를 제작할 수 있습니다.
         </Typography>
       </Box>
       <Box
@@ -248,22 +232,13 @@ export default function Features() {
             <Box
               sx={(theme) => ({
                 m: 'auto',
-                width: 420,
-                height: 500,
-                backgroundSize: 'contain',
-                backgroundImage: 'var(--items-imageLight)',
-                ...theme.applyStyles('dark', {
-                  backgroundImage: 'var(--items-imageDark)',
-                }),
+                width: '100%',
+                height: '100%',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundImage: items[selectedItemIndex].image, // 공통 이미지 사용
               })}
-              style={
-                items[selectedItemIndex]
-                  ? {
-                      '--items-imageLight': items[selectedItemIndex].imageLight,
-                      '--items-imageDark': items[selectedItemIndex].imageDark,
-                    }
-                  : {}
-              }
             />
           </Card>
         </Box>
