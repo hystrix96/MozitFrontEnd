@@ -248,7 +248,8 @@ export default function SignUp(props) {
   //사업자번호 확인
   const handleVerifybusinessNumber = async () => {
     const businessNumberInput = document.getElementById('co-num').value;
-    const apiKey = 'bGVlamgwMjAyMDZAZ21haWwuY29t'; 
+    const apiKey = process.env.REACT_APP_BUSINESS_API_KEY; 
+    console.log(apiKey)
   
     if (!/^\d{10}$/.test(businessNumberInput)) {
       setBusinessNumberError(true);
