@@ -94,7 +94,7 @@ export default function MyPageCheck(props) {
       <AppAppBar />
       <Stack sx={{ minHeight: '100vh' }} justifyContent="center">
         <Card variant="outlined">
-          <Typography variant="h4" component="h1" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)', fontWeight: 'bold' }}>
+          <Typography variant="h4" component="h1" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)', fontWeight: 'bold', textAlign: 'center' }}>
             사용자 정보 수정
           </Typography>
           {!isPasswordVerified ? (
