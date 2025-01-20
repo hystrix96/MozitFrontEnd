@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import { isUserLoggedIn } from '../auth/checkjwt';
 import { useAuth } from '../Context/AuthContext';
 import axios from 'axios';
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -35,10 +36,11 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 }));
 
 export default function AppAppBar() {
-  const [open, setOpen] = React.useState(false);
-  const [openSubMenu, setOpenSubMenu] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [openWorkSubMenu, setOpenWorkSubMenu] = useState(false);  // 작업 메뉴 서브 메뉴
+  const [openUserSubMenu, setOpenUserSubMenu] = useState(false);  // 사용자 메뉴 서브 메뉴
   const isLoggedIn = isUserLoggedIn();
-  const { accessToken , username, setAccessToken, setUsername } = useAuth();
+  const { accessToken, username, setAccessToken, setUsername } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -59,15 +61,14 @@ export default function AppAppBar() {
     }
   };
 
-  const handleMouseEnter = () => setOpenSubMenu(true); // 서브 메뉴 표시
-  const handleMouseLeave = () => setOpenSubMenu(false); // 서브 메뉴 숨김
+  const handleMouseEnterWork = () => setOpenWorkSubMenu(true); // 작업 메뉴 서브 메뉴 표시
+  const handleMouseLeaveWork = () => setOpenWorkSubMenu(false); // 작업 메뉴 서브 메뉴 숨김
+
+  const handleMouseEnterUser = () => setOpenUserSubMenu(true); // 사용자 메뉴 서브 메뉴 표시
+  const handleMouseLeaveUser = () => setOpenUserSubMenu(false); // 사용자 메뉴 서브 메뉴 숨김
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
-  };
-
-  const toggleSubMenu = () => {
-    setOpenSubMenu((prev) => !prev);  // 하위 메뉴 열기/닫기
   };
 
   return (
@@ -84,20 +85,20 @@ export default function AppAppBar() {
       <Container maxWidth="lg">
         <StyledToolbar variant="dense" disableGutters>
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
-            <Sitemark height={20}/>
-            <Box sx={{ display: { xs: 'none', md: 'flex' },px:5 }}>
+            <Sitemark height={20} />
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, px: 5 }}>
               <Button variant="text" color="info" size="small" component={Link} to="/aboutus">
                 About us
               </Button>
               <Box
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
+                onMouseEnter={handleMouseEnterWork}
+                onMouseLeave={handleMouseLeaveWork}
                 sx={{ position: 'relative' }} // 상대 위치로 서브 메뉴 배치
               >
                 <Button variant="text" color="info" size="small">
                   작업
                 </Button>
-                {openSubMenu && (
+                {openWorkSubMenu && (
                   <Box
                     sx={{
                       paddingLeft: 2,
@@ -105,18 +106,18 @@ export default function AppAppBar() {
                       display: 'flex',
                       flexDirection: 'column',
                       gap: 1,
-                      position: 'absolute', // 부모 박스 기준 위치
-                      top: '100%', // 버튼 아래에 배치
-                      left: 0, // 왼쪽 정렬
-                      backgroundColor: (theme) => theme.palette.background.paper, // 라이트 모드에 맞는 밝은 배경색
-                      color: (theme) => theme.palette.text.primary, // 텍스트 색상
-                      boxShadow: 1, // 그림자 추가
-                      borderRadius: 1, // 메뉴 모서리 둥글게
-                      zIndex: 10, // 다른 요소 위로 올림
-                      padding: 1, // 메뉴 내부 여백 추가
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      backgroundColor: (theme) => theme.palette.background.paper,
+                      color: (theme) => theme.palette.text.primary,
+                      boxShadow: 1,
+                      borderRadius: 1,
+                      zIndex: 10,
+                      padding: 1,
                     }}
                   >
-                    <Button variant="text" color="info" size="small" component={Link} to="/edit" >
+                    <Button variant="text" color="info" size="small" component={Link} to="/edit">
                       동영상
                     </Button>
                     <Button variant="text" color="info" size="small">
@@ -134,9 +135,6 @@ export default function AppAppBar() {
               <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }} component={Link} to="/question">
                 문의하기
               </Button>
-              {/* <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
-                Blog
-              </Button> */}
             </Box>
           </Box>
           <Box
@@ -146,10 +144,58 @@ export default function AppAppBar() {
               alignItems: 'center',
             }}
           >
-            {username ? (<><span>{`${username}`}</span>
-              <Button color="primary" variant="text" size="small" onClick={handleLogout}>
-                로그아웃
-              </Button></>
+            {username ? (
+              <>
+              
+                <Box
+                  onMouseEnter={handleMouseEnterUser}
+                  onMouseLeave={handleMouseLeaveUser}
+                  sx={{ position: 'relative' }}
+                >
+                  <Button variant="text" color="info" size="small">
+                    <AccountCircleRoundedIcon />
+                    {`${username}`}
+                  </Button>
+                  {openUserSubMenu && (
+                    <Box
+                      sx={{
+                        paddingLeft: 2,
+                        paddingTop: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        position: 'absolute',
+                        top: '100%',
+                        left: '50%',  // 부모 요소의 50% 위치로 설정
+                        transform: 'translateX(-50%)',  // 정확히 가운데로 정렬
+                        backgroundColor: (theme) => theme.palette.background.paper,
+                        color: (theme) => theme.palette.text.primary,
+                        boxShadow: 1,
+                        borderRadius: 1,
+                        zIndex: 10,
+                        padding: 1,
+                      }}
+                    >
+                      <Button variant="text" color="info" size="small" sx={{ whiteSpace: 'nowrap' }} >
+                        개인정보 수정
+                      </Button>
+                      <Button variant="text" color="info" size="small">
+                        내 작업결과
+                      </Button>
+                      <Button variant="text" color="info" size="small">
+                        내 문의
+                      </Button>
+                      <Button variant="text" color="info" size="small">
+                        내 구독
+                      </Button>
+                      <Button variant="text" color="info" size="small" onClick={handleLogout}>
+                        로그아웃
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+                
+              </>
             ) : (
               <>
                 <Button color="primary" variant="text" size="small" component={Link} to="/sign-in">
@@ -178,12 +224,7 @@ export default function AppAppBar() {
               }}
             >
               <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                  }}
-                >
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <IconButton onClick={toggleDrawer(false)}>
                     <CloseRoundedIcon />
                   </IconButton>
@@ -196,14 +237,14 @@ export default function AppAppBar() {
                 </MenuItem>
                 <MenuItem>
                   <Box
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    sx={{ position: 'relative' }} // 상대 위치로 서브 메뉴 배치
+                    onMouseEnter={handleMouseEnterWork}
+                    onMouseLeave={handleMouseLeaveWork}
+                    sx={{ position: 'relative' }}
                   >
                     <Button variant="text" color="info" size="small">
                       작업
                     </Button>
-                    {openSubMenu && (
+                    {openWorkSubMenu && (
                       <Box
                         sx={{
                           paddingLeft: 2,
@@ -211,18 +252,18 @@ export default function AppAppBar() {
                           display: 'flex',
                           flexDirection: 'column',
                           gap: 1,
-                          position: 'absolute', // 부모 박스 기준 위치
-                          top: '100%', // 버튼 아래에 배치
-                          left: 0, // 왼쪽 정렬
-                          backgroundColor: (theme) => theme.palette.background.paper, // 라이트 모드에 맞는 밝은 배경색
-                          color: (theme) => theme.palette.text.primary, // 텍스트 색상
-                          boxShadow: 1, // 그림자 추가
-                          borderRadius: 1, // 메뉴 모서리 둥글게
-                          zIndex: 10, // 다른 요소 위로 올림
-                          padding: 1, // 메뉴 내부 여백 추가
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          backgroundColor: (theme) => theme.palette.background.paper,
+                          color: (theme) => theme.palette.text.primary,
+                          boxShadow: 1,
+                          borderRadius: 1,
+                          zIndex: 10,
+                          padding: 1,
                         }}
                       >
-                        <Button variant="text" color="info" size="small" component={Link} to="/edit" >
+                        <Button variant="text" color="info" size="small" component={Link} to="/edit">
                           동영상
                         </Button>
                         <Button variant="text" color="info" size="small">
@@ -238,31 +279,77 @@ export default function AppAppBar() {
                   </Button>
                 </MenuItem>
                 <MenuItem>
-                  <Button variant="text" color="info" size="small" component={Link} to="/faq">
+                  <Button variant="text" color="info" size="small">
                     FAQ
                   </Button>
                 </MenuItem>
-                <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }} component={Link} to="/question">
-                  문의하기
-                </Button>
-                <MenuItem>Blog</MenuItem>
-                <Divider sx={{ my: 3 }} />
                 <MenuItem>
-                  {username ? (<>
-                    <span>{`${username}`}</span>
-                    <Button color="primary" variant="contained" fullWidth onClick={handleLogout}>
-                      로그아웃
-                    </Button></>
-                  ) : (
-                    <>
-                      <Button color="primary" variant="contained" fullWidth component={Link} to="/sign-in">
-                        로그인
+                  <Button variant="text" color="info" size="small">
+                    문의하기
+                  </Button>
+                </MenuItem>
+                <Divider sx={{ my: 1 }} />
+                <MenuItem>
+                  {username ? (
+              <>
+                <Box
+                  onMouseEnter={handleMouseEnterUser}
+                  onMouseLeave={handleMouseLeaveUser}
+                  sx={{ position: 'relative' }}
+                >
+                  <Button variant="text" color="info" size="small">
+                    {`${username}`}
+                  </Button>
+                  {openUserSubMenu && (
+                    <Box
+                      sx={{
+                        paddingLeft: 2,
+                        paddingTop: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        position: 'absolute',
+                        top: '100%',
+                        left: '50%',  // 부모 요소의 50% 위치로 설정
+                        transform: 'translateX(-50%)',  // 정확히 가운데로 정렬
+                        backgroundColor: (theme) => theme.palette.background.paper,
+                        color: (theme) => theme.palette.text.primary,
+                        boxShadow: 1,
+                        borderRadius: 1,
+                        zIndex: 10,
+                        padding: 1,
+                      }}
+                    >
+                      <Button variant="text" color="info" size="small" sx={{ whiteSpace: 'nowrap' }} >
+                        개인정보 수정
                       </Button>
-                      <Button color="primary" variant="outlined" fullWidth component={Link} to="/signup">
-                        회원가입
+                      <Button variant="text" color="info" size="small">
+                        내 작업결과
                       </Button>
-                    </>
+                      <Button variant="text" color="info" size="small">
+                        내 문의
+                      </Button>
+                      <Button variant="text" color="info" size="small">
+                        내 구독
+                      </Button>
+                      <Button variant="text" color="info" size="small" onClick={handleLogout}>
+                        로그아웃
+                      </Button>
+                    </Box>
                   )}
+                </Box>
+                
+              </>
+            ) : (
+              <>
+                <Button color="primary" variant="text" size="small" component={Link} to="/sign-in">
+                  로그인
+                </Button>
+                <Button color="primary" variant="contained" size="small" component={Link} to="/agree">
+                  회원가입
+                </Button>
+              </>
+            )}
                 </MenuItem>
               </Box>
             </Drawer>

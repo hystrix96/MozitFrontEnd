@@ -26,12 +26,8 @@ export default function MarketingPage(props) {
       <AppAppBar />
       <Hero onPricingButtonClick={scrollToPricing} />
       <div>
-        <LogoCollection />
+        <Divider />
         <Features />
-        <Divider />
-        <Testimonials />
-        <Divider />
-        <Highlights />
         <Divider />
         <div ref={pricingRef}>
           <Pricing />

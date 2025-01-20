@@ -191,7 +191,7 @@ export default function Hero({ onPricingButtonClick }) {
             color="primary"
             size="large"
             sx={{ minWidth: 'fit-content' }}
-            href="/"
+            href="/sign-in"
           >
             로그인 하고 시작
           </Button>
