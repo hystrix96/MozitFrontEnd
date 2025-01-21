@@ -1,0 +1,58 @@
+{
+  "name": "mozit",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@fontsource/roboto": "^5.1.1",
+    "@mui/icons-material": "^6.4.0",
+    "@mui/material": "^6.4.0",
+    "@mui/styled-engine-sc": "^6.4.0",
+    "axios": "^1.7.9",
+    "cra-template": "1.2.0",
+    "dotenv": "^16.4.7",
+    "js-cookie": "^3.0.5",
+    "quill": "^2.0.3",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-daum-postcode": "^3.2.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-quill": "^2.0.0",
+    "react-router-dom": "^7.1.2",
+    "react-scripts": "5.0.1",
+    "react-slick": "^0.30.3",
+    "reactstrap": "^9.2.3",
+    "slick-carousel": "^1.8.1",
+    "styled-components": "^6.1.14",
+    "web-vitals": "^4.2.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:8080",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0"
+  }
+}
