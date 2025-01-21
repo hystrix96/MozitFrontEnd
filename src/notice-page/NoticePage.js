@@ -1,61 +1,34 @@
-import React, { useState }from 'react';
+import React, { useState, useEffect }from 'react';
 import { Link } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button } from '@mui/material';
-
-
-const notices = [
-    {
-      id: 1,
-      title: '공지사항 제목 1',
-      date: '2025-01-15',
-      description: '공지사항 내용 1입니다. 자세한 내용을 보려면 클릭하세요.',
-    },
-    {
-      id: 2,
-      title: '공지사항 제목 2',
-      date: '2025-01-14',
-      description: '공지사항 내용 2입니다. 더 많은 내용을 보려면 읽어보세요.',
-    },
-    {
-      id: 3,
-      title: '공지사항 제목 3',
-      date: '2025-01-13',
-      description: '공지사항 내용 3입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-    },
-    {
-      id: 4,
-      title: '공지사항 제목 4',
-      date: '2025-01-12',
-      description: '공지사항 내용 4입니다. 자세한 내용을 보려면 클릭하세요.',
-    },
-    {
-      id: 5,
-      title: '공지사항 제목 5',
-      date: '2025-01-11',
-      description: '공지사항 내용 5입니다. 더 많은 내용을 보려면 읽어보세요.',
-    },
-    {
-      id: 6,
-      title: '공지사항 제목 6',
-      date: '2025-01-10',
-      description: '공지사항 내용 6입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-    },
-    {
-        id: 7,
-        title: '공지사항 제목 7',
-        date: '2025-01-10',
-        description: '공지사항 내용 7입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-    },
-];
-
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from '@mui/material';
+import axiosInstance from '../api/axiosInstance';
 
 export default function NoticePage(props) {
+  const [notices, setNotices] = useState([]); // 공지사항 데이터
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [error, setError] = useState(null); // 에러 상태
   const [page, setPage] = useState(0); // Current page number
   const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+
+  const fetchNotices = async () => {
+    try {
+      const response = await axiosInstance.get('/notices'); // API 호출
+      setNotices(response.data); // 데이터를 상태에 저장
+      setLoading(false); // 로딩 종료
+    } catch (error) {
+      console.error('공지사항 데이터를 가져오는 중 오류 발생:', error);
+      setError('공지사항 데이터를 불러오는 중 문제가 발생했습니다.');
+      setLoading(false); // 로딩 종료
+    }
+  };
+
+  useEffect(() => {
+    fetchNotices();
+  }, []);
 
   // Handle change of page
   const handleChangePage = (event, newPage) => {
@@ -67,6 +40,48 @@ export default function NoticePage(props) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // Reset to the first page when rows per page changes
   };
+
+  if (loading) {
+    return (
+      <AppTheme {...props}>
+        <CssBaseline enableColorScheme />
+        <AppAppBar />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </AppTheme>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppTheme {...props}>
+        <CssBaseline enableColorScheme />
+        <AppAppBar />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100vh',
+            textAlign: 'center',
+          }}
+        >
+          <Typography variant="h6" color="error">
+            {error}
+          </Typography>
+        </Box>
+      </AppTheme>
+    );
+  }
 
   return (
     <AppTheme {...props}>
@@ -107,12 +122,12 @@ export default function NoticePage(props) {
                         {notices
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // Paginate the notices
                         .map((notice, index) => (
-                            <TableRow key={notice.id}>
+                            <TableRow key={notice.noticeNum}>
                             <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
-                            <TableCell align="left">{notice.title}</TableCell>
-                            <TableCell align="left">{notice.date}</TableCell>
+                            <TableCell align="left">{notice.noticeTitle}</TableCell>
+                            <TableCell align="left">{notice.createdAt}</TableCell>
                             <TableCell align="center">
-                                <Link to={`/notice/${notice.id}`}>
+                                <Link to={`/notice/${notice.noticeNum}`}>
                                     <Button 
                                     variant="outlined" 
                                     color="primary" 
