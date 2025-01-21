@@ -1,75 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import InputLabel from '@mui/material/InputLabel';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import visuallyHidden from '@mui/utils/visuallyHidden';
-import { styled } from '@mui/material/styles';
+import React from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { styled, useTheme } from "@mui/material/styles";
+import { useAuth } from "../../Context/AuthContext";
 import SitemarkIcon from '../../components/SitemarkIcon';
-const images = [
-  '/assets/img/brand/face.png',
-  '/assets/img/brand/face2.png',
-  '/assets/img/brand/mina.png',
-];
-const StyledBox = styled('div')(({ theme }) => ({
-  alignSelf: 'center',
-  width: '100%', // 컨테이너의 너비를 조정
-  height: 400, // 높이를 조정
-  marginTop: theme.spacing(8),
-  borderRadius: (theme.vars || theme).shape.borderRadius,
-  outline: '6px solid',
-  outlineColor: 'hsla(220, 25%, 80%, 0.2)',
-  border: '1px solid',
-  borderColor: (theme.vars || theme).palette.grey[200],
-  boxShadow: '0 0 12px 8px hsla(220, 25%, 80%, 0.2)',
-  backgroundSize: 'contain', // 이미지를 축소/확대하여 컨테이너에 맞춤
-  backgroundRepeat: 'no-repeat', // 이미지를 반복하지 않음
-  backgroundPosition: 'center', // 이미지를 중앙에 배치
-  [theme.breakpoints.up('sm')]: {
-    marginTop: theme.spacing(10),
-    height: 700, // 큰 화면에서는 높이를 더 늘림
+import "@img-comparison-slider/react";
+
+const StyledBox = styled("div")(({ theme }) => ({
+  width: "100%",
+  maxWidth: "1200px", // 더 큰 너비 설정
+  margin: "20px auto",
+  position: "relative",
+  aspectRatio: "16/9", // 가로 세로 비율 고정
+  overflow: "hidden",
+  borderRadius: theme.shape.borderRadius,
+  border: "1px solid rgba(0, 0, 0, 0.2)",
+  boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)",
+}));
+
+const IconContainer = styled(Box)(({ theme }) => ({
+  transform: "translateX(-50%)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 2,
+  "& img": {
+    position: "absolute",
+    opacity: 0,
+    animation: "fadeInOut 8s infinite", 
   },
-  ...theme.applyStyles('dark', {
-    boxShadow: '0 0 24px 12px hsla(210, 100%, 25%, 0.2)',
-    backgroundImage: `url(${process.env.TEMPLATE_IMAGE_URL || 'https://mui.com'}/static/screenshots/material-ui/getting-started/templates/dashboard-dark.jpg)`,
-    outlineColor: 'hsla(220, 20%, 42%, 0.1)',
-    borderColor: (theme.vars || theme).palette.grey[700],
-  }),
+  "& img:nth-of-type(1)": {
+    animationDelay: "0s", 
+  },
+  "& img:nth-of-type(2)": {
+    animationDelay: "2s", 
+  },
+  "& img:nth-of-type(3)": {
+    animationDelay: "4s", 
+  },
+  "& img:nth-of-type(4)": {
+    animationDelay: "6s", 
+  },
+  "@keyframes fadeInOut": {
+    "0%": { opacity: 0 },
+    "10%": { opacity: 1 }, 
+    "20%": { opacity: 1 }, 
+    "40%": { opacity: 0 }, 
+    "100%": { opacity: 0 },
+  },
 }));
-const DotsContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  marginTop: '16px',
-});
 
-const Dot = styled('div')(({ theme, active }) => ({
-  width: 12,
-  height: 12,
-  borderRadius: '50%',
-  margin: '0 8px',
-  backgroundColor: active ? theme.palette.primary.main : theme.palette.grey[400],
-  cursor: 'pointer',
-  transition: 'background-color 0.3s ease',
-}));
+
 export default function Hero({ onPricingButtonClick }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // 자동 전환 효과
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000); // 3초마다 전환
-
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 클리어
-  }, []);
-
-  const handleDotClick = (index) => {
-    setCurrentImageIndex(index);
-  };
+  const { username } = useAuth();
+  const theme = useTheme();
 
   return (
     <Box
@@ -87,9 +74,9 @@ export default function Hero({ onPricingButtonClick }) {
     >
       <Container
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           pt: { xs: 14, sm: 20 },
           pb: { xs: 8, sm: 12 },
         }}
@@ -99,30 +86,74 @@ export default function Hero({ onPricingButtonClick }) {
           useFlexGap
           sx={{ alignItems: 'center', width: { xs: '100%', sm: '70%' } }}
         >
-          {/* <Typography
+          {/* <IconContainer>
+            <img
+              src={
+                theme.palette.mode === "dark"
+                  ? "/assets/icons/face-white.png"
+                  : "/assets/icons/face.png"
+              }
+              alt="Privacy Icon"
+              style={{ width: "60px", height: "60px" }}
+            />
+            <img
+              src={
+                theme.palette.mode === "dark"
+                  ? "/assets/icons/cigarette_white.png"
+                  : "/assets/icons/cigarette.png"
+              }
+              alt="Cigarette Icon"
+              style={{ width: "60px", height: "60px" }}
+            />
+            <img
+              src={
+                theme.palette.mode === "dark"
+                  ? "/assets/icons/knife_white.png"
+                  : "/assets/icons/knife.png"
+              }
+              alt="Knife Icon"
+              style={{ width: "60px", height: "60px" }}
+            />
+            <img
+              src={
+                theme.palette.mode === "dark"
+                  ? "/assets/icons/identification-card_white.png"
+                  : "/assets/icons/identification-card.png"
+              }
+              alt="Knife Icon"
+              style={{ width: "60px", height: "60px" }}
+            />
+          </IconContainer>
+
+          <Typography
             variant="h1"
-            sx={{
+            sx={(theme) => ({
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
               alignItems: 'center',
-              fontSize: 'clamp(3rem, 10vw, 3.5rem)',
-            }}
+              fontSize: 'clamp(4rem, 12vw, 6rem)', // 더 큰 반응형 크기 설정
+              fontWeight: 'bold', // 강조를 위한 굵기 추가
+              textAlign: 'center', // 텍스트 중앙 정렬
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+              lineHeight: 1.2, // 줄 간격 조정
+              mt: 3, // 위쪽 여백
+              mb: 3, // 아래쪽 여백
+            })}
           >
-            Our&nbsp;latest&nbsp;
+            Mosaic&nbsp;
             <Typography
               component="span"
               variant="h1"
-              sx={(theme) => ({
-                fontSize: 'inherit',
-                color: 'primary.main',
-                ...theme.applyStyles('dark', {
-                  color: 'primary.light',
-                }),
-              })}
+              sx={{
+                fontSize: 'inherit', // 부모 크기를 따라감
+                color: '#3870FF', // 강조 색상
+                textShadow: '0px 0px 15px rgba(56, 112, 255, 0.8)', // 빛나는 효과 추가
+              }}
             >
-              products
+              It!
             </Typography>
           </Typography> */}
+
           <SitemarkIcon height={70}></SitemarkIcon>
           <Typography
             sx={{
@@ -133,94 +164,106 @@ export default function Hero({ onPricingButtonClick }) {
           >
             간략한 소개
           </Typography>
-          {/* <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={1}
-            useFlexGap
-            sx={{ pt: 2, width: { xs: '100%', sm: '350px' } }}
-          >
-            <InputLabel htmlFor="email-hero" sx={visuallyHidden}>
-              Email
-            </InputLabel>
-            <TextField
-              id="email-hero"
-              hiddenLabel
-              size="small"
-              variant="outlined"
-              aria-label="Enter your email address"
-              placeholder="Your email address"
-              fullWidth
-              slotProps={{
-                htmlInput: {
-                  autoComplete: 'off',
-                  'aria-label': 'Enter your email address',
-                },
-              }}
-            />
+        </Stack>
+
+        {/* <Stack
+          spacing={3}
+          sx={{
+            alignItems: "center",
+            width: { xs: "100%", sm: "70%" },
+            pt: { xs: 5, sm: 5 },
+          }}
+        >
+          {username ? (
             <Button
               variant="contained"
               color="primary"
-              size="small"
-              sx={{ minWidth: 'fit-content' }}
+              size="large"
+              sx={{ minWidth: "fit-content" }}
+              href="/edit"
             >
-              Start now
+              작업하러 가기
             </Button>
-          </Stack>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ textAlign: 'center' }}
-          >
-            By clicking &quot;Start now&quot; you agree to our&nbsp;
-            <Link href="#" color="primary">
-              Terms & Conditions
-            </Link>
-            .
-          </Typography> */}
-        </Stack>
-        <Stack
-          spacing={3}
-          useFlexGap
-          sx={{
-            alignItems: 'center', width: { xs: '100%', sm: '70%' },
-            pt: { xs: 5, sm: 5 }
-          }}
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            sx={{ minWidth: 'fit-content' }}
-            href="/sign-in"
-          >
-            로그인 하고 시작
-          </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              sx={{ minWidth: "fit-content" }}
+              href="/sign-in"
+            >
+              로그인 하고 시작
+            </Button>
+          )}
           <Button
             variant="contained"
             color="primary"
             size="small"
-            sx={{ minWidth: 'fit-content' }}
+            sx={{ minWidth: "fit-content" }}
             onClick={onPricingButtonClick}
           >
             요금제 알아보기
           </Button>
-        </Stack>
-        {/* 슬라이드 영역 */}
-        <StyledBox
-          style={{ backgroundImage: `url(${images[currentImageIndex]})` }}
-        />
+        </Stack> */}
 
-        {/* 점 인디케이터 */}
-        <DotsContainer>
-          {images.map((_, index) => (
-            <Dot
-              key={index}
-              active={index === currentImageIndex}
-              onClick={() => handleDotClick(index)}
+        {/* 이미지 슬라이더 */}
+        <StyledBox>
+          <img-comparison-slider style={{ width: "100%", height: "100%" }}>
+            <img
+              slot="first"
+              src="/assets/img/brand/face.png"
+              alt="Before"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover", // 컨테이너에 맞게 채우기
+              }}
             />
-          ))}
-        </DotsContainer>
-        {/* <StyledBox id="image" /> */}
+            <img
+              slot="second"
+              src="/assets/img/brand/face2.png"
+              alt="After"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover", // 컨테이너에 맞게 채우기
+              }}
+            />
+          </img-comparison-slider>
+        </StyledBox>
+
+        <Stack
+          spacing={2}
+          useFlexGap
+          sx={{ alignItems: "center", width: { xs: "100%", sm: "70%" } }}
+        >
+          <Typography
+            variant="h2"
+            sx={(theme) => ({
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "clamp(2rem, 5vw, 3rem)", // 반응형 크기
+              color: theme.palette.mode === 'dark' ? "rgba(255, 255, 255, 0.9)" : '#000000',
+              mt: 5,
+              mb: 3,
+              lineHeight: 1.2,
+            })}
+          >
+            쉬운{" "}
+            <span
+              style={{
+                color: "#3870ff", // 주황색 텍스트
+                textShadow: "0px 0px 15px rgba(56, 112, 255, 0.8)", // 빛나는 효과
+              }}
+            >
+              개인정보 보호
+            </span>
+            ,
+            <br />
+            유해요소 차단.
+          </Typography>
+
+        </Stack>
       </Container>
     </Box>
   );
