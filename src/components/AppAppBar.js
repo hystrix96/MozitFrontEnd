@@ -176,16 +176,16 @@ export default function AppAppBar() {
                         padding: 1,
                       }}
                     >
-                      <Button variant="text" color="info" size="small" sx={{ whiteSpace: 'nowrap' }} >
+                      <Button variant="text" color="info" size="small" sx={{ whiteSpace: 'nowrap' }} component={Link} to="/mypageupdate" >
                         개인정보 수정
                       </Button>
-                      <Button variant="text" color="info" size="small">
+                      <Button variant="text" color="info" size="small" component={Link} to="/myworkpage">
                         내 작업결과
                       </Button>
-                      <Button variant="text" color="info" size="small">
+                      <Button variant="text" color="info" size="small" component={Link} to="/myquestion">
                         내 문의
                       </Button>
-                      <Button variant="text" color="info" size="small">
+                      <Button variant="text" color="info" size="small" component={Link} to="/mysubpage">
                         내 구독
                       </Button>
                       <Button variant="text" color="info" size="small" onClick={handleLogout}>
