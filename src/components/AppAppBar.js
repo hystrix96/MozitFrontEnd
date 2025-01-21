@@ -40,7 +40,7 @@ export default function AppAppBar() {
   const [openWorkSubMenu, setOpenWorkSubMenu] = useState(false);  // 작업 메뉴 서브 메뉴
   const [openUserSubMenu, setOpenUserSubMenu] = useState(false);  // 사용자 메뉴 서브 메뉴
   const isLoggedIn = isUserLoggedIn();
-  const { accessToken, username, setAccessToken, setUsername } = useAuth();
+  const { accessToken , username, isTokenFetched } = useAuth();
 
   const handleLogout = async () => {
     try {
