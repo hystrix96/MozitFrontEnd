@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, TextField } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
@@ -11,57 +10,42 @@ import MenuContent from '../dashboard/components/MenuContent'
 import Header from '../dashboard/components/Header'
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
+import axiosInstance from '../api/axiosInstance';
 
-const notices = [
-  {
-    id: 1,
-    title: '공지사항 제목 1',
-    date: '2025-01-15',
-    description: '공지사항 내용 1입니다. 자세한 내용을 보려면 클릭하세요.',
-  },
-  {
-    id: 2,
-    title: '공지사항 제목 2',
-    date: '2025-01-14',
-    description: '공지사항 내용 2입니다. 더 많은 내용을 보려면 읽어보세요.',
-  },
-  {
-    id: 3,
-    title: '공지사항 제목 3',
-    date: '2025-01-13',
-    description: '공지사항 내용 3입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-  {
-    id: 4,
-    title: '공지사항 제목 4',
-    date: '2025-01-12',
-    description: '공지사항 내용 4입니다. 자세한 내용을 보려면 클릭하세요.',
-  },
-  {
-    id: 5,
-    title: '공지사항 제목 5',
-    date: '2025-01-11',
-    description: '공지사항 내용 5입니다. 더 많은 내용을 보려면 읽어보세요.',
-  },
-  {
-    id: 6,
-    title: '공지사항 제목 6',
-    date: '2025-01-10',
-    description: '공지사항 내용 6입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-  {
-    id: 7,
-    title: '공지사항 제목 7',
-    date: '2025-01-10',
-    description: '공지사항 내용 7입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-];
-
-export default function NoticeDetailPage(props) {
+export default function NoticeEditPage(props) {
   const { id } = useParams();  // URL에서 id 파라미터 추출
-  const notice = notices.find((n) => n.id === parseInt(id));  // 해당 id의 공지사항 찾기
-  const [title, setTitle] = useState(notice ? notice.title : ''); // 제목 상태 관리
-  const [content, setContent] = useState(notice ? notice.description : ''); // 수정 가능한 내용 상태 관리
+  const [notice, setNotice] = useState(null);  // 공지사항 상태
+  const [title, setTitle] = useState(''); // 제목 상태 관리
+  const [content, setContent] = useState(''); // 내용 상태 관리
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchNotice = async () => {
+      try {
+        const response = await axiosInstance.get(`/notices/${id}`); // API 호출로 공지사항 데이터 가져오기
+        console.log('공지사항 데이터:', response.data); // 응답 데이터 확인
+        setNotice(response.data);
+        setTitle(response.data.noticeTitle); // API로 받은 제목을 상태에 설정
+        setContent(response.data.noticeDetail); // API로 받은 내용 설정
+      } catch (error) {
+        console.error('공지사항을 가져오는 중 오류 발생:', error);
+      }
+    };
+    fetchNotice();
+  }, [id]);
+
+  const handleSave = async () => {
+    try {
+      const updatedNotice = {
+        noticeTitle: title,
+        noticeDetail: content,
+      };
+      await axiosInstance.patch(`/notices/${id}`, updatedNotice);
+      navigate(`/noticelist/${id}`);
+    } catch (error) {
+      console.error('공지사항 수정 실패:', error);
+    }
+  };
 
   if (!notice) {
     return (
@@ -143,7 +127,7 @@ export default function NoticeDetailPage(props) {
                     />
                 </Box>
                 <Typography variant="body1" sx={{ flex: 1, marginLeft: -2 }}>
-                    작성일자: {notice.date}
+                    작성일자: {notice.createdAt}
                 </Typography>
             </Box>
 
@@ -161,10 +145,11 @@ export default function NoticeDetailPage(props) {
                 variant="outlined"
                 color="primary"
                 sx={{ marginRight: 2 }}
+                onClick={handleSave}
                 >
                 저장
                 </Button>
-                <Link to={`/noticelist/${notice.id}`}>
+                <Link to={`/noticelist/${notice.noticeNum}`}>
                     <Button variant="outlined" color="secondary">
                     취소
                     </Button>

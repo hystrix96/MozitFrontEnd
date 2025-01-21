@@ -9,23 +9,36 @@ import {
   Card,
   CardActions,
   CardContent,
-  Chip,
-  Container,
   Divider,
-  Fab,
   Typography
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { AutoAwesome as AutoAwesomeIcon, Check as CheckIcon } from '@mui/icons-material';
-
-const user = {
-    sub: 'Pro'
-}
+import {  Check as CheckIcon } from '@mui/icons-material';
+import { useAuth } from '../Context/AuthContext'
+import axiosInstance from '../api/axiosInstance'
 
 export default function Pricing(props) {
-
     const [tiers, setTiers] = useState([]);
-    
+    const [user, setUser] = useState({ userSub: 'Basic' });
+    const authUser = useAuth();
+
+    const fetchUserData = async () => {
+        try{
+            const response = await axiosInstance.get('/my');
+            setUser(response.data);
+        }catch(error){
+            console.error('사용자 정보 가져오는 중 오류 발생:', error);
+        }
+    }
+
+    useEffect(() => {
+        if(authUser){
+            setUser(authUser);
+        }else{
+            fetchUserData();
+        }
+    }, [authUser]);
+
     useEffect(() => {
         const tiersData = [
             {
@@ -74,11 +87,11 @@ export default function Pricing(props) {
 
         const updatedTiers = tiersData.map((tier) => ({
             ...tier,
-            subscribed: tier.title === user.sub, // user.sub와 비교하여 구독 여부 설정
+            subscribed: tier.title === user.userSub, // user.sub와 비교하여 구독 여부 설정
         }));
       
         setTiers(updatedTiers); // 상태 업데이트
-    }, []);
+    }, [authUser]);
 
   return (
     <AppTheme {...props}>
