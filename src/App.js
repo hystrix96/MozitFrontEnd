@@ -20,8 +20,10 @@ import NoticeUpdatePage from './admin-page/NoticeUpdatePage';
 import NoticeEditPage from './admin-page/NoticeEditPage';
 import NoticeCreatePage from './admin-page/NoticeCreatePage';
 import MozaicPage from './mozaic-page/MozaicPage';
-
-
+import MyPageUpdate from './my-page/MyPageUpdate'
+import MySubPage from './my-page/MySubPage'
+import MyWorkPage from './my-page/MyWorkPage'
+import UserListPage from './admin-page/UserListPage'
 
 const App = () => {
   return (
