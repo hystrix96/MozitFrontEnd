@@ -158,47 +158,42 @@ import Button from '@mui/material/Button';
 
 export default function FAQ() {
   const [expanded, setExpanded] = React.useState([]);
-  const [selectedCategory, setSelectedCategory] = React.useState('general'); // 카테고리 선택 상태
 
-  // 카테고리별 FAQ 데이터
-  const faqData = {
-    general: [
-      {
-        question: 'Test용',
-        answer: (
-          <>
-            잘 들어가고 있는건가요?
-          </>
-        ),
-      },
-    ],
-    returns: [
-      {
-        question: 'Test용',
-        answer: (
-          <>
-            잘 들어가고 있는건가요?
-          </>
-        ),
-      },
-    ],
-    product: [
-      {
-        question: 'Test용',
-        answer: (
-          <>
-            잘 들어가고 있는건가요?
-          </>
-        ),
-      },
-    ],
-    warranty: [
-      {
-        question: 'Is there a warranty on the product, and what does it cover?',
-        answer: 'Yes, our product comes with a [length of warranty] warranty. It covers defects in materials and workmanship. If you encounter any issues covered by the warranty, please contact our customer support for assistance.',
-      },
-    ],
-  };
+  // FAQ 데이터
+  const faqData = [
+    {
+      question: 'Q: 이 서비스는 어떤 목적으로 사용되나요?',
+      answer: 'A: 동영상 내 개인정보(얼굴, 차량 번호판 등)와 유해 요소를 자동으로 감지하고 모자이크 처리하는 기능을 제공합니다.',
+    },
+    {
+      question: 'Q: 어떤 유형의 파일을 지원하나요?',
+      answer: 'A: 지원되는 파일 형식은 MP4, MOV, AVI, MKV 등입니다. 파일 크기와 해상도 제한은 여기에서 확인할 수 있습니다.',
+    },
+    {
+      question: 'Q: 모자이크 처리는 어떻게 이루어지나요요?',
+      answer: 'A: AI 기반 객체 인식 기술을 사용해 얼굴, 번호판, 유해 요소 등을 자동으로 탐지한 후 모자이크를 적용합니다.',
+    },
+    {
+      question: 'Q: 동영상 모자이크를 적용하는 방법은 무엇인가요?',
+      answer: 'A: 동영상 작업 페이지에서 파일을 업로드하고 원하는 모자이크 설정을 선택한 후 처리 버튼을 누르면 됩니다.',
+    },
+    {
+      question: 'Q: 서비스는 무료인가요?',
+      answer: 'A: 플랜 구독 서비스를 통해 이용할 수 있으며, 사용자에게 맞는 플랜을 선택할 수 있습니다.',
+    },
+    {
+      question: 'Q: 내 동영상이 다른 곳에 사용될 가능성이 있나요?',
+      answer: 'A: 동영상은 어떠한 방식으로도 외부에 공유되지 않습니다.',
+    },
+    {
+      question: 'Q: 지원되는 브라우저는 무엇인가요?',
+      answer: 'A: Chrome, FireFox, Safari, Edge 등 최신 브라우저를 권장합니다.',
+    },
+    {
+      question: 'Q: 동영상 처리 속도가 느린 이유는 무엇인가요?',
+      answer: 'A: 파일 크기, 해상도, 인터넷 속도에 따라 처리 시간이 달라질 수 있습니다.',
+    },
+  ];
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? [...expanded, panel] : expanded.filter((item) => item !== panel));
@@ -221,25 +216,9 @@ export default function FAQ() {
           Frequently Asked Questions
         </Typography>
 
-        {/* 카테고리 선택 버튼들 */}
-        <Box sx={{ marginBottom: 2, display :'flex', justifyContent: 'center' }}>
-          <Button variant={selectedCategory === 'general' ? 'contained' : 'outlined'} onClick={() => setSelectedCategory('general')}>
-            결제
-          </Button>
-          <Button variant={selectedCategory === 'returns' ? 'contained' : 'outlined'} sx={{ marginLeft: 2 }} onClick={() => setSelectedCategory('returns')}>
-            제품
-          </Button>
-          <Button variant={selectedCategory === 'product' ? 'contained' : 'outlined'} sx={{ marginLeft: 2 }} onClick={() => setSelectedCategory('product')}>
-            주요 질문
-          </Button>
-          <Button variant={selectedCategory === 'warranty' ? 'contained' : 'outlined'} sx={{ marginLeft: 2 }} onClick={() => setSelectedCategory('warranty')}>
-            Warranty
-          </Button>
-        </Box>
-
-        {/* 선택된 카테고리에 따라 내용 표시 */}
+        {/* FAQ 목록 표시 */}
         <Box sx={{ width: '100%' }}>
-          {faqData[selectedCategory].map((faq, index) => (
+          {faqData.map((faq, index) => (
             <Accordion key={index} expanded={expanded.includes(`panel${index}`)} onChange={handleChange(`panel${index}`)}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls={`panel${index}-content`} id={`panel${index}-header`}>
                 <Typography component="span" variant="subtitle2">

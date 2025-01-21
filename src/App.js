@@ -25,6 +25,7 @@ import MySubPage from './my-page/MySubPage';
 import MyWorkPage from './my-page/MyWorkPage';
 import UserListPage from './admin-page/UserListPage';
 import DashBoard from './dashboard/Dashboard'
+import ScrollToTop from './ScrollToTop';
 
 
 
@@ -33,6 +34,7 @@ const App = () => {
   return (
     <>
       <BrowserRouter>
+      <ScrollToTop />
         <Routes>
           <Route path="/" exact element={<MarketingPage />} />
           <Route path="/sign-in" element={<SignIn />} />
