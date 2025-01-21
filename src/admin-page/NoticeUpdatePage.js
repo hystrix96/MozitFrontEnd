@@ -1,60 +1,37 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
-
-const notices = [
-  {
-    id: 1,
-    title: '공지사항 제목 1',
-    date: '2025-01-15',
-    description: '공지사항 내용 1입니다. 자세한 내용을 보려면 클릭하세요.',
-  },
-  {
-    id: 2,
-    title: '공지사항 제목 2',
-    date: '2025-01-14',
-    description: '공지사항 내용 2입니다. 더 많은 내용을 보려면 읽어보세요.',
-  },
-  {
-    id: 3,
-    title: '공지사항 제목 3',
-    date: '2025-01-13',
-    description: '공지사항 내용 3입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-  {
-    id: 4,
-    title: '공지사항 제목 4',
-    date: '2025-01-12',
-    description: '공지사항 내용 4입니다. 자세한 내용을 보려면 클릭하세요.',
-  },
-  {
-    id: 5,
-    title: '공지사항 제목 5',
-    date: '2025-01-11',
-    description: '공지사항 내용 5입니다. 더 많은 내용을 보려면 읽어보세요.',
-  },
-  {
-    id: 6,
-    title: '공지사항 제목 6',
-    date: '2025-01-10',
-    description: '공지사항 내용 6입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-  {
-    id: 7,
-    title: '공지사항 제목 7',
-    date: '2025-01-10',
-    description: '공지사항 내용 7입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-];
+import MenuContent from '../dashboard/components/MenuContent'
+import Header from '../dashboard/components/Header'
+import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
+import axiosInstance from '../api/axiosInstance';
 
 export default function NoticeUpdatePage(props) {
   const { id } = useParams();  // URL에서 id 파라미터 추출
-  const notice = notices.find((n) => n.id === parseInt(id));  // 해당 id의 공지사항 찾기
+  const [notice, setNotice] = useState(null); // 공지사항 데이터
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchNotice = async () => {
+      const response = await axiosInstance.get(`/notices/${id}`); // API 호출
+      setNotice(response.data); // 데이터 저장
+    };
+    fetchNotice();
+  }, [id]);
+
+  const deleteNotice = async () => {
+    try {
+      await axiosInstance.delete(`/notices/${id}`); // 공지사항 삭제 API 호출
+      navigate('/noticelist'); // 삭제 후 목록 페이지로 리다이렉트
+    } catch (error) {
+      console.error('공지사항 삭제 중 오류 발생:', error);
+    }
+  };
 
   if (!notice) {
     return (
@@ -70,20 +47,33 @@ export default function NoticeUpdatePage(props) {
   }
 
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',  // 수직 방향으로 배치
-            alignItems: 'center',
-            justifyContent: 'flex-start', // 상단 정렬
-            minHeight: 'calc(100vh - 64px)', // AppBar를 제외한 전체 높이
-            padding: 4,
-            marginTop: '64px', // AppBar를 위한 상단 여백
-        }}
-      >
-        <Box sx={{
+      <AppTheme {...props}>
+          <CssBaseline enableColorScheme />
+          <Box sx={{ display: 'flex' }}>
+        <MenuContent />
+        
+        {/* Main content */}
+        <Box
+          component="main"
+          sx={(theme) => ({
+            flexGrow: 1,
+            backgroundColor: theme.vars
+              ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
+              : alpha(theme.palette.background.default, 1),
+            overflow: 'auto',
+          })}
+        >
+          <Stack
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+              mx: 3,
+              pb: 5,
+              mt: { xs: 8, md: 0 },
+            }}
+          >
+            <Header />
+              <Box sx={{
             maxWidth: 1000,
             width: '100%',
             }}
@@ -109,14 +99,14 @@ export default function NoticeUpdatePage(props) {
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', flex: 4 }}>
                     <Typography variant="body1" sx={{ marginRight: 2 }}>
-                        {notice.id}
+                        {notice.noticeNum}
                     </Typography>
                     <Typography variant="h5">
-                        {notice.title}
+                        {notice.noticeTitle}
                     </Typography>
                 </Box>
                 <Typography variant="body1" sx={{ flex: 1, marginLeft: -2 }}>
-                    작성일자: {notice.date}
+                    작성일자: {notice.createdAt}
                 </Typography>
             </Box>
 
@@ -134,27 +124,30 @@ export default function NoticeUpdatePage(props) {
                     overflowY: 'auto', // 세로 스크롤 활성화
                 }}
             >
-                <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                    {notice.description}
-                </Typography>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: notice.noticeDetail,
+                  }}
+                />
             </Box>
 
             <Box sx={{ marginTop: 2, textAlign: 'right' }}>
                 <Button variant="outlined" color="primary" component={Link} to="/noticelist" sx={{marginRight: 2}}>
                 목록
                 </Button>
-                <Link to={`/noticelist/${notice.id}/edit`}>
+                <Link to={`/noticelist/${notice.noticeNum}/edit`}>
                     <Button variant="outlined" color="primary" sx={{marginRight: 2}}>
                     수정
                     </Button>
                 </Link>
-                <Button variant="outlined" color="secondary">
+                <Button variant="outlined" color="secondary" onClick={deleteNotice}>
                 삭제
                 </Button>
             </Box>
         </Box>
+          </Stack>
+        </Box>
       </Box>
-      <Footer />
-    </AppTheme>
+           </AppTheme>
   );
 }

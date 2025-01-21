@@ -1,29 +1,75 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, TextField } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import Footer from '../components/Footer';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import MenuContent from '../dashboard/components/MenuContent'
+import Header from '../dashboard/components/Header'
+import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
+import axiosInstance from '../api/axiosInstance';
 
 export default function NoticeCreatePage(props) {
+  const [title, setTitle] = useState('');  // 제목 상태
+  const [content, setContent] = useState('');  // 내용 상태
+  const navigate = useNavigate();  // 페이지 리다이렉션을 위한 useNavigate 훅
+
+  // 제목 변경 핸들러
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
+  };
+
+  // 내용 변경 핸들러
+  const handleContentChange = (value) => {
+    setContent(value);
+  };
+
+  // 공지사항 저장 함수
+  const handleSave = async () => {
+    const newNotice = {
+      noticeTitle: title,
+      noticeDetail: content,
+    };
+
+    try {
+      await axiosInstance.post('/notices', newNotice);  // 공지사항 생성 API 호출
+      navigate('/noticelist');  // 공지사항 목록 페이지로 이동
+    } catch (error) {
+      console.error('공지사항 저장 중 오류 발생:', error);
+    }
+  };
 
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',  // 수직 방향으로 배치
-            alignItems: 'center',
-            justifyContent: 'flex-start', // 상단 정렬
-            minHeight: 'calc(100vh - 64px)', // AppBar를 제외한 전체 높이
-            padding: 4,
-            marginTop: '64px', // AppBar를 위한 상단 여백
-        }}
-      >
-        <Box sx={{
+       <AppTheme {...props}>
+        <CssBaseline enableColorScheme />
+        <Box sx={{ display: 'flex' }}>
+        <MenuContent />
+        
+        {/* Main content */}
+        <Box
+          component="main"
+          sx={(theme) => ({
+            flexGrow: 1,
+            backgroundColor: theme.vars
+              ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
+              : alpha(theme.palette.background.default, 1),
+            overflow: 'auto',
+          })}
+        >
+          <Stack
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+              mx: 3,
+              pb: 5,
+              mt: { xs: 8, md: 0 },
+            }}
+          >
+            <Header />
+              <Box sx={{
             maxWidth: 1000,
             width: '100%',
             }}
@@ -52,6 +98,8 @@ export default function NoticeCreatePage(props) {
                         label="제목"
                         variant="standard"
                         fullWidth
+                        value={title}
+                        onChange={handleTitleChange}
                         sx={{
                             width: '90%',         // 길이를 줄임 (전체 폭의 80%)
                             marginTop: -0.8,        // 위로 살짝 이동
@@ -65,6 +113,8 @@ export default function NoticeCreatePage(props) {
             <Box>
                 <ReactQuill
                     theme="snow"
+                    value={content}
+                    onChange={handleContentChange}
                     style={{ height: '300px', marginBottom: '20px' }}
                 />
             </Box>
@@ -73,6 +123,7 @@ export default function NoticeCreatePage(props) {
                 <Button
                 variant="outlined"
                 color="primary"
+                onClick={handleSave}
                 sx={{ marginRight: 2 }}
                 >
                 저장
@@ -84,8 +135,9 @@ export default function NoticeCreatePage(props) {
                 </Link>
             </Box>
         </Box>
+          </Stack>
+        </Box>
       </Box>
-      <Footer />
     </AppTheme>
   );
 }

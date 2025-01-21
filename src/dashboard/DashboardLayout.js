@@ -1,37 +1,19 @@
-import * as React from 'react';
-
-import { alpha } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
+// DashboardLayout.js
+import React from 'react';
+import { Box, CssBaseline, Stack } from '@mui/material';
+import MenuContent from './components/MenuContent';
 import AppNavbar from './components/AppNavbar';
 import Header from './components/Header';
-import MainGrid from './components/MainGrid';
-import MenuContent from './components/MenuContent';
 import AppTheme from '../shared-theme/AppTheme';
+import { alpha } from '@mui/material/styles';
 
-
-import {
-  chartsCustomizations,
-  dataGridCustomizations,
-  datePickersCustomizations,
-  treeViewCustomizations,
-} from './theme/customizations';
-
-const xThemeComponents = {
-  ...chartsCustomizations,
-  ...dataGridCustomizations,
-  ...datePickersCustomizations,
-  ...treeViewCustomizations,
-};
-
-export default function Dashboard(props) {
-  
+const DashboardLayout = ({ onMenuSelect, currentMenu, children }) => {
   return (
-    <AppTheme {...props} themeComponents={xThemeComponents}>
+    <AppTheme>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex' }}>
-        <MenuContent />
+        {/* MenuContent에 onMenuSelect 전달 */}
+        <MenuContent onMenuSelect={onMenuSelect} />
         <AppNavbar />
         {/* Main content */}
         <Box
@@ -53,11 +35,14 @@ export default function Dashboard(props) {
               mt: { xs: 8, md: 0 },
             }}
           >
-            <Header />
-            <MainGrid />
+            <Header currentMenu={currentMenu} />
+            {/* 자식 컴포넌트를 렌더링 */}
+            {children}
           </Stack>
         </Box>
       </Box>
     </AppTheme>
   );
-}
+};
+
+export default DashboardLayout;

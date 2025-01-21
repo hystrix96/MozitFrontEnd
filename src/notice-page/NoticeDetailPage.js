@@ -1,69 +1,65 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
-
-const notices = [
-  {
-    id: 1,
-    title: '공지사항 제목 1',
-    date: '2025-01-15',
-    description: '공지사항 내용 1입니다. 자세한 내용을 보려면 클릭하세요.',
-  },
-  {
-    id: 2,
-    title: '공지사항 제목 2',
-    date: '2025-01-14',
-    description: '공지사항 내용 2입니다. 더 많은 내용을 보려면 읽어보세요.',
-  },
-  {
-    id: 3,
-    title: '공지사항 제목 3',
-    date: '2025-01-13',
-    description: '공지사항 내용 3입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-  {
-    id: 4,
-    title: '공지사항 제목 4',
-    date: '2025-01-12',
-    description: '공지사항 내용 4입니다. 자세한 내용을 보려면 클릭하세요.',
-  },
-  {
-    id: 5,
-    title: '공지사항 제목 5',
-    date: '2025-01-11',
-    description: '공지사항 내용 5입니다. 더 많은 내용을 보려면 읽어보세요.',
-  },
-  {
-    id: 6,
-    title: '공지사항 제목 6',
-    date: '2025-01-10',
-    description: '공지사항 내용 6입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-  {
-    id: 7,
-    title: '공지사항 제목 7',
-    date: '2025-01-10',
-    description: '공지사항 내용 7입니다. 자세한 사항은 공지사항을 클릭하여 확인하세요.',
-  },
-];
+import axiosInstance from '../api/axiosInstance';
 
 export default function NoticeDetailPage(props) {
   const { id } = useParams();  // URL에서 id 파라미터 추출
-  const notice = notices.find((n) => n.id === parseInt(id));  // 해당 id의 공지사항 찾기
+  const [notice, setNotice] = useState(null); // 공지사항 데이터
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [error, setError] = useState(null); // 오류 상태
 
-  if (!notice) {
+  useEffect(() => {
+    const fetchNotice = async () => {
+      try {
+        const response = await axiosInstance.get(`/notices/${id}`); // API 호출
+        setNotice(response.data); // 데이터 저장
+      } catch (error) {
+        console.error('공지사항 데이터를 가져오는 중 오류 발생:', error);
+        setError('공지사항 데이터를 불러오는 중 문제가 발생했습니다.');
+      } finally {
+        setLoading(false); // 로딩 상태 종료
+      }
+    };
+    
+    fetchNotice();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <AppTheme>
+        <AppAppBar />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 'calc(100vh - 64px)',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+        <Footer />
+      </AppTheme>
+    );
+  }
+
+  if (error || !notice) {
     return (
       <AppTheme>
         <AppAppBar />
         <Box sx={{ padding: 4 }}>
           <Typography variant="h4" gutterBottom>
-            공지사항을 찾을 수 없습니다.
+            {error ? `오류 발생: ${error}` : '공지사항을 찾을 수 없습니다.'}
           </Typography>
+          <Button variant="contained" color="primary" component={Link} to="/notice">
+            공지사항 목록으로 돌아가기
+          </Button>
         </Box>
         <Footer />
       </AppTheme>
@@ -112,14 +108,14 @@ export default function NoticeDetailPage(props) {
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', flex: 4 }}>
                     <Typography variant="body1" sx={{ marginRight: 2 }}>
-                        {notice.id}
+                        {notice.noticeNum}
                     </Typography>
                     <Typography variant="h5">
-                        {notice.title}
+                        {notice.noticeTitle}
                     </Typography>
                 </Box>
                 <Typography variant="body1" sx={{ flex: 1, marginLeft: -2 }}>
-                    작성일자: {notice.date}
+                    작성일자: {notice.createdAt}
                 </Typography>
             </Box>
 
@@ -137,9 +133,11 @@ export default function NoticeDetailPage(props) {
                     overflowY: 'auto', // 세로 스크롤 활성화
                 }}
             >
-                <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                    {notice.description}
-                </Typography>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: notice.noticeDetail,
+                  }}
+                />
             </Box>
 
             {/* 목록으로 돌아가기 버튼 */}

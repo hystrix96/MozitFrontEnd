@@ -1,65 +1,92 @@
 import * as React from 'react';
+import IconButton from '@mui/material/IconButton';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/system';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import InstagramIcon from '@mui/icons-material/Instagram';
+
 const items = [
   {
     icon: '/assets/img/brand/yunho.png',
     title: '서윤호',
-    description:
-      '조장',
+    description: '조장',
+    links: {
+      github: 'https://github.com/sehoon',
+      instar: 'https://www.instagram.com',
+    },
   },
   {
     icon: '/assets/img/brand/mina.png',
     title: '강민아',
-    description:
-      '에이스',
+    description: 'ACE',
+    links: {
+      github: 'https://github.com/minkongkang',
+      instar: 'https://www.instagram.com',
+    },
   },
   {
     icon: '/assets/img/brand/yunho.png',
-    title: 'Great user experience',
-    description:
-      'Integrate our product into your routine with an intuitive and easy-to-use interface.',
+    title: '장현호',
+    description: '블라블라',
+    links: {
+      github: 'https://github.com/minkongkang',
+      instar: 'https://www.instagram.com',
+    },
   },
   {
     icon: '/assets/img/brand/mina.png',
-    title: 'Innovative functionality',
-    description:
-      'Stay ahead with features that set new standards, addressing your evolving needs better than the rest.',
+    title: '민지영',
+    description: '블라블라',
+    links: {
+      github: 'https://github.com/huniiieee',
+      instar: 'https://www.instagram.com',
+    },
   },
   {
     icon: '/assets/img/brand/yunho.png',
-    title: 'Reliable support',
-    description:
-      'Count on our responsive customer support, offering assistance that goes beyond the purchase.',
+    title: '이세훈',
+    description: '블라블라',
+    links: {
+      github: 'https://github.com/huniiieee',
+      instar: 'https://www.instagram.com',
+    },
   },
   {
     icon: '/assets/img/brand/mina.png',
-    title: 'Precision in every detail',
-    description:
-      'Enjoy a meticulously crafted product where small touches make a significant impact on your overall experience.',
+    title: '정연주',
+    description: '블라블라',
+    links: {
+      github: 'https://github.com/racoi',
+      instar: 'https://www.instagram.com',
+    },
   },
   {
     icon: '/assets/img/brand/yunho.png',
-    title: 'Precision in every detail',
-    description:
-      'Enjoy a meticulously crafted product where small touches make a significant impact on your overall experience.',
+    title: '고정우',
+    description: '블라블라',
+    links: {
+      github: 'https://github.com/kjwjj',
+      instar: 'https://www.instagram.com/',
+    },
   },
   {
     icon: '/assets/img/brand/mina.png',
-    title: 'Precision in every detail',
-    description:
-      'Enjoy a meticulously crafted product where small touches make a significant impact on your overall experience.',
-  }
+    title: '이지현',
+    description: '블라블라',
+    links: {
+      github: 'https://github.com/jh226',
+      instar: 'https://www.instagram.com',
+    },
+  },
 ];
 
 export default function Testimonials() {
   const theme = useTheme();
-
 
   return (
     <Container
@@ -84,47 +111,120 @@ export default function Testimonials() {
           component="h2"
           variant="h4"
           gutterBottom
-          sx={{ color: 'text.primary' }}
+          sx={{ color: 'text.primary', fontWeight: 'bold', fontSize: '2.5rem' }}
         >
-          Testimonials
+          About Us
         </Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-          See what our customers love about our products. Discover how we excel in
-          efficiency, durability, and satisfaction. Join us for quality, innovation,
-          and reliable support.
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'text.secondary',
+            fontStyle: 'italic',
+            fontSize: '1.1rem',
+          }}
+        >
+          Connect with us to know more about our team and projects.
         </Typography>
       </Box>
-          <Grid container spacing={2}>
-          {items.map((item, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-              <Stack
-                direction="column"
-                component={Card}
-                spacing={1}
-                useFlexGap
+
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: '800px',
+          textAlign: 'center',
+          marginY: 4,
+        }}
+      >
+        <img
+          src=""
+          alt="사진을 넣을까요?"
+          style={{
+            width: '100%',
+            borderRadius: '15px',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+            objectFit: 'cover',
+          }}
+        />
+      </Box>
+
+      <Grid container spacing={4}>
+        {items.map((item, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Card
+              sx={{
+                p: 3,
+                textAlign: 'center',
+                borderRadius: '10px',
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-10px)',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
+                },
+              }}
+            >
+              <Box
                 sx={{
-                  color: 'inherit',
-                  p: 3,
-                  height: '100%',
-                  borderColor: 'hsla(220, 25%, 25%, 0.3)',
-                  // backgroundColor: 'grey.800',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginBottom: 2,
                 }}
               >
-                <Box sx={{ opacity: '50%' }}>
-                  <img src={item.icon} alt={item.title} style={{ width: '200px', height: '200px',objectFit: 'cover', borderRadius: '50%' }} />
-                </Box>
-                <div>
-                  <Typography gutterBottom sx={{ fontWeight: 'medium' }}>
-                    {item.title}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'grey.400' }}>
-                    {item.description}
-                  </Typography>
-                </div>
+                <img
+                  src={item.icon}
+                  alt={item.title}
+                  style={{
+                    width: '120px',
+                    height: '120px',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                    border: '4px solid white',
+                  }}
+                />
+              </Box>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: '600',
+                  marginBottom: 1,
+                  color: theme.palette.text.primary,
+                }}
+              >
+                {item.title}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: theme.palette.text.secondary,
+                  fontSize: '1rem',
+                  fontStyle: 'italic',
+                  marginBottom: 2,
+                }}
+              >
+                {item.description}
+              </Typography>
+              <Stack direction="row" justifyContent="center" spacing={2}>
+                {Object.entries(item.links).map(([key, link]) => (
+                  <IconButton
+                    key={key}
+                    color="inherit"
+                    size="large"
+                    href={link}
+                    target="_blank"
+                    sx={{
+                      '&:hover': {
+                        color: theme.palette.primary.main,
+                      },
+                    }}
+                  >
+                    {key === 'github' ? <GitHubIcon /> : <InstagramIcon />}
+                  </IconButton>
+                ))}
               </Stack>
-            </Grid>
-          ))}
-        </Grid>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
     </Container>
   );
 }

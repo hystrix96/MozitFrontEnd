@@ -5,6 +5,10 @@ import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Chip } from '@mui/material';
+import MenuContent from '../dashboard/components/MenuContent'
+import Header from '../dashboard/components/Header'
+import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
 
 
 const questions = [
@@ -71,12 +75,51 @@ const questions = [
         state: true,
         description: '문의 내용 7입니다. 더 많은 내용을 보려면 읽어보세요.',
     },
+    {
+        id: 8,
+        username: '강민아',
+        title: '문의 제목 7',
+        date: '2025-01-10',
+        state: true,
+        type: 'SERVICE',
+        description: '문의 내용 7입니다. 더 많은 내용을 보려면 읽어보세요.',
+        answerResponse: {
+            timestamp: '2025-01-15',
+            answerDetail: '답변 내용 7'
+        }
+    },
+     {
+        id: 9,
+        username: '강민아',
+        title: '문의 제목 7',
+        date: '2025-01-10',
+        state: true,
+        type: 'SERVICE',
+        description: '문의 내용 7입니다. 더 많은 내용을 보려면 읽어보세요.',
+        answerResponse: {
+            timestamp: '2025-01-15',
+            answerDetail: '답변 내용 7'
+        }
+    },
+     {
+        id: 10,
+        username: '강민아',
+        title: '문의 제목 7',
+        date: '2025-01-10',
+        state: true,
+        type: 'SERVICE',
+        description: '문의 내용 7입니다. 더 많은 내용을 보려면 읽어보세요.',
+        answerResponse: {
+            timestamp: '2025-01-15',
+            answerDetail: '답변 내용 7'
+        }
+    }
 ];
 
 
 export default function QuestionListPage(props) {
   const [page, setPage] = useState(0); // Current page number
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Number of rows per page
 
   // Handle change of page
   const handleChangePage = (event, newPage) => {
@@ -104,20 +147,32 @@ export default function QuestionListPage(props) {
 
   return (
     <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <div>
-        <Box 
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',  // 수직 방향으로 배치
-                alignItems: 'center',
-                justifyContent: 'flex-start', // 상단 정렬
-                minHeight: 'calc(100vh - 64px)', // AppBar를 제외한 전체 높이
-                padding: 4,
-                marginTop: '64px', // AppBar를 위한 상단 여백
-            }}
+          <CssBaseline enableColorScheme />
+          <Box sx={{ display: 'flex' }}>
+        <MenuContent />
+        
+        {/* Main content */}
+        <Box
+          component="main"
+          sx={(theme) => ({
+            flexGrow: 1,
+            backgroundColor: theme.vars
+              ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
+              : alpha(theme.palette.background.default, 1),
+            overflow: 'auto',
+          })}
         >
-            <Box sx={{
+          <Stack
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+              mx: 3,
+              pb: 5,
+              mt: { xs: 8, md: 0 },
+            }}
+          >
+            <Header />
+              <Box sx={{
                 maxWidth: 1000,
                 width: '100%',
                 }}
@@ -182,9 +237,9 @@ export default function QuestionListPage(props) {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Box>
+          </Stack>
         </Box>
-        <Footer />
-      </div>
-    </AppTheme>
+      </Box>
+           </AppTheme>
   );
 }
