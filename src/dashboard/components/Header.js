@@ -5,10 +5,33 @@ import CustomDatePicker from './CustomDatePicker';
 import NavbarBreadcrumbs from './NavbarBreadcrumbs';
 import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
+import Button from '@mui/material/Button';
+import { useAuth } from '../../Context/AuthContext';
+import axios from 'axios';
 
 import Search from './Search';
 
 export default function Header() {
+    const { accessToken } = useAuth();
+  
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post('/users/logout', {}, {
+        headers: {
+          Authorization: accessToken, // 액세스 토큰을 헤더에 포함
+        },
+      });
+      if (response.status === 200) {
+        alert('로그아웃 성공!');
+        window.location.href="/";
+      } else {
+        throw new Error('로그아웃 실패');
+      }
+    } catch (error) {
+      console.error('로그아웃 에러:', error);
+      alert('로그아웃 요청 중 문제가 발생했습니다.');
+    }
+  };
   return (
     <Stack
       direction="row"
@@ -26,9 +49,9 @@ export default function Header() {
       <Stack direction="row" sx={{ gap: 1 }}>
         <Search />
         <CustomDatePicker />
-        <MenuButton showBadge aria-label="Open notifications">
-          <NotificationsRoundedIcon />
-        </MenuButton>
+        <Button variant="contained" color="primary" size="small" onClick={handleLogout}>
+                        로그아웃
+        </Button>
         <ColorModeIconDropdown />
       </Stack>
     </Stack>
