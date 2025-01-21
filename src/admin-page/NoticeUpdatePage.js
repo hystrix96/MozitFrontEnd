@@ -154,7 +154,7 @@ export default function NoticeUpdatePage(props) {
             </Box>
         </Box>
       </Box>
-      <Footer />
+      
     </AppTheme>
   );
 }

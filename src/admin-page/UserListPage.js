@@ -58,10 +58,9 @@ const users = [
     },
 ];
 
-
 export default function UserListPage(props) {
   const [page, setPage] = useState(0); // Current page number
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Number of rows per page
 
   // Handle change of page
   const handleChangePage = (event, newPage) => {
@@ -76,77 +75,71 @@ export default function UserListPage(props) {
 
   return (
     <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <div>
-        <Box 
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',  // 수직 방향으로 배치
-                alignItems: 'center',
-                justifyContent: 'flex-start', // 상단 정렬
-                minHeight: 'calc(100vh - 64px)', // AppBar를 제외한 전체 높이
-                padding: 4,
-                marginTop: '64px', // AppBar를 위한 상단 여백
-            }}
+              <CssBaseline enableColorScheme />
+        <Box
+          sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-start', // 위로 정렬
+      minHeight: '100vh', // 화면 전체를 차지하게 설정
+      width: '100%',
+      maxWidth: { sm: '100%', md: '1700px' },
+      paddingTop: 4, // 필요에 따라 위쪽 여백을 조절
+    }}
         >
-            <Box sx={{
-                maxWidth: 1000,
-                width: '100%',
-                }}
-            >
-                <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
-                    회원 목록
-                </Typography>
-                
-                <TableContainer component={Paper}>
-                    <Table>
-                    <TableHead>
-                        <TableRow>
-                        <TableCell align="left">번호</TableCell>
-                        <TableCell align="left">이름</TableCell>
-                        <TableCell align="left">소속 기업</TableCell>
-                        <TableCell align="left">작업 수</TableCell>
-                        <TableCell align="left">다운로드 수</TableCell>
-                        <TableCell align="left">다운로드 비율</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {users
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((user, index) => {
-                            const downloadRatio =
-                            user.workNum > 0
-                                ? ((user.downloadNum / user.workNum) * 100).toFixed(2)
-                                : "N/A";
-                            
-                            return (
-                                <TableRow key={user.id}>
-                                <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
-                                <TableCell align="left">{user.username}</TableCell>
-                                <TableCell align="left">{user.enterpriseName}</TableCell>
-                                <TableCell align="left">{user.workNum}</TableCell>
-                                <TableCell align="left">{user.downloadNum}</TableCell>
-                                <TableCell align="left">{downloadRatio}%</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                    </Table>
-                </TableContainer>
+          <Box sx={{ maxWidth: 1000, width: '100%' }}>
+            <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
+              회원 목록
+            </Typography>
 
-                <TablePagination
-                    rowsPerPageOptions={[]} // Options for how many rows per page
-                    component="div"
-                    count={users.length} // Total number of notices
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Box>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="left">번호</TableCell>
+                    <TableCell align="left">이름</TableCell>
+                    <TableCell align="left">소속 기업</TableCell>
+                    <TableCell align="left">작업 수</TableCell>
+                    <TableCell align="left">다운로드 수</TableCell>
+                    <TableCell align="left">다운로드 비율</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {users
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((user, index) => {
+                      const downloadRatio =
+                        user.workNum > 0
+                          ? ((user.downloadNum / user.workNum) * 100).toFixed(2)
+                          : 'N/A';
+
+                      return (
+                        <TableRow key={user.id}>
+                          <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
+                          <TableCell align="left">{user.username}</TableCell>
+                          <TableCell align="left">{user.enterpriseName}</TableCell>
+                          <TableCell align="left">{user.workNum}</TableCell>
+                          <TableCell align="left">{user.downloadNum}</TableCell>
+                          <TableCell align="left">{downloadRatio}%</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <TablePagination
+              rowsPerPageOptions={[]}
+              component="div"
+              count={users.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Box>
         </Box>
-        <Footer />
-      </div>
-    </AppTheme>
+         </AppTheme>
   );
 }

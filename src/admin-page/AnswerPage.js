@@ -232,7 +232,7 @@ export default function AnswerPage(props) {
             </Box>
         </Box>
       </Box>
-      <Footer />
+
     </AppTheme>
   );
 }

@@ -85,7 +85,7 @@ export default function NoticeCreatePage(props) {
             </Box>
         </Box>
       </Box>
-      <Footer />
+   
     </AppTheme>
   );
 }

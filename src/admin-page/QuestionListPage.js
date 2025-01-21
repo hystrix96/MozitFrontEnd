@@ -76,7 +76,7 @@ const questions = [
 
 export default function QuestionListPage(props) {
   const [page, setPage] = useState(0); // Current page number
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Number of rows per page
 
   // Handle change of page
   const handleChangePage = (event, newPage) => {
@@ -103,19 +103,19 @@ export default function QuestionListPage(props) {
   };
 
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <div>
+     <AppTheme {...props}>
+                  <CssBaseline enableColorScheme />
         <Box 
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',  // 수직 방향으로 배치
-                alignItems: 'center',
-                justifyContent: 'flex-start', // 상단 정렬
-                minHeight: 'calc(100vh - 64px)', // AppBar를 제외한 전체 높이
-                padding: 4,
-                marginTop: '64px', // AppBar를 위한 상단 여백
-            }}
+ sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-start', // 위로 정렬
+      minHeight: '100vh', // 화면 전체를 차지하게 설정
+      width: '100%',
+      maxWidth: { sm: '100%', md: '1700px' },
+      paddingTop: 4, // 필요에 따라 위쪽 여백을 조절
+    }}
         >
             <Box sx={{
                 maxWidth: 1000,
@@ -183,8 +183,6 @@ export default function QuestionListPage(props) {
                 />
             </Box>
         </Box>
-        <Footer />
-      </div>
-    </AppTheme>
+        </AppTheme>
   );
 }
