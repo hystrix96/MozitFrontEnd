@@ -5,25 +5,10 @@ import CustomDatePicker from './CustomDatePicker';
 import NavbarBreadcrumbs from './NavbarBreadcrumbs';
 import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
+
 import Search from './Search';
-import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
-import { styled } from '@mui/material/styles';
-import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
-import Typography from '@mui/material/Typography';
 
-
-const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
-  margin: theme.spacing(1, 0),
-  [`& .${breadcrumbsClasses.separator}`]: {
-    color: (theme.vars || theme).palette.action.disabled,
-    margin: 1,
-  },
-  [`& .${breadcrumbsClasses.ol}`]: {
-    alignItems: 'center',
-  },
-}));
-
-export default function Header({currentMenu}) {
+export default function Header() {
   return (
     <Stack
       direction="row"
@@ -37,21 +22,13 @@ export default function Header({currentMenu}) {
       }}
       spacing={2}
     >
-      <StyledBreadcrumbs
-      aria-label="breadcrumb"
-      separator={<NavigateNextRoundedIcon fontSize="small" />}
-    >
-      <Typography variant="body1">Dashboard</Typography>
-      <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600 }}>
-        {currentMenu}
-      </Typography>
-    </StyledBreadcrumbs>
+      <NavbarBreadcrumbs />
       <Stack direction="row" sx={{ gap: 1 }}>
         <Search />
-        {/* <CustomDatePicker /> */}
-        {/* <MenuButton showBadge aria-label="Open notifications">
+        <CustomDatePicker />
+        <MenuButton showBadge aria-label="Open notifications">
           <NotificationsRoundedIcon />
-        </MenuButton> */}
+        </MenuButton>
         <ColorModeIconDropdown />
       </Stack>
     </Stack>

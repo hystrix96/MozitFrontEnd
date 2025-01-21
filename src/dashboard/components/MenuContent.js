@@ -30,18 +30,17 @@ const Drawer = styled(MuiDrawer)({
 
 
 const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon />, component: 'MainGrid' },
-  { text: '공지사항', icon: <NotificationsRoundedIcon />, component: 'Noticelist' },
-  { text: 'Q&A', icon: <QuestionAnswerRoundedIcon />, component: 'QuestionListPage' },
-  { text: '회원조회', icon: <GroupsRoundedIcon />, component: 'UserListPage' },
+  { text: 'Home', icon: <HomeRoundedIcon />, link: '/dashboard' },
+  { text: '공지사항', icon: <NotificationsRoundedIcon />, link: '/noticelist' },
+  { text: 'Q&A', icon: <QuestionAnswerRoundedIcon />, link: '/questionlist' },
+  { text: '회원조회', icon: <GroupsRoundedIcon />, link: '/userlist' },
 ];
 
-export default function MenuContent({onMenuSelect}) {
+export default function MenuContent() {
   const [selectedIndex, setSelectedIndex] = React.useState(null); // 상태로 선택된 인덱스 관리
 
-  const handleListItemClick = (index,text) => {
+  const handleListItemClick = (index) => {
     setSelectedIndex(index); // 클릭된 인덱스로 상태 업데이트
-    onMenuSelect(text); // 선택된 메뉴 이름 전달
   };
 
   return (
@@ -65,12 +64,12 @@ export default function MenuContent({onMenuSelect}) {
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
       <List dense>
         {mainListItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+          <ListItem key={index} disablePadding sx={{ display: 'block',marginBottom:2 }}>
             <ListItemButton
               component={Link}
-              //to={item.link}
+              to={item.link}
               selected={selectedIndex === index} // 상태에 따라 활성화 여부 결정
-              onClick={() => handleListItemClick(index, item.component)}
+              onClick={() => handleListItemClick(index)} // 클릭 이벤트로 상태 변경
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />

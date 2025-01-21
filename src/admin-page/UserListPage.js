@@ -4,6 +4,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import Footer from '../components/Footer';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Chip } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import MenuContent from '../dashboard/components/MenuContent'
+import { alpha } from '@mui/material/styles';
+import Header from '../dashboard/components/Header'
 
 
 const users = [
@@ -74,21 +78,33 @@ export default function UserListPage(props) {
   };
 
   return (
-    <AppTheme {...props}>
-              <CssBaseline enableColorScheme />
+       <AppTheme {...props}>
+          <CssBaseline enableColorScheme />
+          <Box sx={{ display: 'flex' }}>
+        <MenuContent />
+        
+        {/* Main content */}
         <Box
-          sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'flex-start', // 위로 정렬
-      minHeight: '100vh', // 화면 전체를 차지하게 설정
-      width: '100%',
-      maxWidth: { sm: '100%', md: '1700px' },
-      paddingTop: 4, // 필요에 따라 위쪽 여백을 조절
-    }}
+          component="main"
+          sx={(theme) => ({
+            flexGrow: 1,
+            backgroundColor: theme.vars
+              ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
+              : alpha(theme.palette.background.default, 1),
+            overflow: 'auto',
+          })}
         >
-          <Box sx={{ maxWidth: 1000, width: '100%' }}>
+          <Stack
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+              mx: 3,
+              pb: 5,
+              mt: { xs: 8, md: 0 },
+            }}
+          >
+            <Header />
+              <Box sx={{ maxWidth: 1000, width: '100%' }}>
             <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
               회원 목록
             </Typography>
@@ -139,7 +155,9 @@ export default function UserListPage(props) {
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </Box>
+          </Stack>
         </Box>
-         </AppTheme>
+      </Box>
+           </AppTheme>
   );
 }

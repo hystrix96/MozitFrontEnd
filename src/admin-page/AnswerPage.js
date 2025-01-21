@@ -6,6 +6,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
+import MenuContent from '../dashboard/components/MenuContent'
+import Header from '../dashboard/components/Header'
+import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
 
 const questions = [
     {
@@ -90,6 +94,7 @@ const questions = [
             answerDetail: '답변 내용 7'
         }
     },
+     
 ];
 
 export default function AnswerPage(props) {
@@ -124,20 +129,33 @@ export default function AnswerPage(props) {
   };
 
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',  // 수직 방향으로 배치
-            alignItems: 'center',
-            justifyContent: 'flex-start', // 상단 정렬
-            minHeight: 'calc(100vh - 64px)', // AppBar를 제외한 전체 높이
-            padding: 4,
-            marginTop: '64px', // AppBar를 위한 상단 여백
-        }}
-      >
-        <Box sx={{
+     <AppTheme {...props}>
+          <CssBaseline enableColorScheme />
+          <Box sx={{ display: 'flex' }}>
+        <MenuContent />
+        
+        {/* Main content */}
+        <Box
+          component="main"
+          sx={(theme) => ({
+            flexGrow: 1,
+            backgroundColor: theme.vars
+              ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
+              : alpha(theme.palette.background.default, 1),
+            overflow: 'auto',
+          })}
+        >
+          <Stack
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+              mx: 3,
+              pb: 5,
+              mt: { xs: 8, md: 0 },
+            }}
+          >
+            <Header />
+                      <Box sx={{
             maxWidth: 1000,
             width: '100%',
             }}
@@ -231,8 +249,9 @@ export default function AnswerPage(props) {
                 </Button>
             </Box>
         </Box>
+          </Stack>
+        </Box>
       </Box>
-
-    </AppTheme>
+           </AppTheme>
   );
 }
