@@ -9,6 +9,7 @@ import Header from './components/Header';
 import MainGrid from './components/MainGrid';
 import MenuContent from './components/MenuContent';
 import AppTheme from '../shared-theme/AppTheme';
+import SideMenu from './components/SideMenu';
 
 
 import {
@@ -31,7 +32,8 @@ export default function Dashboard(props) {
       <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex', height: '100vh' }}>
         {/* Sidebar (MenuContent) */}
-        <MenuContent />
+        {/* <MenuContent /> */}
+        <SideMenu />
 
         {/* 오른쪽 영역 */}
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -72,3 +74,18 @@ export default function Dashboard(props) {
     </AppTheme>
   );
 }
+// import React from 'react';
+// import DashboardLayout from './DashboardLayout';
+// import Header from './components/Header';
+// import SideMenu from './components/SideMenu';
+// import MainGrid from './components/MainGrid';
+
+// export default function Dashboard() {
+//   return (
+//     <DashboardLayout>
+//       <Header />
+//       <SideMenu />
+//       <MainGrid />
+//     </DashboardLayout>
+//   );
+// }

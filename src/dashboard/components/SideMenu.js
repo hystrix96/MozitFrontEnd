@@ -48,3 +48,23 @@ export default function SideMenu() {
     </Drawer>
   );
 }
+
+// import React from 'react';
+// import MenuContent from './MenuContent';
+// import MuiDrawer from '@mui/material/Drawer';
+
+// export default function SideMenu() {
+//   return (
+//     <MuiDrawer
+//       variant="permanent"
+//       sx={{
+//         [`& .MuiDrawer-paper`]: {
+//           width: 240,
+//           boxSizing: 'border-box',
+//         },
+//       }}
+//     >
+//       <MenuContent />
+//     </MuiDrawer>
+//   );
+// }

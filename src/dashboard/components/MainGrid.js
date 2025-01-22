@@ -91,3 +91,52 @@ export default function MainGrid() {
     </Box>
   );
 }
+
+// import React from 'react';
+// import Grid from '@mui/material/Grid';
+// import StatCard from './StatCard';
+// import PageViewsBarChart from './PageViewsBarChart';
+// import SessionsChart from './SessionsChart';
+
+// export default function MainGrid() {
+//   return (
+//     <Grid container spacing={2}>
+//       {/* KPI 카드 */}
+//       <Grid item xs={12} md={4}>
+//         <StatCard
+//           title="다운로드 완료율"
+//           value="85%"
+//           interval="지난 30일간"
+//           trend="up"
+//           data={[75, 80, 82, 85, 85, 87, 90]}
+//         />
+//       </Grid>
+//       <Grid item xs={12} md={4}>
+//         <StatCard
+//           title="평균 작업 횟수"
+//           value="12회"
+//           interval="지난 30일간"
+//           trend="neutral"
+//           data={[10, 11, 12, 13, 12, 12, 12]}
+//         />
+//       </Grid>
+//       <Grid item xs={12} md={4}>
+//         <StatCard
+//           title="이탈률"
+//           value="15%"
+//           interval="지난 30일간"
+//           trend="down"
+//           data={[20, 18, 17, 16, 15, 15, 14]}
+//         />
+//       </Grid>
+
+//       {/* 차트 */}
+//       <Grid item xs={12} md={6}>
+//         <PageViewsBarChart />
+//       </Grid>
+//       <Grid item xs={12} md={6}>
+//         <SessionsChart />
+//       </Grid>
+//     </Grid>
+//   );
+// }

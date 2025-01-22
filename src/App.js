@@ -12,22 +12,26 @@ import Edit from './edit-page/EditPage';
 import NoticePage from './notice-page/NoticePage';
 import NoticeDetailPage from './notice-page/NoticeDetailPage';
 import MyQuestionPage from './my-page/MyQuestionPage';
-import QuestionListPage from './admin-page/QuestionListPage';
 import MyQuestionDetailPage from './my-page/MyQuestionDetailPage';
+
+import MozaicPage from './mozaic-page/MozaicPage';
+import MyPageUpdate from './my-page/MyPageUpdate';
+import MySubPage from './my-page/MySubPage';
+import MyWorkPage from './my-page/MyWorkPage';
+import DashBoard from './dashboard/Dashboard'
+import ScrollToTop from './ScrollToTop';
+
+import QuestionListPage from './admin-page/QuestionListPage';
 import AnswerPage from './admin-page/AnswerPage';
 import NoticeListPage from './admin-page/NoticeListPage';
 import NoticeUpdatePage from './admin-page/NoticeUpdatePage';
 import NoticeEditPage from './admin-page/NoticeEditPage';
 import NoticeCreatePage from './admin-page/NoticeCreatePage';
-import MozaicPage from './mozaic-page/MozaicPage';
-import MyPageUpdate from './my-page/MyPageUpdate';
-import MySubPage from './my-page/MySubPage';
-import MyWorkPage from './my-page/MyWorkPage';
 import UserListPage from './admin-page/UserListPage';
-import DashBoard from './dashboard/Dashboard'
-import ScrollToTop from './ScrollToTop';
-import TermOfServicePage from './term-of-service-page/TermOfServicePage';
-import Privacy from './privacy/Privacy';
+import SystemStatus from './admin-page/SystemStatus';
+import Traffic from './admin-page/Traffic';
+import KPI from './admin-page/KPI';
+import AdminEdit from './admin-page/AdminEdit';
 
 
 const App = () => {
@@ -53,17 +57,21 @@ const App = () => {
           <Route path="/mysubpage" element={<MySubPage />} />
           <Route path="/mysubpage" element={<MySubPage />} />
           <Route path="/myworkpage" element={<MyWorkPage />} />
-          <Route path="/questionlist" element={<QuestionListPage />} />
-          <Route path="/questionlist/:id" element={<AnswerPage />} />
-          <Route path="/noticelist" element={<NoticeListPage />} />
-          <Route path="/noticelist/:id" element={<NoticeUpdatePage />} />
-          <Route path="/noticelist/:id/edit" element={<NoticeEditPage />} />
-          <Route path="/noticelist/create" element={<NoticeCreatePage />} />
           <Route path="/mozaic" element={<MozaicPage />} />
-          <Route path="/userlist" element={<UserListPage />} />
-          <Route path="/dashboard" element={<DashBoard />} />
-          <Route path="/termofservicepage" element={<TermOfServicePage />} />
-          <Route path="/privacy" element={<Privacy />} />
+
+
+          <Route path="/admin/dashboard" element={<DashBoard />} />
+          <Route path="/admin/system-status" element={<SystemStatus />} />
+          <Route path="/admin/traffic" element={<Traffic />} />
+          <Route path="/admin/users" element={<UserListPage />} />
+          <Route path="/admin/notice" element={<NoticeListPage />} />
+          <Route path="/admin/notice/:id" element={<NoticeUpdatePage />} />
+          <Route path="/admin/notice/:id/edit" element={<NoticeEditPage />} />
+          <Route path="/admin/notice/create" element={<NoticeCreatePage />} />
+          <Route path="/admin/qna" element={<QuestionListPage />} />
+          <Route path="/admin/qna/:id" element={<AnswerPage />} />
+          <Route path="/admin/kpi" element={<KPI />} />
+          <Route path="/admin/admin" element={<AdminEdit />} />
 
         </Routes>
       </BrowserRouter>

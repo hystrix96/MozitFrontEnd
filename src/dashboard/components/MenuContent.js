@@ -13,6 +13,9 @@ import { Link } from 'react-router-dom';
 import MuiDrawer, { drawerClasses } from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Collapse from '@mui/material/Collapse';
 
 
 const drawerWidth = 240;
@@ -30,10 +33,24 @@ const Drawer = styled(MuiDrawer)({
 
 
 const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon />, link: '/dashboard' },
-  { text: '공지사항', icon: <NotificationsRoundedIcon />, link: '/noticelist' },
-  { text: 'Q&A', icon: <QuestionAnswerRoundedIcon />, link: '/questionlist' },
-  { text: '회원조회', icon: <GroupsRoundedIcon />, link: '/userlist' },
+  { text: '대시보드 홈', icon: <HomeRoundedIcon />, link: '/admin/dashboard' },
+  {
+    text: '시스템 상태',
+    icon: <NotificationsRoundedIcon />,
+    link: '/admin/system-status',
+  },
+  {
+    text: '사이트 관리',
+    icon: <GroupsRoundedIcon />,
+    children: [
+      { text: '접속량 모니터링', link: '/admin/traffic' },
+      { text: '회원 정보', link: '/admin/users' },
+      { text: '공지사항', link: '/admin/notice' },
+      { text: 'Q&A', link: '/admin/qna' },
+    ],
+  },
+  { text: 'KPI 분석', icon: <QuestionAnswerRoundedIcon />, link: '/admin/kpi' },
+  { text: '관리자 계정 설정', icon: <GroupsRoundedIcon />, link: '/admin/admin' },
 ];
 
 export default function MenuContent() {
@@ -41,6 +58,12 @@ export default function MenuContent() {
 
   const handleListItemClick = (index) => {
     setSelectedIndex(index); // 클릭된 인덱스로 상태 업데이트
+  };
+
+  const [open, setOpen] = React.useState({}); // 하위 메뉴 상태 관리
+
+  const handleToggle = (index) => {
+    setOpen((prev) => ({ ...prev, [index]: !prev[index] })); // 클릭된 메뉴의 상태 토글
   };
 
   return (
@@ -62,23 +85,101 @@ export default function MenuContent() {
         }}
       >
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
-      <List dense>
-        {mainListItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: 'block',marginBottom:2 }}>
+    <List dense sx={{ fontSize: '1.1rem', gap: 2 }}> {/* 전체 폰트 크기와 간격 조정 */}
+      {mainListItems.map((item, index) => (
+        <React.Fragment key={index}>
+          {/* 상위 항목 */}
+          <ListItem
+            disablePadding
+            sx={{
+              mb: 2, // 카테고리 간의 간격 추가
+            }}
+          >
             <ListItemButton
-              component={Link}
-              to={item.link}
-              selected={selectedIndex === index} // 상태에 따라 활성화 여부 결정
-              onClick={() => handleListItemClick(index)} // 클릭 이벤트로 상태 변경
+              component={item.link ? Link : 'button'}
+              to={item.link || undefined}
+              onClick={() => item.children ? handleToggle(index) : null}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{
+                  fontSize: '1.2rem', // 폰트 크기 증가
+                  fontWeight: 'bold', // 글자 강조
+                }}
+              />
+              {item.children && (open[index] ? <ExpandLess /> : <ExpandMore />)}
             </ListItemButton>
           </ListItem>
-        ))}
-      </List>
+
+          {/* 하위 항목 */}
+          {item.children && (
+            <Collapse in={open[index]} timeout="auto" unmountOnExit>
+              <List
+                component="div"
+                disablePadding
+                sx={{
+                  pl: 4, // 하위 항목 들여쓰기
+                  gap: 1, // 하위 항목 간 간격 조정
+                }}
+              >
+                {item.children.map((subItem, subIndex) => (
+                  <ListItem
+                      key={subIndex}
+                      disablePadding
+                      sx={{
+                        mb: 1, // 하위 항목 간 간격 추가
+                      }}
+                    >
+                    <ListItemButton component={Link} to={subItem.link}>
+                      <ListItemText
+                        primary={subItem.text}
+                        primaryTypographyProps={{
+                          fontSize: '1rem', // 하위 항목 폰트 크기
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
+          )}
+        </React.Fragment>
+      ))}
+    </List>
     </Stack>
     </Box>
     </Drawer>
   );
 }
+
+// import React from 'react';
+// import List from '@mui/material/List';
+// import ListItem from '@mui/material/ListItem';
+// import ListItemButton from '@mui/material/ListItemButton';
+// import ListItemIcon from '@mui/material/ListItemIcon';
+// import ListItemText from '@mui/material/ListItemText';
+// import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+// import QuestionAnswerRoundedIcon from '@mui/icons-material/QuestionAnswerRounded';
+// import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
+
+// const menuItems = [
+//   { text: '대시보드', icon: <HomeRoundedIcon />, link: '/dashboard' },
+//   { text: 'Q&A', icon: <QuestionAnswerRoundedIcon />, link: '/qa' },
+//   { text: '회원 관리', icon: <GroupsRoundedIcon />, link: '/users' },
+// ];
+
+// export default function MenuContent() {
+//   return (
+//     <List>
+//       {menuItems.map((item, index) => (
+//         <ListItem key={index} disablePadding>
+//           <ListItemButton component="a" href={item.link}>
+//             <ListItemIcon>{item.icon}</ListItemIcon>
+//             <ListItemText primary={item.text} />
+//           </ListItemButton>
+//         </ListItem>
+//       ))}
+//     </List>
+//   );
+// }

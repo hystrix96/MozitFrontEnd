@@ -18,7 +18,7 @@ export default function SitemarkIcon({ height = 30, sx }) {
       
       ...sx // 여기서 전달된 추가 스타일을 덮어쓰게 함
     }}>
-      <a href="/dashboard" style={{ textDecoration: 'none' }}>  {/* 경로를 /로 고정 */}
+      <a href="/admin/dashboard" style={{ textDecoration: 'none' }}>  {/* 경로를 /로 고정 */}
         <img
           src={imageUrl}  // public 폴더 기준 경로
           alt="Logo"
