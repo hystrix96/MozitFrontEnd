@@ -8,6 +8,7 @@ import Header from '../dashboard/components/Header'
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import axiosInstance from '../api/axiosInstance';
+import dayjs from 'dayjs';
 
 export default function QuestionListPage(props) {
   const [questions, setQuestions] = useState([]);
@@ -90,7 +91,7 @@ export default function QuestionListPage(props) {
                         <TableCell align="left">이름</TableCell>
                         <TableCell align="left">유형</TableCell>
                         <TableCell align="left">제목</TableCell>
-                        <TableCell align="left">날짜</TableCell>
+                        <TableCell align="left">문의일자</TableCell>
                         <TableCell align="left">상태</TableCell>
                         <TableCell align="center">상세보기</TableCell>
                         </TableRow>
@@ -104,7 +105,7 @@ export default function QuestionListPage(props) {
                             <TableCell align="left">{question.userNum.userId}</TableCell>
                             <TableCell align="left">{getMessageByType(question.questionType)}</TableCell>
                             <TableCell align="left">{question.questionTitle}</TableCell>
-                            <TableCell align="left">{question.timestamp}</TableCell>
+                            <TableCell align="left">{dayjs(question.timestamp).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
                             <TableCell align="left">
                                 <Chip
                                     label={question.questionState ? '답변완료' : '미답변'}

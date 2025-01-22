@@ -6,6 +6,7 @@ import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from '@mui/material';
 import axiosInstance from '../api/axiosInstance';
+import dayjs from 'dayjs';
 
 export default function NoticePage(props) {
   const [notices, setNotices] = useState([]); // 공지사항 데이터
@@ -114,7 +115,7 @@ export default function NoticePage(props) {
                         <TableRow>
                         <TableCell align="left">번호</TableCell>
                         <TableCell align="left">제목</TableCell>
-                        <TableCell align="left">날짜</TableCell>
+                        <TableCell align="left">작성일자</TableCell>
                         <TableCell align="center">상세보기</TableCell>
                         </TableRow>
                     </TableHead>
@@ -125,7 +126,7 @@ export default function NoticePage(props) {
                             <TableRow key={notice.noticeNum}>
                             <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
                             <TableCell align="left">{notice.noticeTitle}</TableCell>
-                            <TableCell align="left">{notice.createdAt}</TableCell>
+                            <TableCell align="left">{dayjs(notice.createdAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
                             <TableCell align="center">
                                 <Link to={`/notice/${notice.noticeNum}`}>
                                     <Button 

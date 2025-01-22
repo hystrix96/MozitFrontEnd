@@ -8,6 +8,7 @@ import Header from '../dashboard/components/Header'
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import axiosInstance from '../api/axiosInstance';
+import dayjs from 'dayjs';
 
 export default function NoticeListPage(props) {
   const [notices, setNotices] = useState([]); // 공지사항 데이터
@@ -82,7 +83,7 @@ export default function NoticeListPage(props) {
                         <TableRow>
                         <TableCell align="left">번호</TableCell>
                         <TableCell align="left">제목</TableCell>
-                        <TableCell align="left">날짜</TableCell>
+                        <TableCell align="left">작성일자</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -97,7 +98,7 @@ export default function NoticeListPage(props) {
                             >
                                 <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
                                 <TableCell align="left">{notice.noticeTitle}</TableCell>
-                                <TableCell align="left">{notice.createdAt}</TableCell>
+                                <TableCell align="left">{dayjs(notice.createdAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

@@ -11,6 +11,7 @@ import Header from '../dashboard/components/Header'
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import axiosInstance from '../api/axiosInstance';
+import dayjs from 'dayjs';
 
 export default function NoticeEditPage(props) {
   const { id } = useParams();  // URL에서 id 파라미터 추출
@@ -126,9 +127,6 @@ export default function NoticeEditPage(props) {
                           }}
                     />
                 </Box>
-                <Typography variant="body1" sx={{ flex: 1, marginLeft: -2 }}>
-                    작성일자: {notice.createdAt}
-                </Typography>
             </Box>
 
             <Box>

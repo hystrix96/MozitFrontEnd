@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { AutoAwesome as AutoAwesomeIcon, Check as CheckIcon } from '@mui/icons-material';
+import { useAuth } from '../../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const tiers = [
   {
@@ -26,8 +28,8 @@ const tiers = [
       '개인정보 모자이크 기능',
     ],
     buttonText: 'Basic 플랜 시작하기',
-    buttonVariant: 'outlined',
-    buttonColor: 'primary',
+    buttonVariant: 'contained',
+    buttonColor: 'secondary',
     recommended: false,
     userType: ['일반 사용자', '소규모 개인 콘텐츠 크리에이터'],
   },
@@ -56,15 +58,28 @@ const tiers = [
       '라이브 스트리밍 기능',
     ],
     buttonText: 'Premium 플랜 시작하기',
-    buttonVariant: 'outlined',
-    buttonColor: 'primary',
+    buttonVariant: 'contained',
+    buttonColor: 'secondary',
     recommended: false,
     userType: ['영상 제작 프로덕션', '대형 콘텐츠 제작업체'],
   },
 ];
 
 export default function Pricing() {
+  const { accessToken, isTokenFetched } = useAuth();
   const [isYearly, setIsYearly] = React.useState(false);
+
+  const isLoggedIn = accessToken != null && accessToken !== '';
+  const navigate = useNavigate();
+
+  const handleBottonClick = () => {
+    if (isLoggedIn) {
+      navigate('/mysubpage');
+    } else {
+      alert('로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.');
+      navigate('/sign-in');
+    }
+  };
 
   const handleToggle = (value) => {
     setIsYearly(value);
@@ -208,6 +223,11 @@ export default function Pricing() {
                     borderColor: 'secondary.main',
                     boxShadow: 4,
                   }),
+                  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', // 애니메이션 추가
+                  '&:hover': {
+                      transform: 'translateY(-10px)', // 마우스를 올리면 카드가 위로 올라가는 효과
+                      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)', // 마우스를 올리면 그림자가 짙어짐
+                  }
                 }}
               >
                 <CardContent>
@@ -284,6 +304,7 @@ export default function Pricing() {
                       fullWidth
                       variant={tier.buttonVariant}
                       color={tier.buttonColor}
+                      onClick={handleBottonClick}
                     >
                       {tier.buttonText}
                     </Button>

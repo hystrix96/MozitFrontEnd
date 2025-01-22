@@ -85,7 +85,7 @@ export default function MyQuestionPage(props) {
                       <TableCell align="left">번호</TableCell>
                       <TableCell align="left">유형</TableCell>
                       <TableCell align="left">제목</TableCell>
-                      <TableCell align="left">날짜</TableCell>
+                      <TableCell align="left">문의일자</TableCell>
                       <TableCell align="left">상태</TableCell>
                       <TableCell align="center">상세보기</TableCell>
                     </TableRow>

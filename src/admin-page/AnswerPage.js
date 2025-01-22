@@ -11,18 +11,36 @@ import Header from '../dashboard/components/Header'
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import axiosInstance from '../api/axiosInstance';
+import dayjs from 'dayjs';
+import Modal from 'react-modal';
 
 export default function AnswerPage(props) {
   const { id } = useParams();  // URL에서 id 파라미터 추출
   const [question, setQuestion] = useState(null);
   const [answer, setAnswer] = useState('');
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
+
+  // 질문 세부사항을 가져오는 함수
+  const fetchQuestionDetail = async () => {
+    const response = await axiosInstance.get(`/questions/${id}`);
+    setQuestion(response.data); // 받아온 데이터를 상태에 설정
+    setImageUrl(response.data.questionImage);
+    console.log(response.data.questionImage);
+  };
 
   useEffect(() => {
-    axiosInstance.get(`/questions/${id}`)
-      .then((response) => setQuestion(response.data))
-      .catch((error) => console.error('데이터 로드 실패:', error));
+    fetchQuestionDetail(); // 컴포넌트 마운트 시 세부 질문 가져오기
   }, [id]);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   if (!question) {
     return (
@@ -133,8 +151,14 @@ export default function AnswerPage(props) {
                         {question.questionTitle}
                     </Typography>
                 </Box>
-                <Typography variant="body1" sx={{ flex: 1, marginLeft: -2 }}>
-                    작성일자: {question.timestamp}
+                <Typography variant="body1" color="textSecondary" sx={{ display: 'flex', flexDirection: 'column' }}>
+                  {getMessageByType(question.questionType)} | 문의일자: {dayjs(question.timestamp).format('YYYY-MM-DD HH:mm:ss')}
+                  
+                  {imageUrl && (
+                    <Button variant="text" onClick={openModal} sx={{ marginTop: 1 }}>
+                      이미지 보기
+                    </Button>
+                  )}
                 </Typography>
             </Box>
 
@@ -171,20 +195,28 @@ export default function AnswerPage(props) {
                     overflowY: 'auto', // 세로 스크롤 활성화
                 }}
             >
-                {question.questionState ? <Typography variant="body1" sx={{ lineHeight: 1.8 }}>{question.answerResponse.answerDetail}</Typography> : 
-                    <Box sx={{ marginTop: 2 }}>
-                        <TextField
-                            label="답변"
-                            variant="outlined"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={answer}
-                            onChange={(e) => setAnswer(e.target.value)}
-                            sx={{ '& .MuiInputBase-root': {height: '100px', }, marginBottom: 2 }}
-                        />
-                    </Box>
-                }
+                {question.questionState ? (
+                  <Box>
+                    <Typography variant="h6">답변</Typography>
+                    <Typography variant="body1">{question.answerResponse.answerDetail}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      답변일자: {dayjs(question.answerResponse.timestamp).format('YYYY-MM-DD HH:mm:ss')}
+                    </Typography>
+                  </Box>
+                ) : (  
+                  <Box sx={{ marginTop: 2 }}>
+                      <TextField
+                          label="답변"
+                          variant="outlined"
+                          fullWidth
+                          multiline
+                          rows={4}
+                          value={answer}
+                          onChange={(e) => setAnswer(e.target.value)}
+                          sx={{ '& .MuiInputBase-root': {height: '100px', }, marginBottom: 2 }}
+                      />
+                  </Box>
+                )}
             </Box>
 
             <Box sx={{ marginTop: 2, textAlign: 'right' }}>
@@ -201,6 +233,46 @@ export default function AnswerPage(props) {
           </Stack>
         </Box>
       </Box>
-           </AppTheme>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // 배경 어둡게
+          },
+          content: {
+            width: '400px', // 모달 너비
+            height: '400px', // 모달 높이
+            margin: 'auto', // 화면 중앙 정렬
+            borderRadius: '10px', // 둥근 모서리
+            padding: '20px', // 내부 여백
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          },
+        }}
+      >
+        <h3>이미지 상세</h3>
+        {imageUrl ? (
+          <img 
+            src={imageUrl} 
+            alt="Inquiry Image" 
+            style={{ 
+              maxWidth: '100%', 
+              maxHeight: '100%', 
+              objectFit: 'contain', 
+              objectFit: 'cover',
+              borderRadius: '5px',
+            }} 
+          />
+        ) : (
+          <p>이미지를 로드할 수 없습니다.</p>
+        )}
+        <Button onClick={closeModal} style={{ marginTop: '10px' }}>닫기</Button>
+      </Modal>
+    </AppTheme>
   );
 }

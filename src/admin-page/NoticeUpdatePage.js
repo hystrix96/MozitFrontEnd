@@ -10,6 +10,7 @@ import Header from '../dashboard/components/Header'
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import axiosInstance from '../api/axiosInstance';
+import dayjs from 'dayjs';
 
 export default function NoticeUpdatePage(props) {
   const { id } = useParams();  // URL에서 id 파라미터 추출
@@ -105,9 +106,16 @@ export default function NoticeUpdatePage(props) {
                         {notice.noticeTitle}
                     </Typography>
                 </Box>
-                <Typography variant="body1" sx={{ flex: 1, marginLeft: -2 }}>
-                    작성일자: {notice.createdAt}
-                </Typography>
+                <Box sx={{ display: 'flex', flex: 3, justifyContent: 'flex-end', gap: 2 }}>
+                    <Typography variant="body1">
+                        작성일자: {dayjs(notice.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                    </Typography>
+                    {notice.updatedAt && (
+                      <Typography variant="body1">
+                          수정일자: {dayjs(notice.updatedAt).format('YYYY-MM-DD HH:mm:ss')}
+                      </Typography>
+                    )}
+                </Box>
             </Box>
 
             <Box

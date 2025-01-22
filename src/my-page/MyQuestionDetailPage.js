@@ -7,18 +7,22 @@ import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import axiosInstance from '../api/axiosInstance';
 import { Link } from 'react-router-dom';
+import Modal from 'react-modal';
 
 
 export default function MyQuestionDetailPage(props) {
   const { id } = useParams(); // URL에서 id 파라미터 추출
   const [question, setQuestion] = useState(null); // 질문 데이터 상태
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
 
   // 질문 세부사항을 가져오는 함수
   const fetchQuestionDetail = async () => {
     try {
       const response = await axiosInstance.get(`/questions/${id}`);
       setQuestion(response.data); // 받아온 데이터를 상태에 설정
+      setImageUrl(response.data.questionImage);
     } catch (error) {
       console.error('Error fetching question detail:', error);
     } finally {
@@ -29,6 +33,14 @@ export default function MyQuestionDetailPage(props) {
   useEffect(() => {
     fetchQuestionDetail(); // 컴포넌트 마운트 시 세부 질문 가져오기
   }, [id]);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   if (isLoading) {
     return (
@@ -113,11 +125,17 @@ export default function MyQuestionDetailPage(props) {
                 <Box sx={{ display: 'flex', alignItems: 'center', flex: 4 }}>
                    <Typography variant="h5">{question.questionTitle}</Typography>
                 </Box>
-                <Typography variant="body1" color="textSecondary">
-            {getMessageByType(question.questionType)} | 작성일자: {new Date(question.timestamp).toLocaleDateString()}
-          </Typography>
+                <Typography variant="body1" color="textSecondary" sx={{ display: 'flex', flexDirection: 'column' }}>
+                  {getMessageByType(question.questionType)} | 문의일자: {new Date(question.timestamp).toLocaleDateString()}
+                  
+                  {imageUrl && (
+                    <Button variant="text" onClick={openModal} sx={{ marginTop: 1 }}>
+                      이미지 보기
+                    </Button>
+                  )}
+                </Typography>
             </Box>
-		<Box
+		        <Box
                 sx={{
                     maxWidth: 1000,
                     width: '100%',
@@ -187,6 +205,46 @@ export default function MyQuestionDetailPage(props) {
         </Box>
       </Box>
       <Footer />
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // 배경 어둡게
+          },
+          content: {
+            width: '400px', // 모달 너비
+            height: '400px', // 모달 높이
+            margin: 'auto', // 화면 중앙 정렬
+            borderRadius: '10px', // 둥근 모서리
+            padding: '20px', // 내부 여백
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          },
+        }}
+      >
+        <h3>이미지 상세</h3>
+        {imageUrl ? (
+          <img 
+            src={imageUrl} 
+            alt="Inquiry Image" 
+            style={{ 
+              maxWidth: '100%', 
+              maxHeight: '100%', 
+              objectFit: 'contain', 
+              objectFit: 'cover',
+              borderRadius: '5px',
+            }} 
+          />
+        ) : (
+          <p>이미지를 로드할 수 없습니다.</p>
+        )}
+        <Button onClick={closeModal} style={{ marginTop: '10px' }}>닫기</Button>
+      </Modal>
     </AppTheme>
   );
 }
