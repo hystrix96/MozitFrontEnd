@@ -5,12 +5,15 @@ import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import axiosInstance from '../api/axiosInstance';
 import {  TextField, Button, Box, Typography, Grid2, Switch, FormControlLabel, Collapse, FormGroup, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function QuestionPage(props) {
   const [category, setCategory] = useState('SERVICE');
   const [selectedImage, setSelectedImage] = useState(null);
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
+
+  const navigate = useNavigate();
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -48,6 +51,7 @@ export default function QuestionPage(props) {
       if (response.status === 201) {
         alert('문의가 성공적으로 전송되었습니다!');
         console.log('Response:', response.data);
+        navigate('/myquestion')
       }
     } catch (error) {
       console.error('Error submitting the question:', error);
