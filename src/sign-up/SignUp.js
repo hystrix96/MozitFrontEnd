@@ -75,6 +75,8 @@ const [passwordError, setPasswordError] = React.useState(true);
 const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
 const [confirmpasswordError, setConfirmPasswordError] = React.useState('true');
 const [confirmpasswordErrorMessage, setConfirmPasswordErrorMessage] = React.useState('');
+const [passwordVerified, setPasswordVerified] = React.useState(false);
+
 const [name, setName] = React.useState(""); // 이름 상태
 const [nameError, setNameError] = React.useState(false);
 const [nameErrorMessage, setNameErrorMessage] = React.useState('');
@@ -634,7 +636,7 @@ error={passwordError}
 helperText={passwordErrorMessage}
                 disabled={passwordDisabled||!idDisabled}
 InputProps={{
-endAdornment: confirmPassword && password === confirmPassword && (
+endAdornment: passwordVerified && (
 <InputAdornment position="end">
   <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
 </InputAdornment>
