@@ -19,7 +19,7 @@ import axiosInstance from '../api/axiosInstance'
 
 export default function Pricing(props) {
     const [tiers, setTiers] = useState([]);
-    const [user, setUser] = useState({ userSub: 'Basic' });
+    const [user, setUser] = useState([]);
     const authUser = useAuth();
 
     const fetchUserData = async () => {
@@ -91,7 +91,39 @@ export default function Pricing(props) {
         }));
 
         setTiers(updatedTiers); // 상태 업데이트
-    }, [authUser]);
+    }, [authUser, user.userSub]);
+
+    const handleSubscriptionChange = async (newSub) => {
+        try {
+            const updatedData = { userSub: newSub };
+            const response = await axiosInstance.patch('/my', updatedData);
+            if (response.status === 200) {
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    userSub: newSub, // Update local state
+                }));
+            }
+        } catch (error) {
+            console.error('구독 정보 변경 중 오류 발생:', error);
+            alert('구독 정보 변경 중 오류가 발생했습니다.');
+        }
+    };
+
+    const handleCancelSubscription = async () => {
+        try {
+            const updatedData = { userSub: null };
+            const response = await axiosInstance.patch('/my', updatedData);
+            if (response.status === 200) {
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    userSub: null, // Update local state
+                }));
+            }
+        } catch (error) {
+            console.error('구독 해지 중 오류 발생:', error);
+            alert('구독 해지 중 오류가 발생했습니다.');
+        }
+    };
 
     return (
         <AppTheme {...props}>
@@ -223,21 +255,28 @@ export default function Pricing(props) {
                                                     variant={
                                                         tier.subscribed
                                                             ? tier.buttonVariant // 구독 중인 경우 원래 색상 사용
-                                                            : user.sub
+                                                            : user.userSub
                                                                 ? tier.buttonVariant // 다른 플랜을 구독 중인 경우 원래 색상 사용
                                                                 : 'contained' // 구독하지 않은 경우
                                                     }
                                                     color={
                                                         tier.subscribed
                                                             ? tier.buttonColor // 구독 중인 경우 원래 색상 사용
-                                                            : user.sub
+                                                            : user.userSub
                                                                 ? tier.buttonColor // 다른 플랜을 구독 중인 경우 원래 색상 사용
                                                                 : 'secondary' // 구독하지 않은 경우 secondary 색상 사용
                                                     }
+                                                    onClick={() => {
+                                                        if (tier.subscribed) {
+                                                            handleCancelSubscription();
+                                                        } else {
+                                                            handleSubscriptionChange(tier.title);
+                                                        }
+                                                    }}
                                                 >
                                                     {tier.subscribed
                                                         ? '플랜 해지하기'
-                                                        : user.sub
+                                                        : user.userSub
                                                             ? `${tier.title} 플랜으로 변경하기`
                                                             : `${tier.title} 플랜 시작하기`}
                                                 </Button>

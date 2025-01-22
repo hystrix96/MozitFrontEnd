@@ -1,5 +1,5 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Button, TextField } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,96 +10,19 @@ import MenuContent from '../dashboard/components/MenuContent'
 import Header from '../dashboard/components/Header'
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
-
-const questions = [
-    {
-      id: 1,
-      username: '정연주',
-      title: '문의 제목 1',
-      date: '2025-01-15',
-      state: false,
-      type: 'SERVICE',
-      description: '문의 내용 1입니다. 자세한 내용을 보려면 클릭하세요.',
-      answerResponse: null
-    },
-    {
-      id: 2,
-      username: '고정우',
-      title: '문의 제목 2',
-      date: '2025-01-14',
-      state: false,
-      type: 'GENERAL',
-      description: '문의 내용 2입니다. 더 많은 내용을 보려면 읽어보세요.',
-      answerResponse: null
-    },
-    {
-      id: 3,
-      username: '이세훈',
-      title: '문의 제목 3',
-      date: '2025-01-13',
-      state: true,
-      type: 'SERVICE',
-      description: '문의 내용 3입니다. 자세한 내용을 보려면 클릭하세요.',
-      answerResponse: {
-        timestamp: '2025-01-15',
-        answerDetail: '답변 내용 3'
-        }
-    },
-    {
-      id: 4,
-      username: '강민아',
-      title: '문의 제목 4',
-      date: '2025-01-12',
-      state: true,
-      type: 'ACCOUNT',
-      description: '문의 내용 4입니다. 자세한 내용을 보려면 클릭하세요.',
-      answerResponse: {
-            timestamp: '2025-01-15',
-            answerDetail: '답변 내용 4'
-        }
-    },
-    {
-      id: 5,
-      username: '강민아',
-      title: '문의 제목 5',
-      date: '2025-01-11',
-      state: false,
-      type: 'GENERAL',
-      description: '문의 내용 5입니다. 더 많은 내용을 보려면 읽어보세요.',
-      answerResponse: null
-    },
-    {
-      id: 6,
-      username: '강민아',
-      title: '문의 제목 6',
-      date: '2025-01-10',
-      state: true,
-      type: 'SERVICE',
-      description: '문의 내용 6입니다. 더 많은 내용을 보려면 읽어보세요.',
-      answerResponse: {
-        timestamp: '2025-01-15',
-        answerDetail: '답변 내용 6'
-        }
-    },
-    {
-        id: 7,
-        username: '강민아',
-        title: '문의 제목 7',
-        date: '2025-01-10',
-        state: true,
-        type: 'SERVICE',
-        description: '문의 내용 7입니다. 더 많은 내용을 보려면 읽어보세요.',
-        answerResponse: {
-            timestamp: '2025-01-15',
-            answerDetail: '답변 내용 7'
-        }
-    },
-     
-];
+import axiosInstance from '../api/axiosInstance';
 
 export default function AnswerPage(props) {
   const { id } = useParams();  // URL에서 id 파라미터 추출
-  const question = questions.find((n) => n.id === parseInt(id));  // 해당 id의 공지사항 찾기
+  const [question, setQuestion] = useState(null);
+  const [answer, setAnswer] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axiosInstance.get(`/questions/${id}`)
+      .then((response) => setQuestion(response.data))
+      .catch((error) => console.error('데이터 로드 실패:', error));
+  }, [id]);
 
   if (!question) {
     return (
@@ -114,6 +37,29 @@ export default function AnswerPage(props) {
       </AppTheme>
     );
   }
+
+  const handleAnswerSubmit = () => {
+    if (!answer.trim()) {
+      alert('답변을 입력해주세요.');
+      return;
+    }
+    
+    const data = {
+      questionNum: question.questionNum, // questionNum을 추가
+      timestamp: new Date().toISOString(),
+      answerDetail: answer 
+    };
+  
+    // 답변 저장 API 호출
+    axiosInstance.post('/answer', data)
+      .then(() => {
+        alert('답변이 성공적으로 저장되었습니다.');
+        window.location.reload(); // 새로고침
+      })
+      .catch((error) => console.error('답변 저장 실패:', error));
+
+    navigate('/questionlist');
+  };
 
   const getMessageByType = (type) => {
     switch (type) {
@@ -181,14 +127,14 @@ export default function AnswerPage(props) {
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', flex: 4 }}>
                     <Typography variant="body1" sx={{ marginRight: 2 }}>
-                        {question.id}
+                        {question.questionNum}
                     </Typography>
                     <Typography variant="h5">
-                        {question.title}
+                        {question.questionTitle}
                     </Typography>
                 </Box>
                 <Typography variant="body1" sx={{ flex: 1, marginLeft: -2 }}>
-                    작성일자: {question.date}
+                    작성일자: {question.timestamp}
                 </Typography>
             </Box>
 
@@ -207,7 +153,7 @@ export default function AnswerPage(props) {
                 }}
             >
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                    {question.description}
+                    {question.questionDetail}
                 </Typography>
             </Box>
 
@@ -225,7 +171,7 @@ export default function AnswerPage(props) {
                     overflowY: 'auto', // 세로 스크롤 활성화
                 }}
             >
-                {question.state ? <Typography variant="body1" sx={{ lineHeight: 1.8 }}>{question.answerResponse.answerDetail}</Typography> : 
+                {question.questionState ? <Typography variant="body1" sx={{ lineHeight: 1.8 }}>{question.answerResponse.answerDetail}</Typography> : 
                     <Box sx={{ marginTop: 2 }}>
                         <TextField
                             label="답변"
@@ -233,17 +179,20 @@ export default function AnswerPage(props) {
                             fullWidth
                             multiline
                             rows={4}
+                            value={answer}
+                            onChange={(e) => setAnswer(e.target.value)}
                             sx={{ '& .MuiInputBase-root': {height: '100px', }, marginBottom: 2 }}
                         />
                     </Box>
                 }
             </Box>
 
-            {/* 목록으로 돌아가기 버튼 */}
             <Box sx={{ marginTop: 2, textAlign: 'right' }}>
-                <Button type="submit" variant="contained" color="primary" size="medium" sx={{ marginRight: 2}}>
-                제출
-                </Button>
+                {!question.questionState && (
+                  <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleAnswerSubmit} sx={{ marginRight: 2}}>
+                  등록
+                  </Button>
+                )}
                 <Button variant="outlined" color="primary" component={Link} to="/questionlist">
                 목록
                 </Button>

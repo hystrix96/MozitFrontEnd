@@ -1,61 +1,31 @@
-import React, { useState }from 'react';
+import React, { useState, useEffect }from 'react';
 import { Link } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Chip } from '@mui/material';
-
-
-const myworks = [
-    {
-      id: 1,
-      title: '작업 제목 1',
-      date: '2025-01-15',
-      thumbnail: 'https://i.imgur.com/FEpJSS8.jpeg'
-    },
-    {
-      id: 2,
-      title: '작업 제목 2',
-      date: '2025-01-14',
-      thumbnail: 'https://i.imgur.com/FEpJSS8.jpeg'
-    },
-    {
-      id: 3,
-      title: '작업 제목 3',
-      date: '2025-01-13',
-      thumbnail: 'https://i.imgur.com/FEpJSS8.jpeg'
-    },
-    {
-      id: 4,
-      title: '작업 제목 4',
-      date: '2025-01-12',
-      thumbnail: 'https://i.imgur.com/FEpJSS8.jpeg'
-    },
-    {
-      id: 5,
-      title: '작업 제목 5',
-      date: '2025-01-11',
-      thumbnail: 'https://i.imgur.com/FEpJSS8.jpeg'
-    },
-    {
-      id: 6,
-      title: '작업 제목 6',
-      date: '2025-01-10',
-      thumbnail: 'https://i.imgur.com/FEpJSS8.jpeg'
-    },
-    {
-        id: 7,
-        title: '작업 제목 7',
-        date: '2025-01-10',
-        thumbnail: 'https://i.imgur.com/FEpJSS8.jpeg'
-    },
-];
-
+import axiosInstance from '../api/axiosInstance';
 
 export default function MyWorkPage(props) {
+  const [myworks, setMyWorks] = useState([]);
   const [page, setPage] = useState(0); // Current page number
   const [rowsPerPage, setRowsPerPage] = useState(3); // Number of rows per page
+
+  const fetchMyWorks = async () => {
+    try {
+      const response = await axiosInstance.get('/edit'); // API 엔드포인트 호출
+      const data = Array.isArray(response.data) ? response.data : [];
+      setMyWorks(data); // 응답 데이터를 상태에 저장
+    } catch (error) {
+      console.error('작업 데이터를 가져오는 중 오류 발생:', error);
+      setMyWorks([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchMyWorks();
+  }, []);
 
   // Handle change of page
   const handleChangePage = (event, newPage) => {
@@ -107,11 +77,11 @@ export default function MyWorkPage(props) {
                         {myworks
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((mywork, index) => (
-                            <TableRow key={mywork.id}>
+                            <TableRow key={mywork.editNum}>
                             <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
                             <TableCell align="left"><img src={mywork.thumbnail} height='100px' weight='200px'/></TableCell>
-                            <TableCell align="left">{mywork.title}</TableCell>
-                            <TableCell align="left">{mywork.date}</TableCell>
+                            <TableCell align="left">{mywork.editTitle}</TableCell>
+                            <TableCell align="left">{mywork.timestamp}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

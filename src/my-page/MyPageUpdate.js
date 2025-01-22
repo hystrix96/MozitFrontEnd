@@ -9,6 +9,7 @@ import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, I
 import CameraAltIcon from '@mui/icons-material/CameraAlt';  // 사진 아이콘 추가
 import axiosInstance from '../api/axiosInstance';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import { useNavigate } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -95,6 +96,8 @@ export default function MyPageCheck(props) {
     }
   };
   
+  const navigate = useNavigate();
+
   const handleUserUpdate = async (event) => {
     event.preventDefault();
   
@@ -136,6 +139,12 @@ export default function MyPageCheck(props) {
         if (updatedData.userName) {
           setUsername(updatedData.userName);
         }
+
+        localStorage.removeItem('userToken');
+        setAccessToken(null);
+        setUsername(null);
+
+        navigate('/sign-in');
       }
     } catch (error) {
       console.error('정보 수정 중 오류 발생:', error);
