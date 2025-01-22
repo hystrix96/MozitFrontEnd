@@ -1,4 +1,4 @@
-import React, { useState }from 'react';
+import React, { useState, useEffect }from 'react';
 import { Link } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
@@ -8,63 +8,21 @@ import Stack from '@mui/material/Stack';
 import MenuContent from '../dashboard/components/MenuContent'
 import { alpha } from '@mui/material/styles';
 import Header from '../dashboard/components/Header'
-
-
-const users = [
-    {
-      id: 1,
-      username: '정연주',
-      enterpriseName: 'KT',
-      workNum: 15,
-      downloadNum: 8
-    },
-    {
-      id: 2,
-      username: '고정우',
-      enterpriseName: 'KT',
-      workNum: 10,
-      downloadNum: 10
-    },
-    {
-      id: 3,
-      username: '강민아',
-      enterpriseName: 'KT',
-      workNum: 10,
-      downloadNum: 8
-    },
-    {
-      id: 4,
-      username: '이세훈',
-      enterpriseName: 'KT',
-      workNum: 20,
-      downloadNum: 5
-    },
-    {
-      id: 5,
-      username: '민지영',
-      enterpriseName: 'KT',
-      workNum: 20,
-      downloadNum: 10
-    },
-    {
-      id: 6,
-      username: '서윤호',
-      enterpriseName: 'KT',
-      workNum: 20,
-      downloadNum: 7
-    },
-    {
-        id: 7,
-        username: '이지현',
-        enterpriseName: 'KT',
-        workNum: 10,
-        downloadNum: 10
-    },
-];
+import axiosInstance from '../api/axiosInstance';
 
 export default function UserListPage(props) {
+  const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0); // Current page number
   const [rowsPerPage, setRowsPerPage] = useState(10); // Number of rows per page
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await axiosInstance.get('/users/summary');
+      setUsers(response.data);
+    };
+
+    fetchUsers();
+  }, []);
 
   // Handle change of page
   const handleChangePage = (event, newPage) => {
@@ -126,8 +84,8 @@ export default function UserListPage(props) {
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((user, index) => {
                       const downloadRatio =
-                        user.workNum > 0
-                          ? ((user.downloadNum / user.workNum) * 100).toFixed(2)
+                        user.workCount > 0
+                          ? ((user.downloadCount / user.workCount) * 100).toFixed(2)
                           : 'N/A';
 
                       return (
@@ -135,8 +93,8 @@ export default function UserListPage(props) {
                           <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
                           <TableCell align="left">{user.username}</TableCell>
                           <TableCell align="left">{user.enterpriseName}</TableCell>
-                          <TableCell align="left">{user.workNum}</TableCell>
-                          <TableCell align="left">{user.downloadNum}</TableCell>
+                          <TableCell align="left">{user.workCount}</TableCell>
+                          <TableCell align="left">{user.downloadCount}</TableCell>
                           <TableCell align="left">{downloadRatio}%</TableCell>
                         </TableRow>
                       );
