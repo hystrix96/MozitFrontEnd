@@ -5,12 +5,15 @@ import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import axiosInstance from '../api/axiosInstance';
 import {  TextField, Button, Box, Typography, Grid2, Switch, FormControlLabel, Collapse, FormGroup, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function QuestionPage(props) {
   const [category, setCategory] = useState('SERVICE');
   const [selectedImage, setSelectedImage] = useState(null);
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
+
+  const navigate = useNavigate();
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -48,13 +51,14 @@ export default function QuestionPage(props) {
       if (response.status === 201) {
         alert('문의가 성공적으로 전송되었습니다!');
         console.log('Response:', response.data);
+        navigate('/myquestion')
       }
     } catch (error) {
       console.error('Error submitting the question:', error);
       alert(`문의 전송에 실패했습니다: ${error.response?.data?.message || error.message}`);
     }
   };
-  
+  const isSubmitDisabled = !title || !detail;
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
@@ -180,6 +184,7 @@ export default function QuestionPage(props) {
                             color="secondary" 
                             onClick={handleImageDelete}
                             size="medium"
+                             
                           >
                             이미지 삭제
                           </Button>
@@ -187,7 +192,9 @@ export default function QuestionPage(props) {
                       )}
                     </Box>
                     <Grid2 item xs={12} display="flex" justifyContent="center">
-                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit}>
+                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit} sx={{
+                                                        pointerEvents: isSubmitDisabled  ? 'none' : 'auto', // 비활성화 상태에서 클릭 방지      
+}}>
                         제출
                         </Button>
                     </Grid2>
