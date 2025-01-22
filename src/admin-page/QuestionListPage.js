@@ -113,7 +113,7 @@ export default function QuestionListPage(props) {
                                 />
                             </TableCell>
                             <TableCell align="center">
-                                <Link to={`/questionlist/${question.questionNum}`}>
+                                <Link to={`/admin/qna/${question.questionNum}`}>
                                     <Button 
                                     variant="outlined" 
                                     color="primary" 

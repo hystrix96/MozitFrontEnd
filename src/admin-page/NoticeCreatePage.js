@@ -36,7 +36,7 @@ export default function NoticeCreatePage(props) {
 
     try {
       await axiosInstance.post('/notices', newNotice);  // 공지사항 생성 API 호출
-      navigate('/noticelist');  // 공지사항 목록 페이지로 이동
+      navigate('/admin/notice');  // 공지사항 목록 페이지로 이동
     } catch (error) {
       console.error('공지사항 저장 중 오류 발생:', error);
     }
@@ -128,7 +128,7 @@ export default function NoticeCreatePage(props) {
                 >
                 저장
                 </Button>
-                <Link to={'/noticelist'}>
+                <Link to={'/admin/notice'}>
                     <Button variant="outlined" color="secondary">
                     취소
                     </Button>

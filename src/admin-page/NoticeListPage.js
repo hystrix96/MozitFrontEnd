@@ -36,7 +36,7 @@ export default function NoticeListPage(props) {
 
   const handleRowClick = (id) => {
     // 클릭한 행의 ID에 해당하는 상세 페이지로 이동
-    window.location.href = `/noticelist/${id}`;
+    window.location.href = `/admin/notice/${id}`;
   };
 
   return (
@@ -133,7 +133,7 @@ export default function NoticeListPage(props) {
                         color="secondary" 
                         sx={{ marginLeft: 2, marginBottom: 1}} 
                         component={Link} 
-                        to="/noticelist/create"
+                        to="/admin/notice/create"
                         >
                         작성
                         </Button>

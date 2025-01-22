@@ -41,7 +41,7 @@ export default function NoticeEditPage(props) {
         noticeDetail: content,
       };
       await axiosInstance.patch(`/notices/${id}`, updatedNotice);
-      navigate(`/noticelist/${id}`);
+      navigate(`/admin/notice/${id}`);
     } catch (error) {
       console.error('공지사항 수정 실패:', error);
     }
@@ -149,7 +149,7 @@ export default function NoticeEditPage(props) {
                 >
                 저장
                 </Button>
-                <Link to={`/noticelist/${notice.noticeNum}`}>
+                <Link to={`/admin/notice/${notice.noticeNum}`}>
                     <Button variant="outlined" color="secondary">
                     취소
                     </Button>

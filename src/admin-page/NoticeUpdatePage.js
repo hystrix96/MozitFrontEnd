@@ -27,7 +27,7 @@ export default function NoticeUpdatePage(props) {
   const deleteNotice = async () => {
     try {
       await axiosInstance.delete(`/notices/${id}`); // 공지사항 삭제 API 호출
-      navigate('/noticelist'); // 삭제 후 목록 페이지로 리다이렉트
+      navigate('/admin/notice'); // 삭제 후 목록 페이지로 리다이렉트
     } catch (error) {
       console.error('공지사항 삭제 중 오류 발생:', error);
     }
@@ -132,10 +132,10 @@ export default function NoticeUpdatePage(props) {
             </Box>
 
             <Box sx={{ marginTop: 2, textAlign: 'right' }}>
-                <Button variant="outlined" color="primary" component={Link} to="/noticelist" sx={{marginRight: 2}}>
+                <Button variant="outlined" color="primary" component={Link} to="/admin/notice" sx={{marginRight: 2}}>
                 목록
                 </Button>
-                <Link to={`/noticelist/${notice.noticeNum}/edit`}>
+                <Link to={`/admin/notice/${notice.noticeNum}/edit`}>
                     <Button variant="outlined" color="primary" sx={{marginRight: 2}}>
                     수정
                     </Button>

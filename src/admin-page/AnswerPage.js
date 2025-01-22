@@ -58,7 +58,7 @@ export default function AnswerPage(props) {
       })
       .catch((error) => console.error('답변 저장 실패:', error));
 
-    navigate('/questionlist');
+    navigate('/admin/qna');
   };
 
   const getMessageByType = (type) => {
@@ -193,7 +193,7 @@ export default function AnswerPage(props) {
                   등록
                   </Button>
                 )}
-                <Button variant="outlined" color="primary" component={Link} to="/questionlist">
+                <Button variant="outlined" color="primary" component={Link} to="/admin/qna">
                 목록
                 </Button>
             </Box>
