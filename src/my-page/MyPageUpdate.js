@@ -247,9 +247,7 @@ export default function MyPageCheck(props) {
                     src={profileImagePreview || userData?.profileImage || 'your-default-image-url'}
                   />
                   {/* 사진 아이콘 */}
-                  <label htmlFor="profileImage" style={{ position: 'absolute', bottom: 0, right: 0, cursor: 'pointer' }}>
-                    <CameraAltIcon sx={{ fontSize: 30, color: '#fff', backgroundColor: '#1976d2', borderRadius: '50%', padding: 0.5 }} />
-                  </label>
+                  <label htmlFor="profileImage" style={{ position: 'absolute', bottom: 0, right: 0, cursor: 'pointer' }}></label>
                   <input
                     type="file"
                     id="profileImage"
