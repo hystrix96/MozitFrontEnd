@@ -7,66 +7,6 @@ import Footer from '../components/Footer';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Chip,CircularProgress } from '@mui/material';
 import axiosInstance from '../api/axiosInstance';
 
-const myquestions = [
-    {
-      id: 1,
-      title: '문의 제목 1',
-      date: '2025-01-15',
-      type: 'SERVICE',
-      state: false,
-      description: '문의 내용 1입니다. 자세한 내용을 보려면 클릭하세요.',
-    },
-    {
-      id: 2,
-      title: '문의 제목 2',
-      date: '2025-01-14',
-      type: 'SERVICE',
-      state: false,
-      description: '문의 내용 2입니다. 더 많은 내용을 보려면 읽어보세요.',
-    },
-    {
-      id: 3,
-      title: '문의 제목 3',
-      date: '2025-01-13',
-      type: 'ACCOUNT',
-      state: true,
-      description: '문의 내용 3입니다. 자세한 내용을 보려면 클릭하세요.',
-    },
-    {
-      id: 4,
-      title: '문의 제목 4',
-      date: '2025-01-12',
-      type: 'GENERAL',
-      state: true,
-      description: '문의 내용 4입니다. 자세한 내용을 보려면 클릭하세요.',
-    },
-    {
-      id: 5,
-      title: '문의 제목 5',
-      date: '2025-01-11',
-      type: 'ACCOUNT',
-      state: false,
-      description: '문의 내용 5입니다. 더 많은 내용을 보려면 읽어보세요.',
-    },
-    {
-      id: 6,
-      title: '문의 제목 6',
-      date: '2025-01-10',
-      type: 'ACCOUNT',
-      state: true,
-      description: '문의 내용 6입니다. 더 많은 내용을 보려면 읽어보세요.',
-    },
-    {
-        id: 7,
-        title: '문의 제목 7',
-        date: '2025-01-10',
-        type: 'SERVICE',
-        state: true,
-        description: '문의 내용 7입니다. 더 많은 내용을 보려면 읽어보세요.',
-    },
-];
-
-
 export default function MyQuestionPage(props) {
   const [page, setPage] = useState(0); // Current page number
   const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page

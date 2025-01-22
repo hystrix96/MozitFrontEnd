@@ -1,95 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
+import axiosInstance from '../api/axiosInstance';
+import { Link } from 'react-router-dom';
 
-const myquestions = [
-    {
-      id: 1,
-      title: '문의 제목 1',
-      date: '2025-01-15',
-      state: false,
-      type: 'SERVICE',
-      description: '문의 내용 1입니다. 자세한 내용을 보려면 클릭하세요.',
-      answerResponse: null
-    },
-    {
-      id: 2,
-      title: '문의 제목 2',
-      date: '2025-01-14',
-      state: false,
-      type: 'GENERAL',
-      description: '문의 내용 2입니다. 더 많은 내용을 보려면 읽어보세요.',
-      answerResponse: null
-    },
-    {
-      id: 3,
-      title: '문의 제목 3',
-      date: '2025-01-13',
-      state: true,
-      type: 'SERVICE',
-      description: '문의 내용 3입니다. 자세한 내용을 보려면 클릭하세요.',
-      answerResponse: {
-        timestamp: '2025-01-15',
-        answerDetail: '답변 내용 3'
-        }
-    },
-    {
-      id: 4,
-      title: '문의 제목 4',
-      date: '2025-01-12',
-      state: true,
-      type: 'ACCOUNT',
-      description: '문의 내용 4입니다. 자세한 내용을 보려면 클릭하세요.',
-      answerResponse: {
-            timestamp: '2025-01-15',
-            answerDetail: '답변 내용 4'
-        }
-    },
-    {
-      id: 5,
-      title: '문의 제목 5',
-      date: '2025-01-11',
-      state: false,
-      type: 'GENERAL',
-      description: '문의 내용 5입니다. 더 많은 내용을 보려면 읽어보세요.',
-      answerResponse: null
-    },
-    {
-      id: 6,
-      title: '문의 제목 6',
-      date: '2025-01-10',
-      state: true,
-      type: 'SERVICE',
-      description: '문의 내용 6입니다. 더 많은 내용을 보려면 읽어보세요.',
-      answerResponse: {
-        timestamp: '2025-01-15',
-        answerDetail: '답변 내용 6'
-        }
-    },
-    {
-        id: 7,
-        title: '문의 제목 7',
-        date: '2025-01-10',
-        state: true,
-        type: 'SERVICE',
-        description: '문의 내용 7입니다. 더 많은 내용을 보려면 읽어보세요.',
-        answerResponse: {
-            timestamp: '2025-01-15',
-            answerDetail: '답변 내용 7'
-        }
-    },
-];
 
 export default function MyQuestionDetailPage(props) {
-  const { id } = useParams();  // URL에서 id 파라미터 추출
-  const myquestion = myquestions.find((n) => n.id === parseInt(id));  // 해당 id의 공지사항 찾기
+  const { id } = useParams(); // URL에서 id 파라미터 추출
+  const [question, setQuestion] = useState(null); // 질문 데이터 상태
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
 
-  if (!myquestion) {
+  // 질문 세부사항을 가져오는 함수
+  const fetchQuestionDetail = async () => {
+    try {
+      const response = await axiosInstance.get(`/questions/${id}`);
+      setQuestion(response.data); // 받아온 데이터를 상태에 설정
+    } catch (error) {
+      console.error('Error fetching question detail:', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
+  };
+
+  useEffect(() => {
+    fetchQuestionDetail(); // 컴포넌트 마운트 시 세부 질문 가져오기
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <AppTheme>
+        <AppAppBar />
+        <Box sx={{ padding: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <CircularProgress />
+        </Box>
+        <Footer />
+      </AppTheme>
+    );
+  }
+
+  if (!question) {
     return (
       <AppTheme>
         <AppAppBar />
@@ -116,6 +69,7 @@ export default function MyQuestionDetailPage(props) {
     }
   };
 
+
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
@@ -136,9 +90,10 @@ export default function MyQuestionDetailPage(props) {
             width: '100%',
             }}
         >
-            <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
-            내 문의
-            </Typography>
+            <Typography variant="h4" gutterBottom>
+          내 문의 
+        </Typography>
+
             <Box
                 sx={{
                     maxWidth: 1000,
@@ -156,19 +111,13 @@ export default function MyQuestionDetailPage(props) {
                 }}
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', flex: 4 }}>
-                    <Typography variant="body1" sx={{ marginRight: 2 }}>
-                        {myquestion.id}
-                    </Typography>
-                    <Typography variant="h5">
-                        {myquestion.title}
-                    </Typography>
+                   <Typography variant="h5">{question.questionTitle}</Typography>
                 </Box>
-                <Typography variant="body1" sx={{ flex: 1, marginLeft: -2 }}>
-                    작성일자: {myquestion.date}
-                </Typography>
+                <Typography variant="body1" color="textSecondary">
+            {getMessageByType(question.questionType)} | 작성일자: {new Date(question.timestamp).toLocaleDateString()}
+          </Typography>
             </Box>
-
-            <Box
+		<Box
                 sx={{
                     maxWidth: 1000,
                     width: '100%',
@@ -183,11 +132,11 @@ export default function MyQuestionDetailPage(props) {
                 }}
             >
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                    {myquestion.description}
+                    {question.questionDetail}
                 </Typography>
             </Box>
-
-            <Box
+             {question.answerResponse ? (
+          <Box
                 sx={{
                     maxWidth: 1000,
                     width: '100%',
@@ -201,10 +150,33 @@ export default function MyQuestionDetailPage(props) {
                     overflowY: 'auto', // 세로 스크롤 활성화
                 }}
             >
-                <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                    {myquestion.state ? myquestion.answerResponse.answerDetail : '괜찮아 딩딩딩딩딩 딩딩딩딩딩'}
-                </Typography>
-            </Box>
+            <Typography variant="h6">답변</Typography>
+            <Typography variant="body1">{question.answerResponse.answerDetail}</Typography>
+            <Typography variant="body2" color="textSecondary">
+              답변일자: {new Date(question.answerResponse.timestamp).toLocaleDateString()}
+            </Typography>
+          </Box>
+        ) : (
+          <Box
+                sx={{
+                    maxWidth: 1000,
+                    width: '100%',
+                    padding: 4,
+                    boxShadow: 2,
+                    borderRadius: 2,
+                    bgcolor: 'background.paper',
+                    marginTop: 2, // 제목 박스와 간격 추가
+                    height: 200,
+                    maxHeight: 200, // 박스 최대 높이 고정
+                    overflowY: 'auto', // 세로 스크롤 활성화
+                }}
+            >
+            <Typography variant="body1" color="textSecondary">
+              아직 답변이 없습니다.
+            </Typography>
+          </Box>
+        )}
+
 
             {/* 목록으로 돌아가기 버튼 */}
             <Box sx={{ marginTop: 2, textAlign: 'right' }}>

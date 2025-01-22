@@ -62,18 +62,20 @@ backgroundImage:
 }));
 
 export default function SignUp(props) {
+
 const [emailError, setEmailError] = React.useState(false);
 const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
 const [emailDisabled, setEmailDisabled] = React.useState(false);
-  const [passwordDisabled, setPasswordDisabled] = React.useState(false);
-  const [idDisabled, setIdDisabled] = React.useState(false);
+const [passwordDisabled, setPasswordDisabled] = React.useState(false);
+const [idDisabled, setIdDisabled] = React.useState(false);
 
 const [password, setPassword] = React.useState('');
 const [confirmPassword, setConfirmPassword] = React.useState('');
-const [passwordError, setPasswordError] = React.useState(false);
+const [passwordError, setPasswordError] = React.useState(true);
 const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-const [confirmpasswordError, setConfirmPasswordError] = React.useState(false);
+const [confirmpasswordError, setConfirmPasswordError] = React.useState('true');
 const [confirmpasswordErrorMessage, setConfirmPasswordErrorMessage] = React.useState('');
+const [name, setName] = React.useState(""); // 이름 상태
 const [nameError, setNameError] = React.useState(false);
 const [nameErrorMessage, setNameErrorMessage] = React.useState('');
 
@@ -106,6 +108,21 @@ clearInterval(interval);
 }
 return () => clearInterval(interval);
 }, [isCodeSent, timer]);
+
+//이름 입력 확인
+ const handleNameChange = (e) => {
+    const value = e.target.value;
+    setName(value);
+
+    // 에러 처리 로직 (예: 값이 비어 있으면 에러)
+    if (value.trim() === "") {
+      setNameError(true);
+      setNameErrorMessage("이름을 입력해주세요.");
+    } else {
+      setNameError(false);
+      setNameErrorMessage("");
+    }
+  };
 
 //이메일 인증 요청
 const handleSendCode = async () => {
@@ -240,13 +257,14 @@ const value = event.target.value;
 setConfirmPassword(value);
 
 // 비밀번호와 확인 비밀번호를 비교
-if (value && value !== password) {
+
+if (value !== password) {
 setConfirmPasswordError(true);
 setConfirmPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
 } else {
 setConfirmPasswordError(false);
 setConfirmPasswordErrorMessage('');
-      if (value === password) {
+      if ((passwordError ===false)&&(value === password)) {
       setPasswordDisabled(true); // 비밀번호와 확인 비밀번호가 일치하면 비밀번호 입력 필드를 비활성화
     }
 }
@@ -303,8 +321,10 @@ const fields = {
 ID: { setter: setIdError, messageSetter: setIdErrorMessage },
 name: { setter: setNameError, messageSetter: setNameErrorMessage },
 email: { setter: setEmailError, messageSetter: setEmailErrorMessage },
+password:{setter:setPasswordError,messageSetter:setPasswordErrorMessage},
+confirmPassword:{setter:setConfirmPasswordError,messageSetter:setConfirmPasswordErrorMessage},
 'co-num': { setter: setBusinessNumberError, messageSetter: setBusinessNumberErrorMessage },
-'co-name': { setter: setNameError, messageSetter: setNameErrorMessage },
+'co-name': { setter: setBusinessNumberError, messageSetter: setBusinessNumberErrorMessage },
 };
 
 let isValid = true;
@@ -320,7 +340,43 @@ messageSetter('');
 }
 });
 
-return isValid;
+ // 추가 유효성 검사
+  const emailValue = document.getElementById('email')?.value;
+  const idValue = document.getElementById('ID')?.value;
+  const passwordValue = document.getElementById('password')?.value;
+  const confirmPasswordValue = document.getElementById('confirmPassword')?.value;
+  const coNumValue = document.getElementById('co-num')?.value;
+  const coNameValue = document.getElementById('co-name')?.value;
+
+  // 1. email 값이 있고, ID 값이 비어 있을 경우
+  if (emailValue && !idValue) {
+    setEmailError(true);
+    setEmailErrorMessage('Email 인증을 하셔야 합니다.');
+    isValid = false;
+  }
+
+  // 2. ID 값이 있고, password 값이 비어 있을 경우
+  if (idValue && !passwordValue) {
+    setIdError(true);
+    setIdErrorMessage('ID 중복 인증을 하셔야 합니다.');
+    isValid = false;
+  }
+
+  // 3. password 값이 있고, confirmPassword 값이 비어 있을 경우
+  if (passwordValue && !confirmPasswordValue) {
+    setConfirmPasswordError(true);
+    setConfirmPasswordErrorMessage('Password를 한번 더 입력해주세요.');
+    isValid = false;
+  }
+
+  // 4. co-num 값이 있고, co-name 값이 없을 경우
+  if (coNumValue && !coNameValue) {
+    setBusinessNumberError(true);
+    setBusinessNumberErrorMessage('사업자 등록번호 인증을 하셔야 합니다.');
+    isValid = false;
+  }
+
+  return isValid;
 };
 
 const handleSubmit = async (event) => {
@@ -387,7 +443,8 @@ required
 fullWidth
 name="name"
 placeholder="Name"
-// type="email"
+value={name} // 상태와 연동
+onChange={handleNameChange} // 상태 업데이트 핸들러
 id="name"
 autoComplete="off"
 error={nameError}
@@ -413,7 +470,7 @@ id="email"
 autoComplete="off"
 error={emailError}
 helperText={emailErrorMessage}
-disabled={emailDisabled}
+disabled={(name==="")||emailDisabled}
 InputProps={{
 endAdornment: emailDisabled && (
 <InputAdornment position="end">
@@ -502,7 +559,7 @@ id="ID"
 autoComplete="off"
 error={idError}
 helperText={idErrorMessage}
-                  disabled={idDisabled}
+disabled={idDisabled||!emailDisabled}
 
 InputProps={{
 endAdornment: idVerified && (
@@ -539,9 +596,9 @@ value={password}
 onChange={handlePasswordChange}
 error={passwordError}
 helperText={passwordErrorMessage}
-                disabled={passwordDisabled}
+                disabled={passwordDisabled||!idDisabled}
 InputProps={{
-endAdornment: confirmPassword && password == confirmPassword && (
+endAdornment: confirmPassword && password === confirmPassword && (
 <InputAdornment position="end">
 <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
 </InputAdornment>
@@ -555,18 +612,18 @@ endAdornment: confirmPassword && password == confirmPassword && (
 <TextField
 required
 fullWidth
-name="confirm-password"
+name="confirmPassword"
 placeholder="••••••"
 type="password"
-id="confirm-password"
+id="confirmPassword"
 autoComplete="new-password"
 value={confirmPassword}
 onChange={handleConfirmPasswordChange}
 error={confirmpasswordError}
 helperText={confirmpasswordErrorMessage}
-                disabled={passwordDisabled}
+disabled={passwordDisabled||passwordError}
 InputProps={{
-endAdornment: confirmPassword && password == confirmPassword && (
+endAdornment: confirmPassword && password === confirmPassword && (
 <InputAdornment position="end">
 <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
 </InputAdornment>
@@ -591,6 +648,7 @@ id="co-num"
 type="tel"
 error={businessNumberError}
 helperText={businessNumberErrorMessage}
+disabled={!passwordDisabled}
 InputProps={{
 endAdornment: isBusinessNumberVerified && (
 <InputAdornment position="end">
@@ -618,7 +676,7 @@ fullWidth
 name="co-name"
 id="co-name"
 placeholder="회사명"
-disabled={isCompanyNameDisabled}
+disabled={true}
 />
 </FormControl>
 
