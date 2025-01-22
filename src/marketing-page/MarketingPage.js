@@ -14,12 +14,14 @@ import Footer from '../components/Footer';
 
 export default function MarketingPage(props) {
   const pricingRef = useRef(null); // Create a ref for Pricing component
+ 
 
   const scrollToPricing = () => {
     if (pricingRef.current) {
       pricingRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
@@ -27,7 +29,9 @@ export default function MarketingPage(props) {
       <Hero onPricingButtonClick={scrollToPricing} />
       <div>
         <Divider />
+        <div >
         <Features />
+        </div>
         <Divider />
         <div ref={pricingRef}>
           <Pricing />
@@ -35,7 +39,7 @@ export default function MarketingPage(props) {
         <Divider />
         {/* <FAQ /> */}
         <Divider />
-        <Footer />
+        <Footer/>
       </div>
     </AppTheme>
   );

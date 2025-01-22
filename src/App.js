@@ -26,8 +26,8 @@ import MyWorkPage from './my-page/MyWorkPage';
 import UserListPage from './admin-page/UserListPage';
 import DashBoard from './dashboard/Dashboard'
 import ScrollToTop from './ScrollToTop';
-
-
+import TermOfServicePage from './term-of-service-page/TermOfServicePage';
+import Privacy from './privacy/Privacy';
 
 
 const App = () => {
@@ -62,6 +62,8 @@ const App = () => {
           <Route path="/mozaic" element={<MozaicPage />} />
           <Route path="/userlist" element={<UserListPage />} />
           <Route path="/dashboard" element={<DashBoard />} />
+          <Route path="/termofservicepage" element={<TermOfServicePage />} />
+          <Route path="/privacy" element={<Privacy />} />
 
         </Routes>
       </BrowserRouter>
