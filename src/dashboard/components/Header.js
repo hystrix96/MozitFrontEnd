@@ -8,8 +8,9 @@ import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
 import Button from '@mui/material/Button';
 import { useAuth } from '../../Context/AuthContext';
 import axios from 'axios';
-
+import Sitemark from './SitemarkIcon';
 import Search from './Search';
+
 
 export default function Header() {
     const { accessToken } = useAuth();
@@ -45,7 +46,8 @@ export default function Header() {
       }}
       spacing={2}
     >
-      <NavbarBreadcrumbs />
+      {/* <NavbarBreadcrumbs /> */}
+      <Sitemark />
       <Stack direction="row" sx={{ gap: 1 }}>
         <Search />
         <CustomDatePicker />

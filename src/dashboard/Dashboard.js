@@ -26,36 +26,47 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props) {
-  
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', height: '100vh' }}>
+        {/* Sidebar (MenuContent) */}
         <MenuContent />
-        <AppNavbar />
-        {/* Main content */}
-        <Box
-          component="main"
-          sx={(theme) => ({
-            flexGrow: 1,
-            backgroundColor: theme.vars
-              ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
-              : alpha(theme.palette.background.default, 1),
-            overflow: 'auto',
-          })}
-        >
-          <Stack
-            spacing={2}
+
+        {/* 오른쪽 영역 */}
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          {/* Header */}
+          <Header
             sx={{
-              alignItems: 'center',
-              mx: 3,
-              pb: 5,
-              mt: { xs: 8, md: 0 },
+              width: '100%',
+              zIndex: 10,
+              position: 'sticky', // 스크롤 시 상단 고정
+              top: 0,
             }}
+          />
+          {/* Main Content */}
+          <Box
+            component="main"
+            sx={(theme) => ({
+              flexGrow: 1,
+              backgroundColor: theme.vars
+                ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
+                : alpha(theme.palette.background.default, 1),
+              overflow: 'auto',
+            })}
           >
-            <Header />
-            <MainGrid />
-          </Stack>
+            <Stack
+              spacing={2}
+              sx={{
+                alignItems: 'center',
+                mx: 3,
+                pb: 5,
+                mt: { xs: 8, md: 0 },
+              }}
+            >
+              <MainGrid />
+            </Stack>
+          </Box>
         </Box>
       </Box>
     </AppTheme>
