@@ -54,7 +54,7 @@ export default function AppAppBar() {
       });
       if (response.status === 200) {
         alert('로그아웃 성공!');
-        window.location.reload();
+        window.location.href='/';
       } else {
         throw new Error('로그아웃 실패');
       }

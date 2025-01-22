@@ -62,27 +62,33 @@ backgroundImage:
 }));
 
 export default function SignUp(props) {
+
 const [emailError, setEmailError] = React.useState(false);
 const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
 const [emailDisabled, setEmailDisabled] = React.useState(false);
-  const [passwordDisabled, setPasswordDisabled] = React.useState(false);
-  const [idDisabled, setIdDisabled] = React.useState(false);
+const [passwordDisabled, setPasswordDisabled] = React.useState(false);
+const [idDisabled, setIdDisabled] = React.useState(false);
 
 const [password, setPassword] = React.useState('');
 const [confirmPassword, setConfirmPassword] = React.useState('');
-const [passwordError, setPasswordError] = React.useState(false);
+const [passwordError, setPasswordError] = React.useState(true);
 const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-const [confirmpasswordError, setConfirmPasswordError] = React.useState(false);
+const [confirmpasswordError, setConfirmPasswordError] = React.useState('true');
 const [confirmpasswordErrorMessage, setConfirmPasswordErrorMessage] = React.useState('');
+const [passwordVerified, setPasswordVerified] = React.useState(false);
+
+const [name, setName] = React.useState(""); // 이름 상태
 const [nameError, setNameError] = React.useState(false);
 const [nameErrorMessage, setNameErrorMessage] = React.useState('');
 
-// 인증 관련 상태 추가
+// 이메일 인증 관련 상태 추가
 const [isCodeSent, setIsCodeSent] = React.useState(false);
 const [authCode, setAuthCode] = React.useState('');
 const [authCodeError, setAuthCodeError] = React.useState(false);
 const [timer, setTimer] = React.useState(0); // 인증 시간 (초)
 const [isCodeExpired, setIsCodeExpired] = React.useState(false);
+const [emailVerified, setEmailVerified] = React.useState(false);
+
 //아이디 중복확인
 const [idError, setIdError] = React.useState(false);
 const [idErrorMessage, setIdErrorMessage] = React.useState('');
@@ -107,7 +113,45 @@ clearInterval(interval);
 return () => clearInterval(interval);
 }, [isCodeSent, timer]);
 
+//이름 입력 확인
+ const handleNameChange = (e) => {
+    const value = e.target.value;
+    setName(value);
+
+    // 에러 처리 로직 (예: 값이 비어 있으면 에러)
+    if (value.trim() === "") {
+      setNameError(true);
+      setNameErrorMessage("이름을 입력해주세요.");
+    } else {
+      setNameError(false);
+      setNameErrorMessage("");
+    }
+  };
+
 //이메일 인증 요청
+
+const checkEmail = async (userEmail) => {  
+  try {
+  const response = await axios.get('http://localhost:8080/users/check-email', {
+    params: { userEmail },
+    validateStatus: (status) => {
+      return status === 201 || status === 409;
+    },
+  });
+  
+    if (response.status === 201) {
+      console.log('사용가능한 이메일입니다');
+      return true;
+    } else if(response.status === 409) {
+      console.error('이미 사용 중인 이메일입니다.');
+      return false;
+  }
+  } catch (error) {
+    console.error('이메일 중복 확인 중 오류 발생:', error);
+    alert('이메일 중복 확인 중 오류가 발생했습니다.');
+    return false;
+  }
+};
 const handleSendCode = async () => {
 const emailInput = document.getElementById('email');
 const email = emailInput.value;
@@ -115,34 +159,45 @@ const email = emailInput.value;
 const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
 
 if (!email || !emailRegEx.test(email)) {
-setEmailError(true);
-setEmailErrorMessage('이메일 계정이 유효하지 않습니다.');
+  setEmailError(true);
+  setEmailErrorMessage('이메일 계정이 유효하지 않습니다.');
 } else {
-setEmailError(false);
-setEmailErrorMessage('');
+  setEmailError(false);
+  setEmailErrorMessage('');
+}
+
+const isEmailValid = await checkEmail(email);
+if (!isEmailValid) {
+  setEmailError(true);
+  setEmailErrorMessage('이미 사용 중인 이메일입니다.');
+  return; // 중복된 이메일이므로 인증 코드 전송 중단
+} else {
+  setEmailError(false);
+  setEmailErrorMessage('');
+}
+  
 
 try {
-// 인증 요청
-const response = await axios.post('http://localhost:8080/users/send-email', {
-mail: email,
-});
+  const response = await axios.post('http://localhost:8080/users/send-email', {
+  mail: email,
+  });
 
-if (response.status === 200) {
-setIsCodeExpired(false);
-setIsCodeSent(true);
-setTimer(180); // 3분 타이머 설정
-setIsCodeExpired(false);
-alert('인증 코드가 이메일로 전송되었습니다.');
-} else {
-setIsCodeExpired(false);
-setIsCodeSent(false);
-throw new Error('인증 코드 전송 실패');
-}
-} catch (error) {
-console.error('Error sending email verification code:', error);
-alert('인증 코드 전송 중 오류가 발생했습니다.');
-}
-}
+  if (response.status === 200) {
+    setIsCodeExpired(false);
+    setIsCodeSent(true);
+    setTimer(180); // 3분 타이머 설정
+    setIsCodeExpired(false);
+    alert('인증 코드가 이메일로 전송되었습니다.');
+  }
+  else {
+    setIsCodeExpired(false);
+    setIsCodeSent(false);
+    throw new Error('인증 코드 전송 실패');
+  }}
+  catch (error) {
+    console.error('Error sending email verification code:', error);
+    alert('인증 코드 전송 중 오류가 발생했습니다.');
+  }
 };
 //인증 코드 확인
 const handleVerifyCode = async () => {
@@ -158,6 +213,7 @@ verifyCode: authCode,
 if (response.status === 200) {
 setAuthCodeError(false);
 setEmailDisabled(true);
+setEmailVerified(true);
 setTimer(0);
 alert('이메일 인증이 완료되었습니다.');
 } else {
@@ -172,67 +228,67 @@ alert('인증 코드가 잘못되었습니다.');
 
 //아이디 중복 확인
 const handleCheckId = async () => {
-const idInput = document.getElementById('ID');
-const userId = idInput.value;
+  const idInput = document.getElementById('ID');
+  const userId = idInput.value;
 
-if (!userId) {
-setIdError(true);
-setIdErrorMessage('ID를 입력해주세요.');
-return;
-}
+  if (!userId) {
+    setIdError(true);
+    setIdErrorMessage('ID를 입력해주세요.');
+    return;
+  }
 
-const idRegex = /^[a-zA-Z0-9]{4,}$/;
-if (!idRegex.test(userId)) {
-setIdError(true);
-setIdErrorMessage('4글자 이상, 영어 또는 숫자만 가능합니다.');
-return;
-}
+  const idRegex = /^[a-zA-Z0-9]{4,}$/;
+  if (!idRegex.test(userId)) {
+    setIdError(true);
+    setIdErrorMessage('4글자 이상, 영어 또는 숫자만 가능합니다.');
+    return;
+  }
 
-try {
-// 서버에 ID 중복 확인 요청
-const response = await axios.get(`http://localhost:8080/users/check-id`, {
-params: { userId },
-});
+  try {
+    const response = await axios.get(`http://localhost:8080/users/check-id`, {
+    params: { userId },
+    });
 
-if (response.status === 201) {
-setIdError(false);
-setIdVerified(true);
-setIdErrorMessage('');
-        setIdDisabled(true);
-alert('사용 가능한 ID입니다.');
-} else {
-setIdError(true);
-setIdVerified(false);
-setIdErrorMessage('이미 사용 중인 ID입니다.');
-}
-} catch (error) {
-console.error('Error checking ID:', error);
-setIdError(true);
-setIdVerified(false);
-setIdErrorMessage('이미 사용 중인 ID입니다.');
-}
+    if (response.status === 201) {
+      setIdError(false);
+      setIdVerified(true);
+      setIdErrorMessage('');
+      setIdDisabled(true);
+    } 
+    else {
+      setIdError(true);
+      setIdVerified(false);
+      setIdErrorMessage('이미 사용 중인 ID입니다.');
+    }
+  } catch (error) {
+    console.error('Error checking ID:', error);
+    setIdError(true);
+    setIdVerified(false);
+    setIdErrorMessage('이미 사용 중인 ID입니다.');
+  }
 };
 
 //비번 유효성 검사
 const handlePasswordChange = (event) => {
-const value = event.target.value;
-setPassword(value);
+  const value = event.target.value;
+  setPassword(value);
 
-const hasLetters = /[a-zA-Z]/.test(value);
-const hasNumbers = /\d/.test(value);
-const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(value);
-const validTypes = [hasLetters, hasNumbers, hasSpecialChars].filter(Boolean).length;
+  const hasLetters = /[a-zA-Z]/.test(value);
+  const hasNumbers = /\d/.test(value);
+  const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+  const validTypes = [hasLetters, hasNumbers, hasSpecialChars].filter(Boolean).length;
 
-if (value.length < 8) {
-setPasswordError(true);
-setPasswordErrorMessage('비밀번호는 8자 이상이어야 합니다.');
-} else if (validTypes < 2) {
-setPasswordError(true);
-setPasswordErrorMessage('비밀번호는 영어, 숫자, 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
-} else {
-setPasswordError(false);
-setPasswordErrorMessage('');
-}
+  if (value.length < 8) {
+    setPasswordError(true);
+    setPasswordErrorMessage('비밀번호는 8자 이상이어야 합니다.');
+  } else if (validTypes < 2) {
+    setPasswordError(true);
+    setPasswordErrorMessage('비밀번호는 영어, 숫자, 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
+  } else if(value.length >= 8 && validTypes>=2){
+    setPasswordVerified(true);
+    setPasswordError(false);
+    setPasswordErrorMessage('');
+  }
 };
 //비번 재입력 확인
 const handleConfirmPasswordChange = (event) => {
@@ -240,13 +296,14 @@ const value = event.target.value;
 setConfirmPassword(value);
 
 // 비밀번호와 확인 비밀번호를 비교
-if (value && value !== password) {
+
+if (value !== password) {
 setConfirmPasswordError(true);
 setConfirmPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
 } else {
 setConfirmPasswordError(false);
 setConfirmPasswordErrorMessage('');
-      if (value === password) {
+      if ((passwordError ===false)&&(value === password)) {
       setPasswordDisabled(true); // 비밀번호와 확인 비밀번호가 일치하면 비밀번호 입력 필드를 비활성화
     }
 }
@@ -303,8 +360,10 @@ const fields = {
 ID: { setter: setIdError, messageSetter: setIdErrorMessage },
 name: { setter: setNameError, messageSetter: setNameErrorMessage },
 email: { setter: setEmailError, messageSetter: setEmailErrorMessage },
+password:{setter:setPasswordError,messageSetter:setPasswordErrorMessage},
+confirmPassword:{setter:setConfirmPasswordError,messageSetter:setConfirmPasswordErrorMessage},
 'co-num': { setter: setBusinessNumberError, messageSetter: setBusinessNumberErrorMessage },
-'co-name': { setter: setNameError, messageSetter: setNameErrorMessage },
+'co-name': { setter: setBusinessNumberError, messageSetter: setBusinessNumberErrorMessage },
 };
 
 let isValid = true;
@@ -320,14 +379,49 @@ messageSetter('');
 }
 });
 
-return isValid;
-};
+ // 추가 유효성 검사
+  const emailValue = document.getElementById('email')?.value;
+  const idValue = document.getElementById('ID')?.value;
+  const passwordValue = document.getElementById('password')?.value;
+  const confirmPasswordValue = document.getElementById('confirmPassword')?.value;
+  const coNumValue = document.getElementById('co-num')?.value;
+  const coNameValue = document.getElementById('co-name')?.value;
 
+  // 1. email 값이 있고, ID 값이 비어 있을 경우
+  if (emailValue && !idValue) {
+    setEmailError(true);
+    setEmailErrorMessage('Email 인증을 하셔야 합니다.');
+    isValid = false;
+  }
+
+  // 2. ID 값이 있고, password 값이 비어 있을 경우
+  if (idValue && !passwordValue) {
+    setIdError(true);
+    setIdErrorMessage('ID 중복 인증을 하셔야 합니다.');
+    isValid = false;
+  }
+
+  // 3. password 값이 있고, confirmPassword 값이 비어 있을 경우
+  if (passwordValue && !confirmPasswordValue) {
+    setConfirmPasswordError(true);
+    setConfirmPasswordErrorMessage('Password를 한번 더 입력해주세요.');
+    isValid = false;
+  }
+
+  // 4. co-num 값이 있고, co-name 값이 없을 경우
+  if (coNumValue && !coNameValue) {
+    setBusinessNumberError(true);
+    setBusinessNumberErrorMessage('사업자 등록번호 인증을 하셔야 합니다.');
+    isValid = false;
+  }
+
+  return isValid;
+};
 const handleSubmit = async (event) => {
 event.preventDefault();
 
 if (!validateInputs()) {
-return;
+  return;
 }
 
 const userId = document.getElementById('ID').value;
@@ -338,25 +432,25 @@ const enterpriseNum = document.getElementById('co-num').value;
 const enterpriseName = document.getElementById('co-name').value;
 
 try {
-const response = await axios.post(
-'http://localhost:8080/users/signup',{
-userId : userId,
-userName : userName,
-userPwd : userPwd,
-userEmail : userEmail,
-enterpriseNum : parseInt(enterpriseNum, 10),
-enterpriseName : enterpriseName,
-});
+  const response = await axios.post(
+    'http://localhost:8080/users/signup',{
+    userId : userId,
+    userName : userName,
+    userPwd : userPwd,
+    userEmail : userEmail,
+    enterpriseNum : parseInt(enterpriseNum, 10),
+    enterpriseName : enterpriseName,
+  });
 
-if (response.status === 200 || response.status === 201) {
-alert('회원가입이 성공적으로 완료되었습니다!');
-window.location.href = '/sign-in';
-} else {
-alert('회원가입에 실패했습니다. 다시 시도해주세요.');
-}
+  if (response.status === 200 || response.status === 201) {
+   alert('회원가입이 성공적으로 완료되었습니다!');
+    window.location.href = '/sign-in';
+  } else {
+    alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+  }
 } catch (error) {
-console.error('Error during signup:', error);
-alert('회원가입 중 오류가 발생했습니다.');
+  console.error('Error during signup:', error);
+  alert('회원가입 중 오류가 발생했습니다.');
 }
 };
 
@@ -387,7 +481,8 @@ required
 fullWidth
 name="name"
 placeholder="Name"
-// type="email"
+value={name} // 상태와 연동
+onChange={handleNameChange} // 상태 업데이트 핸들러
 id="name"
 autoComplete="off"
 error={nameError}
@@ -413,7 +508,7 @@ id="email"
 autoComplete="off"
 error={emailError}
 helperText={emailErrorMessage}
-disabled={emailDisabled}
+disabled={(name==="")||emailDisabled}
 InputProps={{
 endAdornment: emailDisabled && (
 <InputAdornment position="end">
@@ -486,7 +581,7 @@ marginTop: '10px', // 위쪽 마진 추가
 )}
 
 <Divider>
-<Typography sx={{ color: 'text.secondary' }}></Typography>
+  <Typography sx={{ color: 'text.secondary' }}></Typography>
 </Divider>
 
 <FormControl>
@@ -502,7 +597,7 @@ id="ID"
 autoComplete="off"
 error={idError}
 helperText={idErrorMessage}
-                  disabled={idDisabled}
+disabled={idDisabled||!emailDisabled}
 
 InputProps={{
 endAdornment: idVerified && (
@@ -539,11 +634,11 @@ value={password}
 onChange={handlePasswordChange}
 error={passwordError}
 helperText={passwordErrorMessage}
-                disabled={passwordDisabled}
+                disabled={passwordDisabled||!idDisabled}
 InputProps={{
-endAdornment: confirmPassword && password == confirmPassword && (
+endAdornment: passwordVerified && (
 <InputAdornment position="end">
-<TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
+  <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
 </InputAdornment>
 ),
 }}
@@ -555,18 +650,18 @@ endAdornment: confirmPassword && password == confirmPassword && (
 <TextField
 required
 fullWidth
-name="confirm-password"
+name="confirmPassword"
 placeholder="••••••"
 type="password"
-id="confirm-password"
+id="confirmPassword"
 autoComplete="new-password"
 value={confirmPassword}
 onChange={handleConfirmPasswordChange}
 error={confirmpasswordError}
 helperText={confirmpasswordErrorMessage}
-                disabled={passwordDisabled}
+disabled={passwordDisabled||passwordError}
 InputProps={{
-endAdornment: confirmPassword && password == confirmPassword && (
+endAdornment: confirmPassword && password === confirmPassword && (
 <InputAdornment position="end">
 <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
 </InputAdornment>
@@ -584,6 +679,7 @@ endAdornment: confirmPassword && password == confirmPassword && (
 {/* 대표번호 */}
 <Box display="flex" alignItems="center" gap={1}>
 <TextField
+required
 fullWidth
 name="co-num"
 placeholder="대표번호"
@@ -591,6 +687,7 @@ id="co-num"
 type="tel"
 error={businessNumberError}
 helperText={businessNumberErrorMessage}
+disabled={!passwordDisabled}
 InputProps={{
 endAdornment: isBusinessNumberVerified && (
 <InputAdornment position="end">
@@ -614,11 +711,12 @@ minWidth: '90px',
 <FormLabel htmlFor="address">회사명</FormLabel>
 {/* 회사명 */}
 <TextField
+required
 fullWidth
 name="co-name"
 id="co-name"
 placeholder="회사명"
-disabled={isCompanyNameDisabled}
+disabled={true}
 />
 </FormControl>
 

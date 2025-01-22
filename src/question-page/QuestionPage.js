@@ -58,7 +58,7 @@ export default function QuestionPage(props) {
       alert(`문의 전송에 실패했습니다: ${error.response?.data?.message || error.message}`);
     }
   };
-  
+  const isSubmitDisabled = !title || !detail;
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
@@ -184,6 +184,7 @@ export default function QuestionPage(props) {
                             color="secondary" 
                             onClick={handleImageDelete}
                             size="medium"
+                             
                           >
                             이미지 삭제
                           </Button>
@@ -191,7 +192,9 @@ export default function QuestionPage(props) {
                       )}
                     </Box>
                     <Grid2 item xs={12} display="flex" justifyContent="center">
-                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit}>
+                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit} sx={{
+                                                        pointerEvents: isSubmitDisabled  ? 'none' : 'auto', // 비활성화 상태에서 클릭 방지      
+}}>
                         제출
                         </Button>
                     </Grid2>
