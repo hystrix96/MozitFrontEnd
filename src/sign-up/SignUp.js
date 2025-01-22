@@ -62,20 +62,20 @@ backgroundImage:
 }));
 
 export default function SignUp(props) {
+
 const [emailError, setEmailError] = React.useState(false);
 const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
 const [emailDisabled, setEmailDisabled] = React.useState(false);
-  const [passwordDisabled, setPasswordDisabled] = React.useState(false);
-  const [idDisabled, setIdDisabled] = React.useState(false);
+const [passwordDisabled, setPasswordDisabled] = React.useState(false);
+const [idDisabled, setIdDisabled] = React.useState(false);
 
 const [password, setPassword] = React.useState('');
 const [confirmPassword, setConfirmPassword] = React.useState('');
-const [passwordError, setPasswordError] = React.useState(false);
+const [passwordError, setPasswordError] = React.useState(true);
 const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-const [confirmpasswordError, setConfirmPasswordError] = React.useState(false);
+const [confirmpasswordError, setConfirmPasswordError] = React.useState('true');
 const [confirmpasswordErrorMessage, setConfirmPasswordErrorMessage] = React.useState('');
-const [passwordVerified, setPasswordVerified] = React.useState(false);
-
+const [name, setName] = React.useState(""); // 이름 상태
 const [nameError, setNameError] = React.useState(false);
 const [nameErrorMessage, setNameErrorMessage] = React.useState('');
 
@@ -111,7 +111,23 @@ clearInterval(interval);
 return () => clearInterval(interval);
 }, [isCodeSent, timer]);
 
-//이메일 중복 확인
+//이름 입력 확인
+ const handleNameChange = (e) => {
+    const value = e.target.value;
+    setName(value);
+
+    // 에러 처리 로직 (예: 값이 비어 있으면 에러)
+    if (value.trim() === "") {
+      setNameError(true);
+      setNameErrorMessage("이름을 입력해주세요.");
+    } else {
+      setNameError(false);
+      setNameErrorMessage("");
+    }
+  };
+
+//이메일 인증 요청
+
 const checkEmail = async (userEmail) => {  
   try {
   const response = await axios.get('http://localhost:8080/users/check-email', {
@@ -134,7 +150,6 @@ const checkEmail = async (userEmail) => {
     return false;
   }
 };
-//이메일 인증 요청
 const handleSendCode = async () => {
 const emailInput = document.getElementById('email');
 const email = emailInput.value;
@@ -279,13 +294,14 @@ const value = event.target.value;
 setConfirmPassword(value);
 
 // 비밀번호와 확인 비밀번호를 비교
-if (value && value !== password) {
+
+if (value !== password) {
 setConfirmPasswordError(true);
 setConfirmPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
 } else {
 setConfirmPasswordError(false);
 setConfirmPasswordErrorMessage('');
-      if (value === password) {
+      if ((passwordError ===false)&&(value === password)) {
       setPasswordDisabled(true); // 비밀번호와 확인 비밀번호가 일치하면 비밀번호 입력 필드를 비활성화
     }
 }
@@ -338,48 +354,63 @@ alert('사업자 번호 인증 중 오류가 발생했습니다.');
 
 //마지막 유효성 검사
 const validateInputs = () => {
-  // 필수 입력 필드와 상태를 매핑
-  const fields = {
-    ID: { setter: setIdError, messageSetter: setIdErrorMessage, verified: idVerified },
-    name: { setter: setNameError, messageSetter: setNameErrorMessage },
-    email: { setter: setEmailError, messageSetter: setEmailErrorMessage, verified: emailVerified },
-    'co-num': { setter: setBusinessNumberError, messageSetter: setBusinessNumberErrorMessage, verified: isBusinessNumberVerified },
-    'co-name': { setter: setNameError, messageSetter: setNameErrorMessage },
-    password: { setter: setPasswordError, messageSetter: setPasswordErrorMessage },
-  };
+const fields = {
+ID: { setter: setIdError, messageSetter: setIdErrorMessage },
+name: { setter: setNameError, messageSetter: setNameErrorMessage },
+email: { setter: setEmailError, messageSetter: setEmailErrorMessage },
+password:{setter:setPasswordError,messageSetter:setPasswordErrorMessage},
+confirmPassword:{setter:setConfirmPasswordError,messageSetter:setConfirmPasswordErrorMessage},
+'co-num': { setter: setBusinessNumberError, messageSetter: setBusinessNumberErrorMessage },
+'co-name': { setter: setBusinessNumberError, messageSetter: setBusinessNumberErrorMessage },
+};
 
-  let isValid = true;
+let isValid = true;
+Object.entries(fields).forEach(([id, { setter, messageSetter }]) => {
+const value = document.getElementById(id)?.value;
+if (!value) {
+setter(true);
+messageSetter('필수 입력 항목입니다.');
+isValid = false;
+} else {
+setter(false);
+messageSetter('');
+}
+});
 
-  // 필수 입력 필드 검사
-  Object.entries(fields).forEach(([element, { setter, messageSetter, verified }]) => {
-    const value = document.getElementById(element)?.value?.trim(); // 공백 제거
-    console.log(`${element}: ${value}`);
+ // 추가 유효성 검사
+  const emailValue = document.getElementById('email')?.value;
+  const idValue = document.getElementById('ID')?.value;
+  const passwordValue = document.getElementById('password')?.value;
+  const confirmPasswordValue = document.getElementById('confirmPassword')?.value;
+  const coNumValue = document.getElementById('co-num')?.value;
+  const coNameValue = document.getElementById('co-name')?.value;
 
-    if (!value) {
-      setter(true);
-      messageSetter('필수 입력 항목입니다.');
-      isValid = false;
-    } else {
-      setter(false);
-      messageSetter('');
-    }
-
-    // 인증이 필요한 경우 확인
-    if (verified !== undefined && !verified) {
-      setter(true);
-      messageSetter('필수 입력 항목입니다.');
-      isValid = false;
-    }
-  });
-
-  // 패스워드 확인 로직 추가
-  if (password !== confirmPassword) {
-    setConfirmPasswordError(true);
-    setConfirmPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
+  // 1. email 값이 있고, ID 값이 비어 있을 경우
+  if (emailValue && !idValue) {
+    setEmailError(true);
+    setEmailErrorMessage('Email 인증을 하셔야 합니다.');
     isValid = false;
-  } else {
-    setConfirmPasswordError(false);
-    setConfirmPasswordErrorMessage('');
+  }
+
+  // 2. ID 값이 있고, password 값이 비어 있을 경우
+  if (idValue && !passwordValue) {
+    setIdError(true);
+    setIdErrorMessage('ID 중복 인증을 하셔야 합니다.');
+    isValid = false;
+  }
+
+  // 3. password 값이 있고, confirmPassword 값이 비어 있을 경우
+  if (passwordValue && !confirmPasswordValue) {
+    setConfirmPasswordError(true);
+    setConfirmPasswordErrorMessage('Password를 한번 더 입력해주세요.');
+    isValid = false;
+  }
+
+  // 4. co-num 값이 있고, co-name 값이 없을 경우
+  if (coNumValue && !coNameValue) {
+    setBusinessNumberError(true);
+    setBusinessNumberErrorMessage('사업자 등록번호 인증을 하셔야 합니다.');
+    isValid = false;
   }
 
   return isValid;
@@ -448,7 +479,8 @@ required
 fullWidth
 name="name"
 placeholder="Name"
-// type="email"
+value={name} // 상태와 연동
+onChange={handleNameChange} // 상태 업데이트 핸들러
 id="name"
 autoComplete="off"
 error={nameError}
@@ -474,7 +506,7 @@ id="email"
 autoComplete="off"
 error={emailError}
 helperText={emailErrorMessage}
-disabled={emailDisabled}
+disabled={(name==="")||emailDisabled}
 InputProps={{
 endAdornment: emailDisabled && (
 <InputAdornment position="end">
@@ -551,34 +583,39 @@ marginTop: '10px', // 위쪽 마진 추가
 </Divider>
 
 <FormControl>
-  <FormLabel htmlFor="ID">ID</FormLabel>
-  <Box display="flex" alignItems="center" gap={1}>
-    <TextField
-    required
-    fullWidth
-    name="ID"
-    placeholder="Your ID"
-    type="text"
-    id="ID"
-    autoComplete="off"
-    error={idError}
-    helperText={idErrorMessage}
-  disabled={idDisabled}
-    InputProps={{
-      endAdornment: idVerified && (
-      <InputAdornment position="end">
-      <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
-      </InputAdornment>
-      ),
-    }}/>
-    <Button
-      variant="contained"
-      onClick={handleCheckId}
-      sx={{
-      minWidth: '90px',
-      pointerEvents: idDisabled ? 'none' : 'auto',    
-    }}>{idVerified ? '확인완료' : '중복확인'}</Button>
-  </Box>
+<FormLabel htmlFor="ID">ID</FormLabel>
+<Box display="flex" alignItems="center" gap={1}>
+<TextField
+required
+fullWidth
+name="ID"
+placeholder="Your ID"
+type="text"
+id="ID"
+autoComplete="off"
+error={idError}
+helperText={idErrorMessage}
+disabled={idDisabled||!emailDisabled}
+
+InputProps={{
+endAdornment: idVerified && (
+<InputAdornment position="end">
+<TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
+</InputAdornment>
+),
+}}
+/>
+<Button
+variant="contained"
+onClick={handleCheckId}
+sx={{
+minWidth: '90px',
+                    
+                    pointerEvents: idDisabled ? 'none' : 'auto', // 비활성화 상태에서 클릭 방지      
+}}
+       
+                >{idVerified ? '확인완료' : '중복확인'}</Button>
+</Box>
 </FormControl>
 
 <FormControl>
@@ -595,9 +632,9 @@ value={password}
 onChange={handlePasswordChange}
 error={passwordError}
 helperText={passwordErrorMessage}
-                disabled={passwordDisabled}
+                disabled={passwordDisabled||!idDisabled}
 InputProps={{
-endAdornment: passwordVerified && (
+endAdornment: confirmPassword && password === confirmPassword && (
 <InputAdornment position="end">
   <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
 </InputAdornment>
@@ -611,18 +648,18 @@ endAdornment: passwordVerified && (
 <TextField
 required
 fullWidth
-name="confirm-password"
+name="confirmPassword"
 placeholder="••••••"
 type="password"
-id="confirm-password"
+id="confirmPassword"
 autoComplete="new-password"
 value={confirmPassword}
 onChange={handleConfirmPasswordChange}
 error={confirmpasswordError}
 helperText={confirmpasswordErrorMessage}
-                disabled={passwordDisabled}
+disabled={passwordDisabled||passwordError}
 InputProps={{
-endAdornment: confirmPassword && password == confirmPassword && (
+endAdornment: confirmPassword && password === confirmPassword && (
 <InputAdornment position="end">
 <TaskAltIcon color="blue" sx={{ fontSize: 17 }}/>
 </InputAdornment>
@@ -648,6 +685,7 @@ id="co-num"
 type="tel"
 error={businessNumberError}
 helperText={businessNumberErrorMessage}
+disabled={!passwordDisabled}
 InputProps={{
 endAdornment: isBusinessNumberVerified && (
 <InputAdornment position="end">
@@ -676,7 +714,7 @@ fullWidth
 name="co-name"
 id="co-name"
 placeholder="회사명"
-disabled={isCompanyNameDisabled}
+disabled={true}
 />
 </FormControl>
 
