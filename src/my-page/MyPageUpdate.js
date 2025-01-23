@@ -52,11 +52,12 @@ export default function MyPageCheck(props) {
   const [isPasswordValid, setIsPasswordValid] = React.useState(false);
   const [confirmPwd, setConfirmPwd] = React.useState('');
   const [isConfirmPwdValid, setIsConfirmPwdValid] = React.useState(false);
-
+  // 상태 추가
+  const [isPasswordSameAsOld, setIsPasswordSameAsOld] = React.useState(false);
 
   React.useEffect(() => {
-      fetchUserData();
-    }, []);
+    fetchUserData();
+  }, []);
 
   const handlePasswordCheck = async (event) => {
     event.preventDefault();
@@ -64,7 +65,7 @@ export default function MyPageCheck(props) {
     try {
       const response = await axiosInstance.post(
         '/my/verify-password',
-        inputPassword, 
+        inputPassword,
         {
           headers: {
             'Content-Type': 'text/plain',
@@ -84,7 +85,7 @@ export default function MyPageCheck(props) {
       setOpenDialog(true);
     }
   };
-  
+
   const fetchUserData = async () => {
     try {
       const response = await axiosInstance.get('/my');
@@ -95,40 +96,45 @@ export default function MyPageCheck(props) {
       setOpenDialog(true);
     }
   };
-  
+
   const navigate = useNavigate();
 
   const handleUserUpdate = async (event) => {
     event.preventDefault();
-  
+
     const updatedData = {};
 
     if (event.target.userName.value !== userData.userName) {
       updatedData.userName = event.target.userName.value;
     }
-  
+
     if (event.target.userEmail.value !== userData.userEmail) {
       updatedData.userEmail = event.target.userEmail.value;
     }
-  
+
     if (userPwd && isPasswordValid) {
       updatedData.userPwd = userPwd; // 비밀번호 유효성 검사 통과 시 추가
     } else if (userPwd && !isPasswordValid) {
       alert("새 비밀번호가 유효하지 않습니다. 다시 확인해주세요.");
       return;
     }
-  
+
+    if (isPasswordSameAsOld) {
+      alert("새 비밀번호가 기존 비밀번호와 동일합니다. 다른 비밀번호를 입력해주세요.");
+      return;
+    }
+    
     // 요청할 데이터가 없는 경우 경고 메시지
     if (Object.keys(updatedData).length === 0) {
       alert("변경된 사항이 없습니다.");
       return;
     }
-  
+
     try {
       const response = await axiosInstance.patch('http://localhost:8080/my', updatedData, {
         headers: { 'Content-Type': 'application/json' },
       });
-  
+
       if (response.status === 200) {
         alert('정보가 성공적으로 수정되었습니다.');
         setUserData((prevData) => ({
@@ -151,7 +157,7 @@ export default function MyPageCheck(props) {
       alert('정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
-  
+
 
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
@@ -165,6 +171,13 @@ export default function MyPageCheck(props) {
     const password = e.target.value;
     setUserPwd(password);
     setIsPasswordValid(validatePassword(password));
+
+    // 기존 비밀번호와 새 비밀번호 비교
+    if (password === inputPassword) {
+      setIsPasswordSameAsOld(true); // 비밀번호가 같으면 오류 표시
+    } else {
+      setIsPasswordSameAsOld(false); // 비밀번호가 다르면 오류 해제
+    }
   };
 
   const handleConfirmPasswordChange = (e) => {
@@ -291,6 +304,7 @@ export default function MyPageCheck(props) {
                   defaultValue={userData.userEmail || ''}
                   variant="outlined"
                   fullWidth
+                  disabled={true}
                 />
               </FormControl>
               <Box sx={{ width: '100%', borderBottom: '1px solid #ccc', mb: 2 }} />
@@ -325,16 +339,18 @@ export default function MyPageCheck(props) {
                   variant="outlined"
                   fullWidth
                   onChange={handlePasswordChange}
-                  error={!isPasswordValid && userPwd.length > 0} 
+                  error={!isPasswordValid && userPwd.length > 0 || isPasswordSameAsOld} // 비밀번호가 유효하지 않거나 기존 비밀번호와 같을 때 오류
                   helperText={
-                    !isPasswordValid && userPwd.length > 0
-                      ? "영문, 숫자, 특수문자 중 2개 이상 조합하여 8자 이상 입력하세요."
-                      : "영문, 숫자, 특수문자 중 2개 이상 조합하여 8자 이상 입력하세요."
+                    isPasswordSameAsOld
+                      ? "기존 비밀번호와 같습니다." // 기존 비밀번호와 같을 때 메시지
+                      : !isPasswordValid && userPwd.length > 0
+                        ? "영문, 숫자, 특수문자 중 2개 이상 조합하여 8자 이상 입력하세요."
+                        : "영문, 숫자, 특수문자 중 2개 이상 조합하여 8자 이상 입력하세요."
                   }
                   InputProps={{
-                    endAdornment: isPasswordValid ? (
+                    endAdornment: !isPasswordSameAsOld && isPasswordValid ? (
                       <InputAdornment position="end">
-                        <TaskAltIcon color="success" sx={{ fontSize: 17 }}/>
+                        <TaskAltIcon color="success" sx={{ fontSize: 17 }} />
                       </InputAdornment>
                     ) : null,
                   }}
@@ -355,9 +371,9 @@ export default function MyPageCheck(props) {
                       : " "
                   }
                   InputProps={{
-                    endAdornment: isConfirmPwdValid  ? (
+                    endAdornment: isConfirmPwdValid ? (
                       <InputAdornment position="end">
-                        <TaskAltIcon color="success" sx={{ fontSize: 17 }}/>
+                        <TaskAltIcon color="success" sx={{ fontSize: 17 }} />
                       </InputAdornment>
                     ) : null,
                   }}

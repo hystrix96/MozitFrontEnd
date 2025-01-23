@@ -249,8 +249,21 @@ export default function AppAppBar() {
                 },
               }}
             >
-              <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
+              {/* <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <IconButton onClick={toggleDrawer(false)}>
+                    <CloseRoundedIcon />
+                  </IconButton>
+                </Box> */}
+              <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between', // 좌우로 배치
+                    alignItems: 'center', // 수직 정렬
+                  }}
+                >
+                  <Sitemark height={20} />
                   <IconButton onClick={toggleDrawer(false)}>
                     <CloseRoundedIcon />
                   </IconButton>
