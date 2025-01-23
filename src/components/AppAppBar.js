@@ -224,7 +224,7 @@ export default function AppAppBar() {
                 <Button color="primary" variant="text" size="small" component={Link} to="/sign-in">
                   로그인
                 </Button>
-                <Button color="primary" variant="contained" size="small" component={Link} to="/agree">
+                <Button color="primary" variant="text" size="small" component={Link} to="/agree">
                   회원가입
                 </Button>
               </>
