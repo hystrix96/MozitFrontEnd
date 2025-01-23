@@ -8,8 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import axios from 'axios';
-import InputAdornment from '@mui/material/InputAdornment';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import Typography from "@mui/material/Typography";
 import TextField from '@mui/material/TextField'; 
 
 function ForgotPassword({ open, handleClose }) {
@@ -22,19 +21,11 @@ function ForgotPassword({ open, handleClose }) {
   const [codeError, setCodeError] = useState(false);
   const [codeErrorMessage, setCodeErrorMessage] = useState('');
 
-  const [password, setPassword] = useState('');
-  const [confirmpassword, setConfirmPassword] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
-  const [confirmpasswordError, setConfirmPasswordError] = useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
-  const [confirmpasswordErrorMessage, setConfirmPasswordErrorMessage] = useState('');
-  const [passwordVerified, setPasswordVerified] = useState(false);
-  const [confirmpasswordVerified, setConfirmPasswordVerified] = useState(false);
-  
   const [emailSent, setEmailSent] = useState(false); 
   const [isCodeExpired, setIsCodeExpired] = useState(false);
   const [timer, setTimer] = useState(0); 
-  const [temporaryToken, settemporaryToken] = useState('');
+
+  const [Id, setId] = useState('');
 
 
   //이메일 인증 타이머 설정
@@ -65,46 +56,6 @@ function ForgotPassword({ open, handleClose }) {
       }
       return prevStep - 1;
     });
-  };
-
-  const handlePasswordChange = (event) => {
-    const value = event.target.value;
-    setPassword(value);
-
-    const hasLetters = /[a-zA-Z]/.test(value);
-    const hasNumbers = /\d/.test(value);
-    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(value);
-    const validTypes = [hasLetters, hasNumbers, hasSpecialChars].filter(Boolean).length;
-
-    if (value.length < 8) {
-      setPasswordVerified(false);
-      setPasswordError(true);
-      setPasswordErrorMessage('비밀번호는 8자 이상이어야 합니다.');
-
-    } else if (validTypes < 2) {
-      setPasswordVerified(false);
-      setPasswordError(true);
-      setPasswordErrorMessage('비밀번호는 영어, 숫자, 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
-    } else {
-      setPasswordVerified(true);
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-  };
-
-  const handleConfirmPasswordChange = (event) => {
-    const value = event.target.value;
-    setConfirmPassword(value);
-
-    if (value !== password) {
-      setConfirmPasswordVerified(false);
-      setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
-    } else {
-      setConfirmPasswordVerified(true);
-      setConfirmPasswordError(false);
-      setConfirmPasswordErrorMessage('');
-    }
   };
 
   //이메일 존재 확인
@@ -176,40 +127,43 @@ function ForgotPassword({ open, handleClose }) {
       if (response.status === 200) {
         setTimer(0);
         alert('이메일 인증이 완료되었습니다.');
-        settemporaryToken(response.headers['temporary-token'])
+        setCodeError(false);
+        setCodeErrorMessage('');
         handleNext();
+        findId();        
       } else {
-        settemporaryToken('')
         throw new Error('인증 실패');
       }
     } catch (error) {
+      setCodeError(true);
+      setCodeErrorMessage('유효하지 않은 인증코드입니다.');
       console.error('Error verifying code:', error);
     }
   };
 
-  //비밀번호 재설정
-  const handleResetPassword = async () => {
-    if(passwordVerified && confirmpasswordVerified){
-      try {
-        // 비밀번호 리셋을 위한 백엔드 API 호출
-        const response = await axios.post('http://localhost:8080/users/reset-password', {
-          "new-pwd": password,
-        },
+  //아이디찾기기
+  const findId = async () => {
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/users/find-id',
+        null, 
         {
-          headers: {
-            Authorization: `${temporaryToken}`,
-          },
-        });
-
-        if (response.status == 200) {
-          alert('비밀번호가 변경이 완료되었습니다.');
-          handleClose();
-        } else {
-          alert('비밀번호 변경 실패');
+            params: { email: userEmail }, 
+            headers: {
+                'Content-Type': 'application/json',
+            },
         }
-      } catch (error) {
-        console.error('Error resetting password:', error);
+    );
+      console.log(response)
+    
+      if (response.status === 200) {
+        console.log(response.data);
+        setId(response.data);
+        return true;
       }
+    } catch (error) {
+        console.error('아이디 찾기 중 오류 발생:', error);
+        return false;
     }
   };
 
@@ -218,12 +172,11 @@ function ForgotPassword({ open, handleClose }) {
     setStep(1);
     setuserEmail('');
     setCode('');
-    setPassword('');
-    settemporaryToken('')
     setEmailSent(false);
     setIsCodeExpired(false);
     setEmailSent(false);
     setTimer(0);
+    setId('');
     setEmailError(false);
     setEmailErrorMessage('');
     setCodeError(false);
@@ -241,38 +194,38 @@ function ForgotPassword({ open, handleClose }) {
           event.preventDefault();
           if (step === 1) handleSendCode();
           else if (step === 2) handleVerifyCode();
-          else if (step === 3) handleResetPassword();
+          // else if (step === 3)
         },
       }}
     >
       <DialogTitle>
-      {step === 1 && '이메일 인증'}
+        {step === 1 && '이메일 인증'}
         {step === 2 && '인증 코드 입력'}
-        {step === 3 && '비밀번호 재설정'}
+        {step === 3 && '아이디 찾기'}
       </DialogTitle>
       <DialogContent
         sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}
       >
         {step === 1 && (
-          <>
-            <DialogContentText>
-              회원님의 이메일을 입력해주세요. 인증코드가 전송됩니다.
-            </DialogContentText>
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="email"
-              name="email"
-              placeholder="이메일 입력"
-              type="email"
-              fullWidth
-              value={userEmail}
-              onChange={(e) => setuserEmail(e.target.value)}
-              error={emailError} // 에러 상태 설정
-              helperText={emailErrorMessage} // 에러 메시지 표시
-            />
-          </>
+           <>
+           <DialogContentText>
+             회원님의 이메일을 입력해주세요. 인증코드가 전송됩니다.
+           </DialogContentText>
+           <TextField
+             autoFocus
+             required
+             margin="dense"
+             id="email"
+             name="email"
+             placeholder="이메일 입력"
+             type="email"
+             fullWidth
+             value={userEmail}
+             onChange={(e) => setuserEmail(e.target.value)}
+             error={emailError} // 에러 상태 설정
+             helperText={emailErrorMessage} // 에러 메시지 표시
+           />
+         </>
         )}
         {step === 2 && (
           <>
@@ -298,60 +251,30 @@ function ForgotPassword({ open, handleClose }) {
         {step === 3 && (
           <>
             <DialogContentText>
-              새로운 비밀번호를 입력해주세요.<br/>
-              8자리 이상, 영어, 숫자, 특수문자 중 두가지 이상의 유형을 포함해야합니다.
+              인증이 완료되었습니다. 회원님의 아이디는 다음과 같습니다.
             </DialogContentText>
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="password"
-              name="password"
-              placeholder="새 비밀번호 입력"
-              type="password"
-              fullWidth
-              value={password}
-              onChange={handlePasswordChange}
-              error={passwordError}
-              helperText={passwordErrorMessage} 
-              InputProps={{
-                endAdornment: passwordVerified && (
-                  <InputAdornment position="end">
-                    <TaskAltIcon color="success" sx={{ fontSize: 17 }} />
-                  </InputAdornment>
-                ),
+            <Typography
+              variant="h6"
+              component="p"
+              sx={{
+                textAlign: 'center',
+                fontWeight: 'bold',
+                mt: 2, // 위쪽 여백
+                padding: '50px', // 패딩 추가
+                borderRadius: '8px', // 둥근 테두리
+                backgroundColor: 'rgba(0, 123, 255, 0.1)', // 배경 색
               }}
-            />
-
-            <TextField
-              required
-              margin="dense"
-              id="confirmPassword"
-              name="confirmPassword"
-              placeholder="비밀번호 재입력"
-              type="password"
-              fullWidth
-              value={confirmpassword}
-              onChange={handleConfirmPasswordChange}
-              error={confirmpasswordError}
-              helperText={confirmpasswordErrorMessage}
-              InputProps={{
-                endAdornment:
-                  confirmpassword && confirmpassword === password && (
-                    <InputAdornment position="end">
-                      <TaskAltIcon color="success" sx={{ fontSize: 17 }} />
-                    </InputAdornment>
-                  ),
-              }}
-            />
+            >
+              {Id}
+            </Typography>
           </>
         )}
       </DialogContent>
       <DialogActions sx={{ pb: 3, px: 3 }}>
-        {step > 1 && step < 3 && <Button onClick={handleBack}>Back</Button>}
+        {step > 1 && <Button onClick={handleBack}>Back</Button>}
         {step < 3 && <Button type="submit" variant="contained">Next</Button>}
-        {step === 3 && <Button type="submit" variant="contained">Submit</Button>}
-        <Button onClick={handleDialogClose}>Cancel</Button>
+        {step === 3 ? <Button onClick={handleDialogClose} variant="contained">Submit</Button>:
+        <Button onClick={handleDialogClose}>Cancel</Button>}
       </DialogActions>
     </Dialog>
   );

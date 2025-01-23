@@ -15,6 +15,7 @@ import { FormControlLabel, FormControl, FormLabel, TextField, Box, Typography, L
 import MuiCard from '@mui/material/Card';
 // import { styled } from '@mui/material/styles';
 import ForgotPassword from './components/ForgotPassword';
+import ForgotId from './components/ForgotId';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
@@ -64,31 +65,24 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn(props) {
+  const [rememberMe, setRememberMe] = React.useState(() => {
+    return localStorage.getItem('rememberedUserId') ? true : false;
+  });
+  const [userId, setUserId] = React.useState(() => {
+    return localStorage.getItem('rememberedUserId') || '';
+  });
   const [userIdError, setUserIdError] = React.useState(false);
   const [userIdErrorMessage, setUserIdErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+  const [openId, setOpenId] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const handleClickOpenId = () => setOpenId(true);
+  const handleCloseId = () => setOpenId(false);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  // const handleSubmit = (event) => {
-  //   if (emailError || passwordError) {
-  //     event.preventDefault();
-  //     return;
-  //   }
-  //   const data = new FormData(event.currentTarget);
-  //   console.log({
-  //     email: data.get('email'),
-  //     password: data.get('password'),
-  //   });
-  // };
   const handleSubmit = async (event) => {
   event.preventDefault(); // 기본 폼 제출 동작을 방지.
 
@@ -116,9 +110,13 @@ export default function SignIn(props) {
     console.log(response);
     // 응답 처리
     if (response.status === 200) {
-        alert('로그인 성공!');
+        if (rememberMe) {
+          localStorage.setItem('rememberedUserId', userId);
+        } else {
+          localStorage.removeItem('rememberedUserId');
+        }
         if(userId==='admin')
-          window.location.href='/dashboard';
+          window.location.href='/admin/dashboard';
         else
           window.location.href = '/'; // 성공 시 페이지 이동
     } else {
@@ -165,7 +163,16 @@ export default function SignIn(props) {
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            mb: 2, 
+          }}
+        >
           <SitemarkIcon height={20} />
+        </Box>
           <Typography
             component="h1"
             variant="h4"
@@ -192,6 +199,8 @@ export default function SignIn(props) {
                 id="userId"
                 type="text"
                 name="userId"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
                 placeholder="Enter your Id"
                 autoFocus
                 required
@@ -218,10 +227,16 @@ export default function SignIn(props) {
               />
             </FormControl>
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={
+                <Checkbox
+                  value="remember"
+                  color="primary"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+              }
               label="Remember me"
-            />
-            <ForgotPassword open={open} handleClose={handleClose} />
+            />            
             <Button
               type="submit"
               fullWidth
@@ -230,15 +245,35 @@ export default function SignIn(props) {
             >
               Sign in
             </Button>
-            <Link
-              component="button"
-              type="button"
-              onClick={handleClickOpen}
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
+            <ForgotPassword open={open} handleClose={handleClose} />
+            <ForgotId open={openId} handleClose={handleCloseId} />
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 1,         
+              }}
             >
-              Forgot your password?
-            </Link>
+              <Link
+                component="button"
+                type="button"
+                onClick={handleClickOpenId}
+                variant="body2"
+              >
+                Forgot your ID?
+              </Link>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                /
+              </Typography>
+              <Link
+                component="button"
+                type="button"
+                onClick={handleClickOpen}
+                variant="body2"
+              >
+                Forgot your password?
+              </Link>
+            </Box>
           </Box>
           {/* <Divider>or</Divider> */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
