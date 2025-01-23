@@ -35,7 +35,7 @@ const items = [
     description:
       '사용자가 선택한 인물을 자동으로 모자이크 처리하여 개인의 프라이버시를 보호하는 서비스를 제공합니다.',
     image1: `url("/assets/img/brand/mina.png")`, // 공통 이미지
-    image2: `url("/assets/img/brand/mina.jpg")`,
+    image2: `url("/assets/img/brand/mina.png")`,
   },
 ];
 
@@ -258,20 +258,22 @@ export default function Features() {
                   width: '50%',
                   height: '100%',
                   backgroundImage: items[selectedItemIndex].image1,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
+                  backgroundSize: '200% 100%', // 가로 방향으로 2배 확대
+                  backgroundPosition: 'left', // 왼쪽 절반만 표시
                 }}
               />
+
               {/* 우측 이미지 */}
               <Box
                 sx={{
                   width: '50%',
                   height: '100%',
                   backgroundImage: items[selectedItemIndex].image2,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
+                  backgroundSize: '200% 100%', // 가로 방향으로 2배 확대
+                  backgroundPosition: 'right', // 오른쪽 절반만 표시
                 }}
               />
+
               {/* 중앙 분할 선 */}
               <Box
                 sx={{

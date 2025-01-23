@@ -292,7 +292,7 @@ export default function Hero({ onPricingButtonClick }) {
         const currentValue = parseFloat(slider.value);
 
         // 값 증가, 100%에 도달하면 다시 0으로 리셋
-        const newValue = currentValue + 0.7;
+        const newValue = currentValue + direction * 0.7;
         // slider.value = newValue >= 100 ? 0 : newValue;
 
         if (newValue >= 100) {
