@@ -18,21 +18,24 @@ const items = [
     title: '유해요소',
     description:
       '아동 및 청소년에게 유해한 요소를 자동으로 차단하여 안전한 영상을 제공합니다.',
-    image: `url("/assets/img/brand/face.png")`, // 공통 이미지
+    image1: `url("/assets/img/brand/blood1.jpg")`, // 공통 이미지
+    image2: `url("/assets/img/brand/blood2.jpg")`,
   },
   {
     icon: <ContactEmergencyRoundedIcon />,
     title: '개인정보',
     description:
       '민증, 여권 등 개인정보가 포함된 콘텐츠를 자동으로 모자이크 처리하여 개인정보 유출을 방지합니다.',
-    image: `url("/assets/img/brand/face2.png")`, // 공통 이미지
+    image1: `url("/assets/img/brand/roadsign1.jpg")`, // 공통 이미지
+    image2: `url("/assets/img/brand/roadsign2.jpg")`,
   },
   {
     icon: <PersonOffRoundedIcon />,
     title: '인물',
     description:
       '사용자가 선택한 인물을 자동으로 모자이크 처리하여 개인의 프라이버시를 보호하는 서비스를 제공합니다.',
-    image: `url("/assets/img/brand/mina.png")`, // 공통 이미지
+    image1: `url("/assets/img/brand/mina.png")`, // 공통 이미지
+    image2: `url("/assets/img/brand/mina.jpg")`,
   },
 ];
 
@@ -229,7 +232,7 @@ export default function Features() {
               pointerEvents: 'none',
             }}
           >
-            <Box
+            {/* <Box
               sx={(theme) => ({
                 m: 'auto',
                 width: '100%',
@@ -239,7 +242,48 @@ export default function Features() {
                 backgroundRepeat: 'no-repeat',
                 backgroundImage: items[selectedItemIndex].image, // 공통 이미지 사용
               })}
-            />
+            /> */}
+            {/* 좌우 분할 이미지 */}
+            <Box
+              sx={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+              }}
+            >
+              {/* 좌측 이미지 */}
+              <Box
+                sx={{
+                  width: '50%',
+                  height: '100%',
+                  backgroundImage: items[selectedItemIndex].image1,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              {/* 우측 이미지 */}
+              <Box
+                sx={{
+                  width: '50%',
+                  height: '100%',
+                  backgroundImage: items[selectedItemIndex].image2,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              {/* 중앙 분할 선 */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  width: '2px',
+                  height: '100%',
+                  backgroundColor: 'black',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                }}
+              />
+            </Box>
           </Card>
         </Box>
       </Box>

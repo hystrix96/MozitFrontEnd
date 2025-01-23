@@ -1,4 +1,4 @@
-  import React, {useEffect, useState} from "react";
+  import React, {useEffect, useState, useRef} from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -278,6 +278,67 @@ export default function Hero({ onPricingButtonClick }) {
     return () => observer.disconnect();
   }, []);
 
+  // 슬라이더 자동으로 움직이기 & 드래그로 이동동
+  const sliderRef = useRef(null);
+  const [direction, setDirection] = useState(1); // 1: 오른쪽, -1: 왼쪽
+  const [isDragging, setIsDragging] = useState(false); // 슬라이더 드래그 상태
+
+  useEffect(() => {
+    let interval;
+
+    const moveSlider = () => {
+      if (sliderRef.current && !isDragging) { // 드래그 중이 아닐 때만 이동
+        const slider = sliderRef.current;
+        const currentValue = parseFloat(slider.value);
+
+        // 값 증가, 100%에 도달하면 다시 0으로 리셋
+        const newValue = currentValue + 0.7;
+        // slider.value = newValue >= 100 ? 0 : newValue;
+
+        if (newValue >= 100) {
+          slider.value = 100;
+          setDirection(-1); // 왼쪽으로 이동
+        } else if (newValue <= 0) {
+          slider.value = 0;
+          setDirection(1); // 오른쪽으로 이동
+        } else {
+          slider.value = newValue;
+        }
+      }
+    };
+
+    // 50ms마다 슬라이더 이동
+    interval = setInterval(moveSlider, 50);
+
+    // 컴포넌트 언마운트 시 interval 정리
+    return () => clearInterval(interval);
+  }, [direction, isDragging]);
+
+  useEffect(() => {
+    const slider = sliderRef.current;
+
+    if (slider) {
+      // 슬라이더 클릭(드래그 시작)
+      const handleMouseDown = () => {
+        setIsDragging(true);
+      };
+
+      // 슬라이더 클릭 해제(드래그 종료)
+      const handleMouseUp = () => {
+        setIsDragging(false);
+      };
+
+      slider.addEventListener("mousedown", handleMouseDown);
+      slider.addEventListener("mouseup", handleMouseUp);
+
+      // 이벤트 정리
+      return () => {
+        slider.removeEventListener("mousedown", handleMouseDown);
+        slider.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, []);
+
   return (
     <Box
       id="hero"
@@ -378,7 +439,7 @@ export default function Hero({ onPricingButtonClick }) {
 
         {/* 이미지 슬라이더 */}
         <StyledBox>
-          <img-comparison-slider style={{ width: "100%", height: "100%" }}>
+          <img-comparison-slider ref={sliderRef} style={{ width: "100%", height: "100%" }}>
             <img
               slot="first"
               src="/assets/img/brand/face.png"
