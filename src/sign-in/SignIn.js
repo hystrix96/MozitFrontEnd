@@ -118,7 +118,7 @@ export default function SignIn(props) {
     if (response.status === 200) {
         alert('로그인 성공!');
         if(userId==='admin')
-          window.location.href='/dashboard';
+          window.location.href='/admin/dashboard';
         else
           window.location.href = '/'; // 성공 시 페이지 이동
     } else {
