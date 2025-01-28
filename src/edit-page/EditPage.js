@@ -11,7 +11,8 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios'; 
+import { useAuth } from '../Context/AuthContext';
 
 const StyledBox = styled('div')(({ theme }) => ({
   alignSelf: 'center',
@@ -45,27 +46,36 @@ const StyledBox = styled('div')(({ theme }) => ({
 
 export default function EditPage(props) {
   const [videoSrc, setVideoSrc] = useState(null);
+  const [videoFile, setVideoFile] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null); // Popover 상태 추가
   const [loading, setLoading] = useState(false); // 영상 처리 중 상태 추가
+  const [error, setError] = useState(''); // 에러 메시지
   const editButtonRef = useRef(null); // 편집 시작 버튼 참조 추가
-   const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
+  const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
+  const { accessToken } = useAuth();
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith('video/')) {
+      setVideoFile(file);
       setVideoSrc(URL.createObjectURL(file));
     } else {
-      alert('동영상 파일을 업로드해주세요.');
+      setError('동영상 파일을 업로드해주세요.');
     }
   };
 
   const handleDrop = (event) => {
     event.preventDefault();
+    if (event.dataTransfer.files.length > 1) {
+      setError('한 번에 하나의 동영상만 업로드 가능합니다.');
+      return;
+    }
     const file = event.dataTransfer.files[0];
     if (file && file.type.startsWith('video/')) {
+      setVideoFile(file);
       setVideoSrc(URL.createObjectURL(file));
     } else {
-      alert('동영상 파일을 드롭해주세요.');
+      setError('동영상 파일을 드롭해주세요.');
     }
   };
 
@@ -74,39 +84,65 @@ export default function EditPage(props) {
   };
 
   const handleEditStart = async () => {
-    if (!videoSrc) {
-      setAnchorEl(editButtonRef.current); // Popover 열기
-    } else {
-      navigate('/mozaic', { state: { videoUrl: videoSrc } });
-      // setLoading(true); // 영상 처리 중 상태 시작
-      // try {
-      //   // 서버로 동영상 전송 (예시: fetch를 사용하여 서버로 요청)
-      //   const formData = new FormData();
-      //   const videoFile = videoSrc; // 실제 파일을 보내야 함
-      //   formData.append('video', videoFile);
+    if (!videoFile) {
+      setAnchorEl(editButtonRef.current);
+      setError("동영상을 업로드해주세요.");
+      return;
+    }
+  
+    setLoading(true);
+    setError("");
+  
+    const formData = new FormData();
+    formData.append("videoFile", videoFile);
+  
+    try {
+      // Step 1: 동영상 파일 업로드 + T썸네일 추출 + DB 저장
+      const uploadResponse = await axios.post("/edit/start-editing", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: accessToken,
+        },
+      });
+  
+      const { editNum, savedFileName } = uploadResponse.data;
+      const outputPath = "uploads/output.mp4";   //fastapi에서 저장할 경로
+  
+      console.log("editNum:", editNum);
+      console.log("savedFileName:", savedFileName);
+  
 
-      //   // 서버로 동영상 전송 (백엔드 URL로 변경)
-      //   const response = await fetch('/backend/upload', {
-      //     method: 'POST',
-      //     body: formData,
-      //   });
-
-      //   if (response.ok) {
-      //     // 서버에서 처리된 영상이 오면 처리된 영상으로 업데이트
-      //     const processedVideo = await response.blob();
-      //     const videoURL = URL.createObjectURL(processedVideo);
-      //     console.log('편집 시작! 처리 완료');
-      //     navigate('/mozaic', { state: { videoUrl: videoURL } }); // navigate()로 새 페이지로 이동
-      //   } else {
-      //     alert('서버 오류 발생');
-      //   }
-      // } catch (error) {
-      //   alert('동영상 처리 중 오류가 발생했습니다.');
-      // } finally {
-      //   setLoading(false); // 처리 완료 후 로딩 종료
-      // }
+      console.log("videoPath:", savedFileName);
+      console.log("outputPath:", outputPath);
+      // Step 2: 동영상 경로 FastAPI에 전송
+      const response = await axios.post(
+        "/edit/send-video-path",
+        { video_path: savedFileName, output_path: outputPath },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+  
+      console.log("FastAPI 응답:", response.data);
+      //mozaic페이지로 넘어감. 
+      navigate("/mozaic", { state: { savedFileName } });
+  
+    } catch (error) {
+      if (error.response) {
+        console.error("응답 오류:", error.response.data);
+        setError("서버 오류: " + error.response.data);
+      } else {
+        console.error("에러 발생:", error.message);
+        setError("요청 처리 중 문제가 발생했습니다.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   const handleClosePopover = () => {
     setAnchorEl(null); // Popover 닫기
@@ -126,9 +162,9 @@ export default function EditPage(props) {
       <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
 
       <StyledBox onDrop={handleDrop} onDragOver={handleDragOver}>
-        {videoSrc ? (
+        {videoSrc  ? (
           <video
-            src={videoSrc}
+            src={videoSrc }
             controls
             playsInline
             style={{ width: '100%', height: '100%', objectFit: 'fill' }}
