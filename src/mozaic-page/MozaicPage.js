@@ -1,4 +1,4 @@
-import React , { useRef, useState, useEffect }from 'react';
+import React , { useRef, useState, useEffect, useCallback  }from 'react';
 import { useLocation } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -62,11 +62,84 @@ export default function MozaicPage() {
     context.strokeRect(x, y, width, height); // 네모 박스 그리기
   };
 
-  useEffect(() => {
-    if (canvasRef.current) {
-      drawTransparentOverlay();
+
+  const drawMosaic = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+  
+    if (!video || !ctx) return;
+  
+    // 캔버스 크기 설정
+    canvas.width = canvasSize.width;
+    canvas.height = canvasSize.height;
+  
+    // 비디오 프레임을 캔버스에 그림
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+    // 모자이크 처리할 영역 설정
+    const x = 938.0; // x 좌표
+    const y = 335.0; // y 좌표
+    const width = 118.0; // 박스 너비
+    const height = 144.0; // 박스 높이
+  
+    // 모자이크 블록 크기
+    const blockSize = 10;
+  
+    for (let i = 0; i < width; i += blockSize) {
+      for (let j = 0; j < height; j += blockSize) {
+        const pixel = ctx.getImageData(x + i, y + j, blockSize, blockSize);
+        const avgColor = getAverageColor(pixel.data);
+  
+        ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
+        ctx.fillRect(x + i, y + j, blockSize, blockSize);
+      }
     }
-  }, [canvasSize]); // canvasSize가 변경될 때마다 호출
+  };
+  
+  // 평균 색상을 구하는 함수
+  const getAverageColor = useCallback((pixelData) => {
+    let r = 0, g = 0, b = 0;
+    const pixelCount = pixelData.length / 4;
+  
+    for (let i = 0; i < pixelData.length; i += 4) {
+      r += pixelData[i];
+      g += pixelData[i + 1];
+      b += pixelData[i + 2];
+    }
+  
+    return {
+      r: Math.floor(r / pixelCount),
+      g: Math.floor(g / pixelCount),
+      b: Math.floor(b / pixelCount),
+    };
+  }, []);
+  
+
+  useEffect(() => {
+    let animationFrameId;
+  
+    const render = () => {
+      if (videoRef.current?.paused || videoRef.current?.ended) return; // 비디오가 멈추면 실행 중지
+      drawMosaic();
+      animationFrameId = requestAnimationFrame(render);
+    };
+  
+    const handlePlay = () => {
+      render();
+    };
+  
+    if (videoRef.current) {
+      videoRef.current.addEventListener('play', handlePlay);
+    }
+  
+    return () => {
+      videoRef.current?.removeEventListener('play', handlePlay);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [canvasSize]);
+  
+  
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -93,6 +166,7 @@ export default function MozaicPage() {
               <video
                 ref={videoRef}
                 src={videoUrl}
+                crossOrigin="anonymous"
                 controls
                 onLoadedMetadata={handleLoadedMetadata}
                 style={{
