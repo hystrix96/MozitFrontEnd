@@ -6,22 +6,14 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
   const [username, setUsername] = useState(null);
+  const [userId, setUserid] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [isTokenFetched, setIsTokenFetched] = useState(false);
-
-  useEffect(() => {
-    console.log('Username:', username);
-    console.log('Email:', userEmail);
-    console.log('Access Token:', accessToken);
-  }, [username, userEmail, accessToken]);
 
   useEffect(() => {
     const fetchAccessToken = async () => {
       try {
         const response = await axios.post('/auth/refresh', null, { withCredentials: true });
-        console.log('Response:', response);
-        console.log('Refresh Token Response:', response.headers['authorization']);
-
         const newAccessToken = response.headers['authorization'];
         if (newAccessToken) {
           setAccessToken(newAccessToken);
@@ -34,6 +26,7 @@ export const AuthProvider = ({ children }) => {
           });
 
           setUsername(userInfoResponse.data.userName);
+          setUserid(userInfoResponse.data.userId);
           setUserEmail(userInfoResponse.data.userEmail);
         }
       } catch (error) {
@@ -50,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
 
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken, username, setUsername, userEmail, setUserEmail }}>
+    <AuthContext.Provider value={{ accessToken, setAccessToken, username, setUsername, userEmail, setUserEmail, userId, setUserid }}>
       {children}
     </AuthContext.Provider>
   );

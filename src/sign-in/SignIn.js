@@ -1,19 +1,8 @@
 import * as React from 'react';
 import { Button, CssBaseline, Divider, Stack, styled, Checkbox } from '@mui/material';
 import { FormControlLabel, FormControl, FormLabel, TextField, Box, Typography, Link } from '@mui/material';
-// import Box from '@mui/material/Box';
-// import Button from '@mui/material/Button';
-// import Checkbox from '@mui/material/Checkbox';
-// import CssBaseline from '@mui/material/CssBaseline';
-// import FormControlLabel from '@mui/material/FormControlLabel';
-// import FormLabel from '@mui/material/FormLabel';
-// import FormControl from '@mui/material/FormControl';
-// import Link from '@mui/material/Link';
-// import TextField from '@mui/material/TextField';
-// import Typography from '@mui/material/Typography';
-// import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
-// import { styled } from '@mui/material/styles';
+import { useAuth } from '../Context/AuthContext';
 import ForgotPassword from './components/ForgotPassword';
 import ForgotId from './components/ForgotId';
 import AppTheme from '../shared-theme/AppTheme';
@@ -65,6 +54,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn(props) {
+  const { setUserid } = useAuth();
   const [rememberMe, setRememberMe] = React.useState(() => {
     return localStorage.getItem('rememberedUserId') ? true : false;
   });
@@ -112,6 +102,7 @@ export default function SignIn(props) {
     if (response.status === 200) {
         if (rememberMe) {
           localStorage.setItem('rememberedUserId', userId);
+          setUserid(userId);
         } else {
           localStorage.removeItem('rememberedUserId');
         }
