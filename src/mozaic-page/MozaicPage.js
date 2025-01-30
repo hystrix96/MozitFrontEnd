@@ -13,6 +13,8 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { Link } from 'react-router-dom';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
 
 
 
@@ -27,6 +29,10 @@ export default function MozaicPage() {
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [value, setValue] = useState(0); // 탭 상태 추가
   const [detectionData, setDetectionData] = useState([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [sliderValue, setSliderValue] = useState(0); // 슬라이더 값을 상태로 관리
+
 
   const handleLoadedMetadata = () => {
     const video = videoRef.current;
@@ -35,8 +41,63 @@ export default function MozaicPage() {
         width: video.videoWidth,
         height: video.videoHeight,
       });
+      setVideoDuration(video.duration); // 비디오 길이 설정
     }
   };
+
+  const handlePlayPause = () => {
+    const video = videoRef.current;
+    if (video) {
+      if (video.paused) {
+        video.play().then(() => {
+          setIsPlaying(true);
+        }).catch(error => {
+          console.error("Error playing the video:", error);
+        });
+      } else {
+        video.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
+
+
+
+
+  const handleSliderChange = (event, newValue) => {
+    setSliderValue(newValue); // 슬라이더 값 업데이트
+    const video = videoRef.current;
+    video.currentTime = (newValue / 100) * videoDuration; // 슬라이더 값에 비례하여 현재 재생 시간 조정
+  };
+
+
+
+  const handleCanvasClick = () => {
+  const video = videoRef.current;
+  if (video) {
+    if (video.paused) {
+      handlePlayPause(); // 재생
+    } else {
+      handlePlayPause(); // 일시 정지
+    }
+  }
+};
+
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const updateSlider = () => {
+        const currentSliderValue = (video.currentTime / videoDuration) * 100; // 비디오 현재 시간 비율
+        setSliderValue(currentSliderValue); // 슬라이더 값 업데이트
+      };
+      
+      video.addEventListener('timeupdate', updateSlider);
+      return () => {
+        video.removeEventListener('timeupdate', updateSlider);
+      };
+    }
+  }, [videoDuration]);
 
   // 캔버스에 투명한 색을 그리는 함수
   const drawTransparentOverlay = () => {
@@ -84,10 +145,17 @@ export default function MozaicPage() {
     // 해당 프레임의 detections 가져오기
     const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
   
+    // 모자이크 적용
     currentDetections.forEach(({ x, y, width, height }) => {
-      applyMosaic(ctx, x, y, width, height);
+      applyMosaic(ctx, x, y, width, height); // 모자이크 적용
+  
+      // 경계선 그리기
+      ctx.strokeStyle = 'black'; // 선 색상
+      ctx.lineWidth = 4; // 선 두께
+      ctx.strokeRect(x, y, width, height); // 네모 박스 그리기
     });
   };
+  
 
   // 모자이크 적용 함수
 const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
@@ -187,7 +255,7 @@ const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
                 ref={videoRef}
                 src={videoUrl}
                 crossOrigin="anonymous"
-                controls
+                // controls
                 onLoadedMetadata={handleLoadedMetadata}
                 style={{
                   display: 'block',
@@ -196,22 +264,48 @@ const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
                   position: 'relative', // 위치 설정
                   top: 0, // 상단 정렬
                   zIndex: 1, // 비디오가 위에 오도록 설정
+                  marginBottom: '50px',
                 }}
               />
               <canvas
                 ref={canvasRef}
                 width={canvasSize.width}
                 height={canvasSize.height}
+                onClick={handleCanvasClick}
                 style={{
                   position: 'absolute', // 절대 위치로 설정
                   top: 0,
-                  pointerEvents: 'none', // 캔버스가 클릭 이벤트를 차단하지 않도록
+                  pointerEvents: 'auto', // 캔버스가 클릭 이벤트를 차단하지 않도록
                   zIndex: 2, // 캔버스가 비디오 위에 오도록 설정
                   width: '80%', // 캔버스 너비를 비디오와 동일하게 설정
                   height: 'auto', // 자동으로 높이 조정
                   top: '68px',
                 }}
               />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: '20px',
+                  left: '20px',
+                  right: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  zIndex: 3,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
+                  borderRadius: '5px',
+                  padding: '10px',
+                }}
+              >
+                <Button onClick={handlePlayPause}>
+                  {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+                </Button>
+                <Slider
+                  id="video-slider"
+                  sx={{ marginLeft: '10px', flexGrow: 1 }}
+                  value={sliderValue} 
+                  onChange={handleSliderChange}
+                />
+              </Box>
             </>
           ) : (
             <Typography
