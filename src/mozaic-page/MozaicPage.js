@@ -34,6 +34,69 @@ export default function MozaicPage() {
   const [sliderValue, setSliderValue] = useState(0); // 슬라이더 값을 상태로 관리
 
 
+
+  // 각 탭별 상태 저장
+  const [settings, setSettings] = useState({
+    harmful: { mosaic: false, blur: false, intensity: 50, size: 100 },
+    privacy: { mosaic: false, blur: false, intensity: 50, size: 100 },
+    person: { mosaic: false, blur: false, intensity: 50, size: 100, checkedPeople: [] },
+  });
+
+
+  // 초기 로드 시 모자이크 기본 활성화 설정
+    useEffect(() => {
+      setSettings(prevSettings => ({
+        ...prevSettings,
+        harmful: { mosaic: true, blur: false, intensity: 50, size: 50 },
+        privacy: { mosaic: true, blur: false, intensity: 50, size: 50 },
+        person: { mosaic: true, blur: false, intensity: 50, size: 50, checkedPeople: [] }
+      }));
+    }, []);
+
+
+
+   // ✅ 모자이크 또는 블러 중 하나만 선택 가능하게 함
+   const handleCheckboxChange = (tab, effectType, event) => {
+    setSettings(prevSettings => {
+      const updatedSettings = { ...prevSettings };
+      // effectType이 "mosaic"이면 blur를 비활성화, 반대도 마찬가지
+      if (effectType === "mosaic") {
+        updatedSettings[tab].mosaic = event.target.checked;
+        if (event.target.checked) updatedSettings[tab].blur = false; // 블러 비활성화
+      } else if (effectType === "blur") {
+        updatedSettings[tab].blur = event.target.checked;
+        if (event.target.checked) updatedSettings[tab].mosaic = false; // 모자이크 비활성화
+      }
+      return updatedSettings;
+    });
+  };
+  
+
+  // 슬라이더 핸들러
+  const handleSliderChange2 = (tab, key) => (event, newValue) => {
+    setSettings((prev) => ({
+      ...prev,
+      [tab]: { ...prev[tab], [key]: newValue },
+    }));
+  };
+
+  // 사람 체크박스 핸들러 (사람 탭 전용)
+  const handlePersonCheck = (person) => (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      person: {
+        ...prev.person,
+        checkedPeople: event.target.checked
+          ? [...prev.person.checkedPeople, person]
+          : prev.person.checkedPeople.filter((p) => p !== person),
+      },
+    }));
+  };
+
+  const handleTabChange2 = (_, newValue) => setValue(newValue);
+
+  /* */
+
   const handleLoadedMetadata = () => {
     const video = videoRef.current;
     if (video) {
@@ -83,7 +146,9 @@ export default function MozaicPage() {
   }
 };
 
-
+/*
+   재생바
+          */
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
@@ -125,35 +190,82 @@ export default function MozaicPage() {
   };
 
 
-  const drawMosaic = () => {
+  // ✅ 모자이크 & 블러를 적용하는 함수
+  const drawMosaicOrBlur = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
   
     if (!video || !ctx) return;
   
-    // 캔버스 크기 설정
     canvas.width = canvasSize.width;
     canvas.height = canvasSize.height;
-  
-    // 비디오 프레임을 캔버스에 그림
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
-    // 현재 재생 중인 프레임 번호 추출
-    const currentFrame = Math.floor(video.currentTime * 30); // 30fps 기준
-  
-    // 해당 프레임의 detections 가져오기
+    const currentFrame = Math.floor(video.currentTime * 30);
     const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
   
-    // 모자이크 적용
-    currentDetections.forEach(({ x, y, width, height }) => {
-      applyMosaic(ctx, x, y, width, height); // 모자이크 적용
+    // 🔥 `settings[value]`이 없을 경우 기본값 설정
+    const effectSettings = settings[value] || { mosaic: true, blur: false };
   
-      // 경계선 그리기
-      ctx.strokeStyle = 'black'; // 선 색상
-      ctx.lineWidth = 4; // 선 두께
-      ctx.strokeRect(x, y, width, height); // 네모 박스 그리기
+    currentDetections.forEach(({ x, y, width, height }) => {
+      if (effectSettings.mosaic) {
+        applyMosaic(ctx, x, y, width, height);
+      } else if (effectSettings.blur) {
+        applyBlur(ctx, x, y, width, height);
+      }
+  
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(x, y, width, height);
     });
+  };
+  
+  
+
+
+  /*
+     블러처리
+             */
+
+
+     // 화면 중앙에 블러 박스를 띄우는 함수
+        const drawBlurBoxInCenter = () => {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext('2d');
+
+          // 캔버스 크기 설정
+          canvas.width = canvasSize.width;
+          canvas.height = canvasSize.height;
+
+          // 화면 중앙에 블러 박스의 위치와 크기 설정
+          const x = canvas.width / 4; // 화면의 가로 중앙
+          const y = canvas.height / 4; // 화면의 세로 중앙
+          const width = canvas.width / 2; // 블러 박스의 너비
+          const height = canvas.height / 2; // 블러 박스의 높이
+
+          // 블러 처리 적용
+          applyBlur(ctx, x, y, width, height);
+        };
+
+
+
+
+ // ✅ 모자이크 & 블러 처리 함수
+  const applyEffect = (ctx, x, y, width, height, effectType) => {
+    if (effectType === "mosaic") {
+      applyMosaic(ctx, x, y, width, height);
+    } else if (effectType === "blur") {
+      applyBlur(ctx, x, y, width, height);
+    }
+  };
+  
+  // ✅ 블러 처리 함수 추가
+  const applyBlur = (ctx, x, y, width, height) => {
+    ctx.save();
+    ctx.filter = "blur(10px)"; // 블러 효과 적용
+    ctx.drawImage(canvasRef.current, x, y, width, height, x, y, width, height);
+    ctx.restore();
   };
   
 
@@ -203,30 +315,40 @@ const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
   }, [savedFileName]);
 
 
-  useEffect(() => {
-  let animationFrameId;
+ // 비디오 재생 시 모자이크 또는 블러 적용
+    useEffect(() => {
+      let animationFrameId;
+      const render = () => {
+        if (videoRef.current?.paused || videoRef.current?.ended) return;
+        drawMosaicOrBlur();
+        animationFrameId = requestAnimationFrame(render);
+      };
 
-  const render = () => {
-    if (videoRef.current?.paused || videoRef.current?.ended) return; // 비디오가 멈추면 실행 중지
-    drawMosaic();
-    animationFrameId = requestAnimationFrame(render);
-  };
+      if (videoRef.current) {
+        videoRef.current.addEventListener("play", render);
+      }
 
-  const handlePlay = () => {
-    render();
-  };
+      return () => {
+        videoRef.current?.removeEventListener("play", render);
+        cancelAnimationFrame(animationFrameId);
+      };
+    }, [canvasSize, detectionData, settings]);
 
-  if (videoRef.current) {
-    videoRef.current.addEventListener('play', handlePlay);
-  }
-
-  return () => {
-    videoRef.current?.removeEventListener('play', handlePlay);
-    cancelAnimationFrame(animationFrameId);
-  };
-}, [canvasSize, detectionData]); // detectionData 변경 시 모자이크 업데이트
-
-  
+    useEffect(() => {
+      const video = videoRef.current;
+      if (video) {
+        const render = () => {
+          if (video.paused || video.ended) return;
+          drawBlurBoxInCenter(); // 중앙에 블러 박스를 그리기
+          requestAnimationFrame(render); // 계속해서 업데이트
+        };
+    
+        video.addEventListener('play', render);
+        return () => {
+          video.removeEventListener('play', render);
+        };
+      }
+    }, [canvasSize]);
   
 
   const handleTabChange = (event, newValue) => {
@@ -321,58 +443,52 @@ const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
           )}
         </Box>
 
-        <Box sx={{ width: '25%', padding: 2 }}> {/* 1/4 크기로 조정 */}
-          <Tabs value={value} onChange={handleTabChange} sx={{ marginBottom: 2 }}>
-            <Tab label="유해요소" />
-            <Tab label="개인정보" />
-            <Tab label="사람" />
-          </Tabs>
+        <Box sx={{ width: "25%", padding: 2 }}>
+        <Tabs value={value} onChange={handleTabChange2} sx={{ marginBottom: 2 }}>
+          <Tab label="유해요소" />
+          <Tab label="개인정보" />
+          <Tab label="사람" />
+        </Tabs>
 
-          {value === 0 && (
-            <Box>
+        {/* 공통 UI */}
+        {["harmful", "privacy", "person"].map((tab, index) =>
+          value === index && (
+            <Box key={tab}>
               <Typography variant="h6">마스크 설정</Typography>
-              <FormControlLabel control={<Checkbox />} label="모자이크" />
-              <FormControlLabel control={<Checkbox />} label="블러" />
+              <FormControlLabel
+                control={<Checkbox checked={settings[tab].mosaic} onChange={(e) => handleCheckboxChange(tab, "mosaic", e)} />}
+                label="모자이크"
+              />
+              <FormControlLabel
+                control={<Checkbox checked={settings[tab].blur} onChange={(e) => handleCheckboxChange(tab, "blur", e)} />}
+                label="블러"
+              />
               <Typography variant="h6">마스크 강도</Typography>
-              <Slider defaultValue={50} aria-label="Mask Intensity" />
+              <Slider value={settings[tab].intensity} onChange={handleSliderChange2(tab, "intensity")} />
               <Typography variant="h6">마스크 크기</Typography>
-              <Slider defaultValue={100} aria-label="Mask Size" />
-              <Typography variant="h6">마스크 체크</Typography>
-              <FormControlLabel control={<Checkbox />} label="사람 1" />
-              <FormControlLabel control={<Checkbox />} label="사람 2" />
-              <FormControlLabel control={<Checkbox />} label="사람 3" />
+              <Slider value={settings[tab].size} onChange={handleSliderChange2(tab, "size")} />
+
+              {/* 사람 탭에서만 마스크 체크 표시 */}
+              {tab === "person" && (
+                <>
+                  <Typography variant="h6">마스크 체크</Typography>
+                  {["사람 1", "사람 2", "사람 3"].map((person) => (
+                    <FormControlLabel
+                      key={person}
+                      control={
+                        <Checkbox
+                          checked={settings.person.checkedPeople.includes(person)}
+                          onChange={handlePersonCheck(person)}
+                        />
+                      }
+                      label={person}
+                    />
+                  ))}
+                </>
+              )}
             </Box>
-          )}
-          {value === 1 && (
-            <Box>
-              <Typography variant="h6">마스크 설정</Typography>
-              <FormControlLabel control={<Checkbox />} label="모자이크" />
-              <FormControlLabel control={<Checkbox />} label="블러" />
-              <Typography variant="h6">마스크 강도</Typography>
-              <Slider defaultValue={50} aria-label="Mask Intensity" />
-              <Typography variant="h6">마스크 크기</Typography>
-              <Slider defaultValue={100} aria-label="Mask Size" />
-              <Typography variant="h6">마스크 체크</Typography>
-              <FormControlLabel control={<Checkbox />} label="사람 1" />
-              <FormControlLabel control={<Checkbox />} label="사람 2" />
-              <FormControlLabel control={<Checkbox />} label="사람 3" />
-            </Box>
-          )}
-          {value === 2 && (
-            <Box>
-              <Typography variant="h6">마스크 설정</Typography>
-              <FormControlLabel control={<Checkbox />} label="모자이크" />
-              <FormControlLabel control={<Checkbox />} label="블러" />
-              <Typography variant="h6">마스크 강도</Typography>
-              <Slider defaultValue={50} aria-label="Mask Intensity" />
-              <Typography variant="h6">마스크 크기</Typography>
-              <Slider defaultValue={100} aria-label="Mask Size" />
-              <Typography variant="h6">마스크 체크</Typography>
-              <FormControlLabel control={<Checkbox />} label="사람 1" />
-              <FormControlLabel control={<Checkbox />} label="사람 2" />
-              <FormControlLabel control={<Checkbox />} label="사람 3" />
-            </Box>
-          )}
+          )
+        )}
         </Box>
       </Box>
 
