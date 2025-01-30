@@ -26,6 +26,7 @@ export default function MozaicPage() {
   const canvasRef = useRef(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [value, setValue] = useState(0); // 탭 상태 추가
+  const [detectionData, setDetectionData] = useState([]);
 
   const handleLoadedMetadata = () => {
     const video = videoRef.current;
@@ -77,25 +78,29 @@ export default function MozaicPage() {
     // 비디오 프레임을 캔버스에 그림
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
-    // 모자이크 처리할 영역 설정
-    const x = 938.0; // x 좌표
-    const y = 335.0; // y 좌표
-    const width = 118.0; // 박스 너비
-    const height = 144.0; // 박스 높이
+    // 현재 재생 중인 프레임 번호 추출
+    const currentFrame = Math.floor(video.currentTime * 30); // 30fps 기준
   
-    // 모자이크 블록 크기
-    const blockSize = 10;
+    // 해당 프레임의 detections 가져오기
+    const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
   
-    for (let i = 0; i < width; i += blockSize) {
-      for (let j = 0; j < height; j += blockSize) {
-        const pixel = ctx.getImageData(x + i, y + j, blockSize, blockSize);
-        const avgColor = getAverageColor(pixel.data);
-  
-        ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
-        ctx.fillRect(x + i, y + j, blockSize, blockSize);
-      }
-    }
+    currentDetections.forEach(({ x, y, width, height }) => {
+      applyMosaic(ctx, x, y, width, height);
+    });
   };
+
+  // 모자이크 적용 함수
+const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
+  for (let i = 0; i < width; i += blockSize) {
+    for (let j = 0; j < height; j += blockSize) {
+      const pixel = ctx.getImageData(x + i, y + j, blockSize, blockSize);
+      const avgColor = getAverageColor(pixel.data);
+      
+      ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
+      ctx.fillRect(x + i, y + j, blockSize, blockSize);
+    }
+  }
+};
   
   // 평균 색상을 구하는 함수
   const getAverageColor = useCallback((pixelData) => {
@@ -115,29 +120,44 @@ export default function MozaicPage() {
     };
   }, []);
   
+  useEffect(() => {
+    const fetchDetections = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/edit/videos/${savedFileName}/info`);
+        const data = await response.json();
+        setDetectionData(data.detections); // JSON 데이터 저장
+      } catch (error) {
+        console.error("Error fetching detection data:", error);
+      }
+    };
+  
+    fetchDetections();
+  }, [savedFileName]);
+
 
   useEffect(() => {
-    let animationFrameId;
-  
-    const render = () => {
-      if (videoRef.current?.paused || videoRef.current?.ended) return; // 비디오가 멈추면 실행 중지
-      drawMosaic();
-      animationFrameId = requestAnimationFrame(render);
-    };
-  
-    const handlePlay = () => {
-      render();
-    };
-  
-    if (videoRef.current) {
-      videoRef.current.addEventListener('play', handlePlay);
-    }
-  
-    return () => {
-      videoRef.current?.removeEventListener('play', handlePlay);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [canvasSize]);
+  let animationFrameId;
+
+  const render = () => {
+    if (videoRef.current?.paused || videoRef.current?.ended) return; // 비디오가 멈추면 실행 중지
+    drawMosaic();
+    animationFrameId = requestAnimationFrame(render);
+  };
+
+  const handlePlay = () => {
+    render();
+  };
+
+  if (videoRef.current) {
+    videoRef.current.addEventListener('play', handlePlay);
+  }
+
+  return () => {
+    videoRef.current?.removeEventListener('play', handlePlay);
+    cancelAnimationFrame(animationFrameId);
+  };
+}, [canvasSize, detectionData]); // detectionData 변경 시 모자이크 업데이트
+
   
   
 
