@@ -37,34 +37,37 @@ export default function MozaicPage() {
 
   // 각 탭별 상태 저장
   const [settings, setSettings] = useState({
-    harmful: { mosaic: false, blur: false, intensity: 50, size: 100 },
-    privacy: { mosaic: false, blur: false, intensity: 50, size: 100 },
-    person: { mosaic: false, blur: false, intensity: 50, size: 100, checkedPeople: [] },
+    mosaic: false,
+    blur: true,
+    intensity: 50,
+    size: 50,
   });
 
-
-  // 초기 로드 시 모자이크 기본 활성화 설정
   useEffect(() => {
-    setSettings(prevSettings => ({
-      ...prevSettings,
-      harmful: { mosaic: false, blur: true, intensity: 50, size: 50 },
-      privacy: { mosaic: false, blur: true, intensity: 50, size: 50 },
-      person: { mosaic: false, blur: true, intensity: 50, size: 50, checkedPeople: [] }
-    }));
+    // 초기 설정
+    setSettings({
+      mosaic: false,
+      blur: true,
+      intensity: 50,
+      size: 50,
+    });
   }, []);
 
 
 
    // ✅ 모자이크 또는 블러 중 하나만 선택 가능하게 함
-   const handleCheckboxChange = (tab, effectType, event) => {
+   const handleCheckboxChange = (effectType, event) => {
     setSettings(prevSettings => {
       const updatedSettings = { ...prevSettings };
-      // 블러가 활성화된 상태에서 모자이크를 체크하지 못하도록 설정
+
       if (effectType === "mosaic") {
-        updatedSettings[tab].mosaic = false; // 항상 모자이크 비활성화
+        updatedSettings.mosaic = true;
+        updatedSettings.blur = false;
       } else if (effectType === "blur") {
-        updatedSettings[tab].blur = event.target.checked;
+        updatedSettings.blur = true;
+        updatedSettings.mosaic = false;
       }
+
       return updatedSettings;
     });
   };
@@ -194,7 +197,8 @@ export default function MozaicPage() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
   
-    if (!video || !ctx) return;
+    // 비디오와 캔버스 크기가 0이 아닌지 확인
+    if (!video || !ctx || canvasSize.width === 0 || canvasSize.height === 0) return;
   
     canvas.width = canvasSize.width;
     canvas.height = canvasSize.height;
@@ -203,11 +207,12 @@ export default function MozaicPage() {
     const currentFrame = Math.floor(video.currentTime * 30);
     const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
   
-    // 🔥 `settings[value]`이 없을 경우 기본값 설정
-    const effectSettings = settings[value] || { mosaic: false, blur: true };
-  
     currentDetections.forEach(({ x, y, width, height }) => {
-      if (effectSettings.blur) {
+      // 공통 설정을 사용하여 모자이크 및 블러 처리
+      if (settings.mosaic) {
+        applyMosaic(ctx, x, y, width, height); // 모자이크 적용
+      }
+      if (settings.blur) {
         applyBlur(ctx, x, y, width, height); // 블러 적용
       }
   
@@ -216,7 +221,6 @@ export default function MozaicPage() {
       ctx.strokeRect(x, y, width, height); // 박스 테두리 그리기
     });
   };
-  
   
 
 
@@ -415,23 +419,22 @@ const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
             <Box key={tab}>
               <Typography variant="h6">마스크 설정</Typography>
               <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={settings[tab].mosaic}
-                      onChange={(e) => handleCheckboxChange(tab, "mosaic", e)}
-                      disabled // 항상 비활성화
-                    />
-                  }
-                  label="모자이크"
-                />
+                control={
+                  <Checkbox
+                    checked={settings.mosaic}
+                    onChange={(e) => handleCheckboxChange("mosaic", e)}
+                  />
+                }
+                label="모자이크"
+              />
               <FormControlLabel
-                control={<Checkbox checked={settings[tab].blur} onChange={(e) => handleCheckboxChange(tab, "blur", e)} />}
+                control={<Checkbox checked={settings.blur} onChange={(e) => handleCheckboxChange("blur", e)} />}
                 label="블러"
               />
               <Typography variant="h6">마스크 강도</Typography>
-              <Slider value={settings[tab].intensity} onChange={handleSliderChange2(tab, "intensity")} />
+              <Slider value={settings.intensity} onChange={(e, newValue) => setSettings(prev => ({ ...prev, intensity: newValue }))} />
               <Typography variant="h6">마스크 크기</Typography>
-              <Slider value={settings[tab].size} onChange={handleSliderChange2(tab, "size")} />
+              <Slider value={settings.size} onChange={(e, newValue) => setSettings(prev => ({ ...prev, size: newValue }))} />
 
               {/* 사람 탭에서만 마스크 체크 표시 */}
               {tab === "person" && (
