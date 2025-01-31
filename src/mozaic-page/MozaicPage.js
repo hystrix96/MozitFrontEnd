@@ -113,19 +113,18 @@ useEffect(() => {
   };
 
   // 사람 체크박스 핸들러 (사람 탭 전용)
-  const handlePersonCheck = (person) => (event) => {
+  const handlePersonCheck = (personId) => (event) => {
     setSettings((prev) => ({
-        ...prev,
-        person: {
-            ...prev.person,
-            checkedPeople: prev.person?.checkedPeople
-                ? event.target.checked
-                    ? [...prev.person.checkedPeople, person]
-                    : prev.person.checkedPeople.filter((p) => p !== person)
-                : [person], // 초기 상태에서 체크된 경우
-        },
+      ...prev,
+      person: {
+        ...prev.person,
+        checkedPeople: event.target.checked
+          ? [...prev.person.checkedPeople, personId]
+          : prev.person.checkedPeople.filter((p) => p !== personId),
+      },
     }));
-};
+  };
+  
 
 
   const handleTabChange2 = (_, newValue) => setValue(newValue);
@@ -211,17 +210,6 @@ useEffect(() => {
     // 투명한 색 사각형 그리기
     context.fillStyle = 'rgba(255, 255, 255, 0)'; // 반투명 빨간색
     context.fillRect(0, 0, canvas.width, canvas.height);
-
-
-    // 주어진 좌표와 크기로 네모 박스 그리기
-    const x = 938.0; // x 좌표
-    const y = 335.0; // y 좌표
-    const width = 118.0; // 박스 너비
-    const height = 144.0; // 박스 높이
-
-    context.strokeStyle = 'red'; // 박스 선 색상
-    context.lineWidth = 2; // 박스 선 두께
-    context.strokeRect(x, y, width, height); // 네모 박스 그리기
   };
 
 
@@ -237,25 +225,41 @@ useEffect(() => {
     canvas.height = canvasSize.height;
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
-    const currentFrame = Math.floor(video.currentTime * 30);
-    const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
+    const currentFrame = Math.floor(video.currentTime * 30); // 현재 프레임 계산
+    const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
   
-    currentDetections.forEach(({ x, y, width, height }) => {
+    currentDetections.forEach(({ x, y, width, height, objectId, className }) => {
       const maskSize = settings.size;
       const newWidth = width * (maskSize / 50);
       const newHeight = height * (maskSize / 50);
   
-      if (settings.mosaic) {
-        applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
-      } else if (settings.blur) {
-        applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+      // className이 "face"인 경우에만 체크된 objectId에 따라 모자이크 적용
+      if (className === "face") {
+        if (settings.person.checkedPeople.includes(objectId)) {
+          // 체크된 사람에 대해서만 모자이크 적용
+          if (settings.mosaic) {
+            applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+          } else if (settings.blur) {
+            applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+          }
+        }
+      } else {
+        // className이 "face"가 아닌 경우 무조건 모자이크 적용
+        if (settings.mosaic) {
+          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+        } else if (settings.blur) {
+          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+        }
       }
   
-      ctx.strokeStyle = "black";
-      ctx.lineWidth = 4;
-      ctx.strokeRect(x, y, newWidth, newHeight);
+      // ctx.strokeStyle = "black";
+      // ctx.lineWidth = 4;
+      // ctx.strokeRect(x, y, newWidth, newHeight);
     });
   };
+  
+  
+  
   
   
 
