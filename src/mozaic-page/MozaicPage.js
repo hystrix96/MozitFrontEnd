@@ -35,23 +35,30 @@ export default function MozaicPage() {
 
 
 
+  
   // 각 탭별 상태 저장
   const [settings, setSettings] = useState({
     mosaic: false,
     blur: true,
     intensity: 50,
     size: 50, // 모자이크 크기
-  });
+    person: {
+        checkedPeople: [], // 초기값을 빈 배열로 설정
+    },
+});
 
-  useEffect(() => {
-    // 초기 설정
-    setSettings({
-      mosaic: false,
-      blur: true,
-      intensity: 50,
-      size: 50,
-    });
-  }, []);
+useEffect(() => {
+  // 초기 설정
+  setSettings({
+    mosaic: false,
+    blur: true,
+    intensity: 50,
+    size: 50,
+    person: {
+        checkedPeople: [], // 체크된 사람들을 저장할 배열
+    },
+  });
+}, []);
 
 
 
@@ -84,15 +91,18 @@ export default function MozaicPage() {
   // 사람 체크박스 핸들러 (사람 탭 전용)
   const handlePersonCheck = (person) => (event) => {
     setSettings((prev) => ({
-      ...prev,
-      person: {
-        ...prev.person,
-        checkedPeople: event.target.checked
-          ? [...prev.person.checkedPeople, person]
-          : prev.person.checkedPeople.filter((p) => p !== person),
-      },
+        ...prev,
+        person: {
+            ...prev.person,
+            checkedPeople: prev.person?.checkedPeople
+                ? event.target.checked
+                    ? [...prev.person.checkedPeople, person]
+                    : prev.person.checkedPeople.filter((p) => p !== person)
+                : [person], // 초기 상태에서 체크된 경우
+        },
     }));
-  };
+};
+
 
   const handleTabChange2 = (_, newValue) => setValue(newValue);
 
@@ -262,27 +272,17 @@ export default function MozaicPage() {
   
   const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
     ctx.save();
-    
-    // 블러의 강도 비율을 계산
+
+    // 슬라이더 값에 따라 블러의 강도를 조정
     const blurAmount = (blurSize * intensity) / 100; 
-    
-    // 블러를 적용할 사각형의 중앙 좌표
-    const centerX = x + width / 2;
-    const centerY = y + height / 2;
 
-    // 원형 블러를 위해 그라디언트 생성
-    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height));
-    gradient.addColorStop(0, `rgba(255, 255, 255, 0)`); // 중심점
-    gradient.addColorStop(1, `rgba(255, 255, 255, 1)`); // 가장자리
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x, y, width, height); // 블러를 적용할 영역
-
-    ctx.filter = `blur(${blurAmount}px)`;
+    // 블러를 적용할 영역의 필터 설정
+    ctx.filter = `blur(${blurAmount}px)`; 
     ctx.drawImage(canvasRef.current, x, y, width, height, x, y, width, height); // 블러가 적용된 이미지를 그립니다.
-    
+
     ctx.restore();
 };
+
 
   
   // 평균 색상을 구하는 함수
@@ -478,7 +478,7 @@ export default function MozaicPage() {
                       key={person}
                       control={
                         <Checkbox
-                          checked={settings.person.checkedPeople.includes(person)}
+                          checked={settings.person?.checkedPeople?.includes(person) || false} // 안전하게 접근
                           onChange={handlePersonCheck(person)}
                         />
                       }
