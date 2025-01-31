@@ -40,7 +40,7 @@ export default function MozaicPage() {
     mosaic: false,
     blur: true,
     intensity: 50,
-    size: 50,
+    size: 50, // 모자이크 크기
   });
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function MozaicPage() {
   };
   
 
-  // 슬라이더 핸들러
+  // 슬라이더 핸들러=> 이게 모자이크 
   const handleSliderChange2 = (tab, key) => (event, newValue) => {
     setSettings((prev) => ({
       ...prev,
@@ -127,7 +127,7 @@ export default function MozaicPage() {
 
 
 
-
+//이게 재생바 
   const handleSliderChange = (event, newValue) => {
     setSliderValue(newValue); // 슬라이더 값 업데이트
     const video = videoRef.current;
@@ -197,7 +197,6 @@ export default function MozaicPage() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
   
-    // 비디오와 캔버스 크기가 0이 아닌지 확인
     if (!video || !ctx || canvasSize.width === 0 || canvasSize.height === 0) return;
   
     canvas.width = canvasSize.width;
@@ -208,19 +207,22 @@ export default function MozaicPage() {
     const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
   
     currentDetections.forEach(({ x, y, width, height }) => {
-      // 공통 설정을 사용하여 모자이크 및 블러 처리
+      const maskSize = settings.size;
+      const newWidth = width * (maskSize / 50);
+      const newHeight = height * (maskSize / 50);
+  
       if (settings.mosaic) {
-        applyMosaic(ctx, x, y, width, height); // 모자이크 적용
-      }
-      if (settings.blur) {
-        applyBlur(ctx, x, y, width, height); // 블러 적용
+        applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+      } else if (settings.blur) {
+        applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
       }
   
       ctx.strokeStyle = "black";
       ctx.lineWidth = 4;
-      ctx.strokeRect(x, y, width, height); // 박스 테두리 그리기
+      ctx.strokeRect(x, y, newWidth, newHeight);
     });
   };
+  
   
 
 
@@ -238,26 +240,50 @@ export default function MozaicPage() {
   };
   
   // ✅ 블러 처리 함수 추가
-  const applyBlur = (ctx, x, y, width, height) => {
-    ctx.save();
-    ctx.filter = "blur(10px)"; // 블러 효과 적용
-    ctx.drawImage(canvasRef.current, x, y, width, height, x, y, width, height);
-    ctx.restore();
+  const applyMosaic = (ctx, x, y, width, height, size, intensity) => {
+    const blockSize = Math.max(size / 4, 4) * (intensity / 100); // 모자이크 블록 크기를 절반으로 줄임 (최소 5 유지)
+    
+    for (let i = x; i < x + width; i += blockSize) {
+      for (let j = y; j < y + height; j += blockSize) {
+        const pixel = ctx.getImageData(i, j, blockSize, blockSize);
+        const avgColor = getAverageColor(pixel.data);
+        
+        ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
+        ctx.fillRect(i, j, blockSize, blockSize);
+      }
+    }
+  
+    // 📌 테두리를 모자이크 크기에 맞게 조정
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = Math.max(blockSize / 4, 5); // 기존 대비 줄어든 크기 반영
+    ctx.strokeRect(x, y, width, height);
   };
   
+  
+  const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
+    ctx.save();
+    
+    // 블러의 강도 비율을 계산
+    const blurAmount = (blurSize * intensity) / 100; 
+    
+    // 블러를 적용할 사각형의 중앙 좌표
+    const centerX = x + width / 2;
+    const centerY = y + height / 2;
 
-  // 모자이크 적용 함수
-const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
-  for (let i = 0; i < width; i += blockSize) {
-    for (let j = 0; j < height; j += blockSize) {
-      const pixel = ctx.getImageData(x + i, y + j, blockSize, blockSize);
-      const avgColor = getAverageColor(pixel.data);
-      
-      ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
-      ctx.fillRect(x + i, y + j, blockSize, blockSize);
-    }
-  }
+    // 원형 블러를 위해 그라디언트 생성
+    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height));
+    gradient.addColorStop(0, `rgba(255, 255, 255, 0)`); // 중심점
+    gradient.addColorStop(1, `rgba(255, 255, 255, 1)`); // 가장자리
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, width, height); // 블러를 적용할 영역
+
+    ctx.filter = `blur(${blurAmount}px)`;
+    ctx.drawImage(canvasRef.current, x, y, width, height, x, y, width, height); // 블러가 적용된 이미지를 그립니다.
+    
+    ctx.restore();
 };
+
   
   // 평균 색상을 구하는 함수
   const getAverageColor = useCallback((pixelData) => {
@@ -434,7 +460,14 @@ const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
               <Typography variant="h6">마스크 강도</Typography>
               <Slider value={settings.intensity} onChange={(e, newValue) => setSettings(prev => ({ ...prev, intensity: newValue }))} />
               <Typography variant="h6">마스크 크기</Typography>
-              <Slider value={settings.size} onChange={(e, newValue) => setSettings(prev => ({ ...prev, size: newValue }))} />
+              <Slider
+                value={settings.size}
+                onChange={(e, newValue) => setSettings(prev => ({ ...prev, size: newValue }))}
+                min={1} // 최소 크기
+                max={100} // 최대 크기
+                step={1}
+                valueLabelDisplay="auto"
+              />
 
               {/* 사람 탭에서만 마스크 체크 표시 */}
               {tab === "person" && (
