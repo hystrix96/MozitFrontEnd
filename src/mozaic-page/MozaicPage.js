@@ -44,14 +44,14 @@ export default function MozaicPage() {
 
 
   // 초기 로드 시 모자이크 기본 활성화 설정
-    useEffect(() => {
-      setSettings(prevSettings => ({
-        ...prevSettings,
-        harmful: { mosaic: true, blur: false, intensity: 50, size: 50 },
-        privacy: { mosaic: true, blur: false, intensity: 50, size: 50 },
-        person: { mosaic: true, blur: false, intensity: 50, size: 50, checkedPeople: [] }
-      }));
-    }, []);
+  useEffect(() => {
+    setSettings(prevSettings => ({
+      ...prevSettings,
+      harmful: { mosaic: false, blur: true, intensity: 50, size: 50 },
+      privacy: { mosaic: false, blur: true, intensity: 50, size: 50 },
+      person: { mosaic: false, blur: true, intensity: 50, size: 50, checkedPeople: [] }
+    }));
+  }, []);
 
 
 
@@ -59,13 +59,11 @@ export default function MozaicPage() {
    const handleCheckboxChange = (tab, effectType, event) => {
     setSettings(prevSettings => {
       const updatedSettings = { ...prevSettings };
-      // effectType이 "mosaic"이면 blur를 비활성화, 반대도 마찬가지
+      // 블러가 활성화된 상태에서 모자이크를 체크하지 못하도록 설정
       if (effectType === "mosaic") {
-        updatedSettings[tab].mosaic = event.target.checked;
-        if (event.target.checked) updatedSettings[tab].blur = false; // 블러 비활성화
+        updatedSettings[tab].mosaic = false; // 항상 모자이크 비활성화
       } else if (effectType === "blur") {
         updatedSettings[tab].blur = event.target.checked;
-        if (event.target.checked) updatedSettings[tab].mosaic = false; // 모자이크 비활성화
       }
       return updatedSettings;
     });
@@ -206,18 +204,16 @@ export default function MozaicPage() {
     const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
   
     // 🔥 `settings[value]`이 없을 경우 기본값 설정
-    const effectSettings = settings[value] || { mosaic: true, blur: false };
+    const effectSettings = settings[value] || { mosaic: false, blur: true };
   
     currentDetections.forEach(({ x, y, width, height }) => {
-      if (effectSettings.mosaic) {
-        applyMosaic(ctx, x, y, width, height);
-      } else if (effectSettings.blur) {
-        applyBlur(ctx, x, y, width, height);
+      if (effectSettings.blur) {
+        applyBlur(ctx, x, y, width, height); // 블러 적용
       }
   
       ctx.strokeStyle = "black";
       ctx.lineWidth = 4;
-      ctx.strokeRect(x, y, width, height);
+      ctx.strokeRect(x, y, width, height); // 박스 테두리 그리기
     });
   };
   
@@ -227,29 +223,6 @@ export default function MozaicPage() {
   /*
      블러처리
              */
-
-
-     // 화면 중앙에 블러 박스를 띄우는 함수
-        const drawBlurBoxInCenter = () => {
-          const canvas = canvasRef.current;
-          const ctx = canvas.getContext('2d');
-
-          // 캔버스 크기 설정
-          canvas.width = canvasSize.width;
-          canvas.height = canvasSize.height;
-
-          // 화면 중앙에 블러 박스의 위치와 크기 설정
-          const x = canvas.width / 4; // 화면의 가로 중앙
-          const y = canvas.height / 4; // 화면의 세로 중앙
-          const width = canvas.width / 2; // 블러 박스의 너비
-          const height = canvas.height / 2; // 블러 박스의 높이
-
-          // 블러 처리 적용
-          applyBlur(ctx, x, y, width, height);
-        };
-
-
-
 
  // ✅ 모자이크 & 블러 처리 함수
   const applyEffect = (ctx, x, y, width, height, effectType) => {
@@ -316,39 +289,25 @@ const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
 
 
  // 비디오 재생 시 모자이크 또는 블러 적용
-    useEffect(() => {
-      let animationFrameId;
-      const render = () => {
-        if (videoRef.current?.paused || videoRef.current?.ended) return;
-        drawMosaicOrBlur();
-        animationFrameId = requestAnimationFrame(render);
-      };
+ useEffect(() => {
+  const video = videoRef.current;
+  let animationFrameId;
 
-      if (videoRef.current) {
-        videoRef.current.addEventListener("play", render);
-      }
+  const render = () => {
+    if (video.paused || video.ended) return;
+    drawMosaicOrBlur(); // 비디오 프레임을 그리는 함수 호출
+    animationFrameId = requestAnimationFrame(render);
+  };
 
-      return () => {
-        videoRef.current?.removeEventListener("play", render);
-        cancelAnimationFrame(animationFrameId);
-      };
-    }, [canvasSize, detectionData, settings]);
+  video.addEventListener("play", render);
 
-    useEffect(() => {
-      const video = videoRef.current;
-      if (video) {
-        const render = () => {
-          if (video.paused || video.ended) return;
-          drawBlurBoxInCenter(); // 중앙에 블러 박스를 그리기
-          requestAnimationFrame(render); // 계속해서 업데이트
-        };
-    
-        video.addEventListener('play', render);
-        return () => {
-          video.removeEventListener('play', render);
-        };
-      }
-    }, [canvasSize]);
+  return () => {
+    video.removeEventListener("play", render);
+    cancelAnimationFrame(animationFrameId);
+  };
+}, [canvasSize, detectionData, settings]);
+
+  
   
 
   const handleTabChange = (event, newValue) => {
@@ -456,9 +415,15 @@ const applyMosaic = (ctx, x, y, width, height, blockSize = 10) => {
             <Box key={tab}>
               <Typography variant="h6">마스크 설정</Typography>
               <FormControlLabel
-                control={<Checkbox checked={settings[tab].mosaic} onChange={(e) => handleCheckboxChange(tab, "mosaic", e)} />}
-                label="모자이크"
-              />
+                  control={
+                    <Checkbox
+                      checked={settings[tab].mosaic}
+                      onChange={(e) => handleCheckboxChange(tab, "mosaic", e)}
+                      disabled // 항상 비활성화
+                    />
+                  }
+                  label="모자이크"
+                />
               <FormControlLabel
                 control={<Checkbox checked={settings[tab].blur} onChange={(e) => handleCheckboxChange(tab, "blur", e)} />}
                 label="블러"
