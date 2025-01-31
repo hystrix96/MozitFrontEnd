@@ -534,7 +534,7 @@ useEffect(() => {
         <Button variant="contained" color="primary" component={Link} to="/edit">
           돌아가기
         </Button>
-        <Button variant="outlined" color="secondary" onClick={() => {/* 다른 동작 */}}>
+        <Button variant="outlined" color="secondary" onClick={() => {/* 다른 동작 */}} component={Link} to="/download">
           편집완료
         </Button>
       </Stack>

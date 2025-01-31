@@ -11,6 +11,7 @@ import NoticePage from '../notice-page/NoticePage';
 import NoticeDetailPage from '../notice-page/NoticeDetailPage';
 import QuestionPage from '../question-page/QuestionPage';
 import Edit from '../edit-page/EditPage';
+import Download from '../download-page/DownloadPage';
 import MyQuestionPage from '../my-page/MyQuestionPage';
 import MyQuestionDetailPage from '../my-page/MyQuestionDetailPage';
 
@@ -18,6 +19,7 @@ import MozaicPage from '../mozaic-page/MozaicPage';
 import MyPageUpdate from '../my-page/MyPageUpdate';
 import MySubPage from '../my-page/MySubPage';
 import MyWorkPage from '../my-page/MyWorkPage';
+
 
 const PublicRoutes = () => {
     const { userId } = useAuth();
@@ -39,6 +41,7 @@ const PublicRoutes = () => {
         <>
             <Route path="/question" element={<QuestionPage />} />
             <Route path="/edit" element={<Edit />} />
+            <Route path="/download" element={<Download />} />
             <Route path="/myquestion" element={<MyQuestionPage />} />
             <Route path="/myquestion/:id" element={<MyQuestionDetailPage />} />
             <Route path="/mypageupdate" element={<MyPageUpdate />} />
