@@ -32,7 +32,31 @@ export default function MozaicPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoDuration, setVideoDuration] = useState(0);
   const [sliderValue, setSliderValue] = useState(0); // 슬라이더 값을 상태로 관리
+  const [faceIds, setFaceIds] = useState([]);
+  
+// ✅ Face ID
+////////////////////////////////////////////////////
 
+const getUniqueFaceIds = (detections) => {
+  const faceIds = detections
+    .flatMap(d => d.detections) // 모든 프레임의 detections을 평탄화
+    .filter(detection => detection.className === "face")
+    .map(detection => detection.objectId);
+  
+  console.log("Filtered Face IDs:", faceIds); // 로그 추가
+  
+  return [...new Set(faceIds)]; // 중복 제거
+}
+
+useEffect(() => {
+  console.log("Detection Data:", detectionData);
+  if (detectionData.length > 0) {
+    const uniqueFaceIds = getUniqueFaceIds(detectionData);
+    console.log("Unique Face IDs:", uniqueFaceIds); 
+    setFaceIds(uniqueFaceIds);
+  }
+}, [detectionData]);
+////////////////////////////////////////////////////////////
 
 
   
@@ -308,7 +332,14 @@ useEffect(() => {
       try {
         const response = await fetch(`http://localhost:8080/edit/videos/${savedFileName}/info`);
         const data = await response.json();
-        setDetectionData(data.detections); // JSON 데이터 저장
+        
+        // 각 프레임의 detections을 포함한 객체를 유지하면서 평탄화
+        const flattenedDetections = data.detections.map(item => ({
+          frame: item.frame,
+          detections: item.detections // 원래 detections 배열 유지
+        }));
+  
+        setDetectionData(flattenedDetections);
       } catch (error) {
         console.error("Error fetching detection data:", error);
       }
@@ -316,6 +347,8 @@ useEffect(() => {
   
     fetchDetections();
   }, [savedFileName]);
+  
+  
 
 
  // 비디오 재생 시 모자이크 또는 블러 적용
@@ -473,16 +506,16 @@ useEffect(() => {
               {tab === "person" && (
                 <>
                   <Typography variant="h6">마스크 체크</Typography>
-                  {["사람 1", "사람 2", "사람 3"].map((person) => (
+                  {faceIds.map((id) => (
                     <FormControlLabel
-                      key={person}
+                      key={id}
                       control={
                         <Checkbox
-                          checked={settings.person?.checkedPeople?.includes(person) || false} // 안전하게 접근
-                          onChange={handlePersonCheck(person)}
+                          checked={settings.person?.checkedPeople?.includes(id) || false}
+                          onChange={handlePersonCheck(id)}
                         />
                       }
-                      label={person}
+                      label={`사람 ${id}`} // 또는 다른 적절한 라벨
                     />
                   ))}
                 </>
