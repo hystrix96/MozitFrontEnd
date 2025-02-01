@@ -357,12 +357,12 @@ const handleReEdit = async () => {
     const response = await fetch('http://localhost:8080/edit/restart-editing', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': accessToken, // 인증 헤더 추가
+        'Content-Type': 'application/json', // JSON 형식으로 설정
+        'Authorization': accessToken,
       },
-      body: new URLSearchParams({
+      body: JSON.stringify({
         videoFileName: savedFileName, // 비디오 파일 이름 전달
-      }).toString(),
+      }), // JSON으로 변환하여 전송
     });
 
     if (!response.ok) {
@@ -370,10 +370,10 @@ const handleReEdit = async () => {
     }
 
     const editNum = await response.json(); // EDIT_NUM 반환
-    console.log('Edit Number:', editNum); // 반환된 EDIT_NUM 확인
+    console.log('Edit Number:', editNum);
 
     // MosaicPage로 이동
-    navigate('/mozaic', { state: { editNum, savedFileName } }); // 필요 시 editNum 전달
+    navigate('/mozaic', { state: { editNum, savedFileName } });
   } catch (error) {
     console.error('Error during re-editing:', error);
   }
