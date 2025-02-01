@@ -83,7 +83,7 @@ export default function EditPage(props) {
   const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
   const [detectionData, setDetectionData] = useState([]);
   const location = useLocation();
-  const { settings } = location.state || {}; // 전달된 마스크 상태 가져오기
+  const { settings , editNum} = location.state || {}; // 전달된 마스크 상태 가져오기
 
 
 
@@ -225,23 +225,6 @@ export default function EditPage(props) {
     fetchDetections();
   }, [savedFileName]);
 
-
-
-  // 캔버스에 투명한 색을 그리는 함수
-  // const drawTransparentOverlay = () => {
-  //   const canvas = canvasRef.current;
-  //   const context = canvas.getContext('2d');
-
-  //   // 캔버스 사이즈 설정
-  //   canvas.width = canvasSize.width;
-  //   canvas.height = canvasSize.height;
-
-  //   // 투명한 색 사각형 그리기
-  //   context.fillStyle = 'rgba(255, 255, 255, 0)'; // 반투명 빨간색
-  //   context.fillRect(0, 0, canvas.width, canvas.height);
-  // };
-
-    // ✅ 모자이크 & 블러를 적용하는 함수
     const drawMosaicOrBlur = () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;

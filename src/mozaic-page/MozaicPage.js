@@ -16,9 +16,25 @@ import { Link } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import { imageDataRGB } from 'stackblur-canvas';
+import { useNavigate } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
+const ControlBox = styled(Box)(({ showControls }) => ({
+  position: 'absolute',
+  bottom: '5px',
+  left: '20px',
+  right: '20px',
+  display: 'flex',
+  alignItems: 'center',
+  zIndex: 3,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
+  borderRadius: '5px',
+  opacity: showControls ? 1 : 0, // 마우스 오버 시만 보이게 설정
+  transition: 'opacity 0.3s ease', // 부드러운 전환
+}));
 
 export default function MozaicPage() {
   const location = useLocation();
+  const { editNum } = location.state || {}; // 상태를 받음
   const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
   const videoUrl = savedFileName ? `http://localhost:8080/edit/videos/${savedFileName}` : null;
 
@@ -32,8 +48,12 @@ export default function MozaicPage() {
   const [videoDuration, setVideoDuration] = useState(0);
   const [sliderValue, setSliderValue] = useState(0); // 슬라이더 값을 상태로 관리
   const [faceIds, setFaceIds] = useState([]);
-
+  const navigate = useNavigate();
   const [faceImages, setFaceImages] = useState({}); // 각 faceId에 해당하는 이미지를 저장할 상태
+  const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
+ 
+ 
+ 
   // ✅ Face ID
   const getUniqueFaceIds = (detections) => {
     const faceIds = detections
@@ -271,15 +291,14 @@ const drawMosaicOrBlur = () => {
     const endY = y + height / 2;
 
     for (let i = startX; i < endX; i += blockSize) {
-      for (let j = startY; j < endY; j += blockSize) {
-        const pixel = ctx.getImageData(i, j, blockSize, blockSize);
-        const avgColor = getAverageColor(pixel.data);
+        for (let j = startY; j < endY; j += blockSize) {
+            const pixel = ctx.getImageData(i, j, blockSize, blockSize);
+            const avgColor = getAverageColor(pixel.data);
 
-        ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
-        ctx.fillRect(i, j, blockSize, blockSize);
-      }
+            ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
+            ctx.fillRect(i, j, blockSize, blockSize);
+        }
     }
-
     // 📌 테두리를 모자이크 크기에 맞게 조정
     // ctx.strokeStyle = "black";
     // ctx.lineWidth = Math.max(blockSize / 4, 5);
@@ -433,6 +452,39 @@ const getFaceImage = (id) => {
   return tempCanvas.toDataURL(); // Data URL로 변환
 };
 
+
+
+
+// ✅편집 완료 버튼 클릭 시 상태를 전달하는 함수 추가
+const handleEditComplete = () => {
+  const settingsToSend = {
+    mosaic: settings.mosaic,
+    blur: settings.blur,
+    intensity: settings.intensity,
+    size: settings.size,
+    checkedPeople: settings.person.checkedPeople,
+  };
+
+  navigate('/download', { state: { settings: settingsToSend },savedFileName, editNum });
+};
+
+
+
+
+/////////비디오 화면에 마우스 올라가면 재생바 나타남//////////////
+const handleMouseEnter = () => {
+  setShowControls(true); // 마우스가 올라가면 컨트롤 표시
+};
+
+const handleMouseLeave = () => {
+  setShowControls(false); // 마우스가 나가면 컨트롤 숨김
+};
+////////////////////////////////////////////////////////////
+
+
+
+
+
   return (
     <AppTheme sx={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <CssBaseline />
@@ -449,76 +501,89 @@ const getFaceImage = (id) => {
           >
             모자이크 처리된 동영상
           </Typography>
-          {videoUrl ? (
-            <>
-              <video
-                ref={videoRef}
-                src={videoUrl}
-                crossOrigin="anonymous"
-                // controls
-                onLoadedMetadata={handleLoadedMetadata}
-                style={{
-                  display: 'block',
-                  width: '80%', // 비디오 너비를 80%로 설정
-                  height: 'auto', // 비율 유지
-                  position: 'relative', // 위치 설정
-                  top: 0, // 상단 정렬
-                  zIndex: 1, // 비디오가 위에 오도록 설정
-                  marginBottom: '50px',
-                }}
-              />
-              <canvas
-                ref={canvasRef}
-                width={canvasSize.width}
-                height={canvasSize.height}
-                onClick={handleCanvasClick}
-                style={{
-                  position: 'absolute', // 절대 위치로 설정
-                  top: 0,
-                  pointerEvents: 'auto', // 캔버스가 클릭 이벤트를 차단하지 않도록
-                  zIndex: 2, // 캔버스가 비디오 위에 오도록 설정
-                  width: '80%', // 캔버스 너비를 비디오와 동일하게 설정
-                  height: 'auto', // 자동으로 높이 조정
-                  top: '68px',
-                }}
-              />
-              <Box
+            {videoUrl ? (
+              <>
+                <video
+                  ref={videoRef}
+                  src={videoUrl}
+                  crossOrigin="anonymous"
+                  // controls
+                  onLoadedMetadata={handleLoadedMetadata}
+                  style={{
+                    display: 'block',
+                    width: '80%', // 비디오 너비를 80%로 설정
+                    height: 'auto', // 비율 유지
+                    position: 'relative', // 위치 설정
+                    top: 0, // 상단 정렬
+                    zIndex: 1, // 비디오가 위에 오도록 설정
+                    marginBottom: '50px',
+                  }}
+                />
+                <div
+                //  onMouseEnter={handleMouseEnter} // 비디오에 마우스 진입 시
+                //  onMouseLeave={handleMouseLeave} // 비디오에서 마우스 이탈 시
+                  style={{
+                    position: 'absolute', // 절대 위치로 설정
+                    top: '68px', // div의 상단을 부모 div의 상단에 맞춤
+                    width: '80%', // div 너비를 부모 div에 맞춤
+                    height: '90%', // div 높이를 부모 div에 맞춤
+                    zIndex: 3, // div가 비디오 위에 오도록 설정
+                  }}
+                />
+                <canvas
+                  ref={canvasRef}
+                  width={canvasSize.width}
+                  height={canvasSize.height}
+                  onClick={handleCanvasClick}
+                  style={{
+                    position: 'absolute', // 절대 위치로 설정
+                    top: 0,
+                    pointerEvents: 'auto', // 캔버스가 클릭 이벤트를 차단하지 않도록
+                    zIndex: 2, // 캔버스가 비디오 위에 오도록 설정
+                    width: '80%', // 캔버스 너비를 비디오와 동일하게 설정
+                    height: 'auto', // 자동으로 높이 조정
+                    top: '68px',
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: '20px',
+                    left: '20px',
+                    right: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    zIndex: 3,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
+                    borderRadius: '5px',
+                    padding: '10px',
+                  }}
+                >
+
+                    <Button onClick={handlePlayPause}>
+                      {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+                    </Button>
+                    <Slider
+                      id="video-slider"
+                      sx={{ marginLeft: '10px', flexGrow: 1 }}
+                      value={sliderValue}
+                      onChange={handleSliderChange}
+                    />
+
+                </Box>
+              </>
+            ) : (
+              <Typography
+                variant="h6"
                 sx={{
-                  position: 'absolute',
-                  bottom: '20px',
-                  left: '20px',
-                  right: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  zIndex: 3,
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
-                  borderRadius: '5px',
-                  padding: '10px',
+                  textAlign: 'center',
+                  color: 'error.main',
+                  marginTop: 2,
                 }}
               >
-                <Button onClick={handlePlayPause}>
-                  {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-                </Button>
-                <Slider
-                  id="video-slider"
-                  sx={{ marginLeft: '10px', flexGrow: 1 }}
-                  value={sliderValue}
-                  onChange={handleSliderChange}
-                />
-              </Box>
-            </>
-          ) : (
-            <Typography
-              variant="h6"
-              sx={{
-                textAlign: 'center',
-                color: 'error.main',
-                marginTop: 2,
-              }}
-            >
-              처리된 동영상이 없습니다.
-            </Typography>
-          )}
+                처리된 동영상이 없습니다.
+              </Typography>
+            )}
         </Box>
 
         <Box sx={{ width: "25%", padding: 2 }}>
@@ -604,7 +669,7 @@ const getFaceImage = (id) => {
         <Button variant="contained" color="primary" component={Link} to="/edit">
           돌아가기
         </Button>
-        <Button variant="outlined" color="secondary" onClick={() => {/* 다른 동작 */}} component={Link} to="/download">
+        <Button variant="outlined" color="secondary"  onClick={handleEditComplete}>
           편집완료
         </Button>
       </Stack>
