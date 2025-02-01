@@ -128,7 +128,7 @@ export default function EditPage(props) {
   
       console.log("FastAPI 응답:", response.data);
       //mozaic페이지로 넘어감. 
-      navigate("/mozaic", { state: { savedFileName } });
+      navigate("/mozaic", { state: { editNum, savedFileName } });
   
     } catch (error) {
       if (error.response) {
