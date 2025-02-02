@@ -14,61 +14,61 @@ const items = [
   {
     icon: '/assets/img/brand/yunho.png',
     title: '서윤호',
-    description: '조장',
+    description: 'Infra/Frontend',
     links: {
-      github: 'https://github.com/sehoon',
-      email: 'mailto:rhwjddn89@naver.com'
+      github: 'https://github.com/hystrix96',
+      email: 'mailto:leo8071004@naver.com'
     },
   },
   {
     icon: '/assets/img/brand/mina.png',
     title: '강민아',
-    description: 'ACE',
+    description: 'Backend',
     links: {
       github: 'https://github.com/minkongkang',
-      email: 'mailto:rhwjddn89@naver.com'
+      email: 'mailto:uter828@naver.com'
     },
   },
   {
     icon: '/assets/img/brand/yunho.png',
     title: '장현호',
-    description: '블라블라',
+    description: 'AI/Data',
     links: {
-      github: 'https://github.com/minkongkang',
-      email: 'mailto:rhwjddn89@naver.com'
+      github: 'https://github.com/LargeSsun',
+      email: 'mailto:wkjang74@naver.com'
     },
   },
   {
     icon: '/assets/img/brand/mina.png',
     title: '민지영',
-    description: '블라블라',
+    description: 'AI/Data',
     links: {
-      github: 'https://github.com/huniiieee',
-      email: 'mailto:rhwjddn89@naver.com'
+      github: 'https://github.com/IMZI0',
+      email: 'mailto:1alswldud@naver.com'
     },
   },
   {
     icon: '/assets/img/brand/yunho.png',
     title: '이세훈',
-    description: '블라블라',
+    description: 'Frontend',
     links: {
       github: 'https://github.com/huniiieee',
-      email: 'mailto:rhwjddn89@naver.com'
+      email: 'mailto:kyung6805@naver.com'
     },
   },
   {
     icon: '/assets/img/brand/mina.png',
     title: '정연주',
-    description: '블라블라',
+    description: 'Backend/Frontend',
     links: {
       github: 'https://github.com/racoi',
-      email: 'mailto:rhwjddn89@naver.com'
+      email: 'mailto:919jung@gmail.com'
     },
   },
   {
     icon: '/assets/img/brand/yunho.png',
     title: '고정우',
-    description: '블라블라',
+    description: 'Frontend',
     links: {
       github: 'https://github.com/kjwjj',
       email: 'mailto:rhwjddn89@naver.com'
@@ -77,10 +77,10 @@ const items = [
   {
     icon: '/assets/img/brand/mina.png',
     title: '이지현',
-    description: '블라블라',
+    description: 'Backend/Frontend',
     links: {
       github: 'https://github.com/jh226',
-      email: 'mailto:rhwjddn89@naver.com'
+      email: 'mailto:leejh020206@gmail.com'
     },
   },
 ];
@@ -202,12 +202,11 @@ const [isFirstTextVisible, setFirstTextVisible] = useState(false);
             fontSize: '1.1rem',
           }}
         >
-          Connect with us to know more about our team and projects.
+          Aivle School 6기 수도권 4반 13조
         </Typography>
       </Box>
 
-       <Box id="hero" sx={{ position: "relative", width: "100%" }}>
-        {/* 움직이는 아이콘 */}
+       {/* <Box id="hero" sx={{ position: "relative", width: "100%" }}>
         <FloatingIcons>
           {icons.map((icon, index) => (
             <Icon
@@ -221,7 +220,6 @@ const [isFirstTextVisible, setFirstTextVisible] = useState(false);
             />
           ))}
           
-          {/* 중앙 텍스트, 아이콘 안에서만 보이도록 설정 */}
           <CenteredText isVisible={isFirstTextVisible}>
             <Typography
               variant="h2"
@@ -250,7 +248,7 @@ const [isFirstTextVisible, setFirstTextVisible] = useState(false);
             </Typography>
           </CenteredText>
         </FloatingIcons>
-      </Box>
+      </Box> */}
 
       <Grid container spacing={4}>
         {items.map((item, index) => (
