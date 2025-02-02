@@ -87,42 +87,70 @@ useEffect(() => {
   }, [detectionData]);
 
   // 각 탭별 상태 저장
-  const [settings, setSettings] = useState({
-    mosaic: false,
-    blur: true,
-    intensity: 50,
-    size: 50, // 모자이크 크기
-    person: {
-      checkedPeople: [], // 초기값을 빈 배열로 설정
-    },
-    privacy: {
-    checkedItems: [], // 기본값으로 빈 배열 설정
-    harmful: {
-    checkedItems: [], // 유해요소 체크 항목
+ const [settings, setSettings] = useState({
+  mosaic: true,
+  blur: false,
+  harmful: {
+    checkedItems: [],
+    intensity: 50, // 유해요소 탭의 마스크 강도
+    size: 70, // 유해요소 탭의 마스크 크기
   },
+  privacy: {
+    checkedItems: [],
+    intensity: 50, // 개인정보 탭의 마스크 강도
+    size:70, // 개인정보 탭의 마스크 크기
   },
-  });
+  person: {
+    checkedPeople: [],
+    intensity: 50, // 사람 탭의 마스크 강도
+    size: 70, // 사람 탭의 마스크 크기
+  },
+});
 
   useEffect(() => {
     // 초기 설정
     setSettings({
-      mosaic: false,
-      blur: true,
-      intensity: 50,
-      size: 70,
-      person: {
-        checkedPeople: [], // 체크된 사람들을 저장할 배열
-      },
-      privacy: {
-    checkedItems: [], // 기본값으로 빈 배열 설정
-    harmful: {
-    checkedItems: [], // 유해요소 체크 항목
+     mosaic: true,
+  blur: false,
+  harmful: {
+    checkedItems: [],
+    intensity: 50, // 유해요소 탭의 마스크 강도
+    size: 70, // 유해요소 탭의 마스크 크기
   },
+  privacy: {
+    checkedItems: [],
+    intensity: 50, // 개인정보 탭의 마스크 강도
+    size: 70, // 개인정보 탭의 마스크 크기
+  },
+  person: {
+    checkedPeople: [],
+    intensity: 50, // 사람 탭의 마스크 강도
+    size: 70, // 사람 탭의 마스크 크기
   },
     });
   }, []);
 
+// 마스크 강도 변경 핸들러
+const handleIntensityChange = (tab) => (event, newValue) => {
+  setSettings((prev) => ({
+    ...prev,
+    [tab]: {
+      ...prev[tab],
+      intensity: newValue + 70, // 예시: 70을 더하는 로직 유지
+    },
+  }));
+};
 
+// 마스크 크기 변경 핸들러
+const handleSizeChange = (tab) => (event, newValue) => {
+  setSettings((prev) => ({
+    ...prev,
+    [tab]: {
+      ...prev[tab],
+      size: newValue + 70, // 예시: 70을 더하는 로직 유지
+    },
+  }));
+};
   
   // ✅ 모자이크 또는 블러 중 하나만 선택 가능하게 함
   const handleCheckboxChange = (effectType, event) => {
@@ -290,9 +318,7 @@ const drawMosaicOrBlur = () => {
   const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
 
   currentDetections.forEach(({ x, y, width, height, objectId, className,confidence }) => {
-    const maskSize = settings.size;
-    const newWidth = width * (maskSize / 50);
-    const newHeight = height * (maskSize / 50);
+
 
      // ✅ 빨간 글씨로 objectId와 className 출력
     ctx.fillStyle = "red"; 
@@ -310,44 +336,43 @@ const drawMosaicOrBlur = () => {
  // 사람(face)인 경우
     if (className === "face") {
       // 체크된 사람에 대해서만 모자이크 또는 블러 적용
+          const maskSize = settings.person.size;
+        const newWidth = width * (maskSize / 50);
+        const newHeight = height * (maskSize / 50);
       if (settings.person.checkedPeople.includes(objectId)) {
         if (settings.mosaic) {
-          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
         } else if (settings.blur) {
-          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
         }
       }
     }
     // 개인정보인 경우
     else if (["ID_card", "address_sign", "license_plate"].includes(className)) {
+          const maskSize = settings.privacy.size;
+    const newWidth = width * (maskSize / 50);
+    const newHeight = height * (maskSize / 50);
       // 체크된 개인정보에 대해서만 모자이크 또는 블러 적용
       if (settings.privacy.checkedItems.includes(className)) {
         if (settings.mosaic) {
-          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
         } else if (settings.blur) {
-          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
         }
       }
     }
     // 유해요소인 경우
     else if (["blood", "gun", "knife", "cigarette", "alcohol"].includes(className)) {
-      // settings.harmful가 없는 경우 기본값 사용
-      const checkedItems = settings.harmful?.checkedItems || [];
+          const maskSize = settings.harmful.size;
+    const newWidth = width * (maskSize / 50);
+    const newHeight = height * (maskSize / 50);
       // 체크된 유해요소에 대해서만 모자이크 또는 블러 적용
-      if (checkedItems.includes(className)) {
+      if (settings.harmful.checkedItems.includes(className)) {
         if (settings.mosaic) {
-          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
         } else if (settings.blur) {
-          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
         }
-      }
-    }
-    // 그 외 객체
-    else {
-      if (settings.mosaic) {
-        applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
-      } else if (settings.blur) {
-        applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
       }
     }
   });
@@ -681,143 +706,142 @@ const handleMouseLeave = () => {
 
   {/* 공통 UI */}
   {["harmful", "privacy", "person"].map((tab, index) =>
-    value === index && (
-      <Box key={tab} sx={{ border: "1px solid #eee", borderRadius: 2, padding: 2, marginBottom: 2 }}>
-        {/* 마스크 설정 섹션 */}
-        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
-          <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
-            마스크 설정
-          </Typography>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={settings.mosaic}
-                onChange={(e) => handleCheckboxChange("mosaic", e)}
-              />
-            }
-            label="모자이크"
-          />
-          {/* <FormControlLabel
-            control={<Checkbox checked={settings.blur} onChange={(e) => handleCheckboxChange("blur", e)} />}
-            label="블러"
-          /> */}
-        </Box>
+  value === index && (
+    <Box key={tab} sx={{ border: "1px solid #eee", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+      {/* 마스크 설정 섹션 */}
+      <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+        <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+          마스크 설정
+        </Typography>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={settings.mosaic}
+              onChange={(e) => handleCheckboxChange("mosaic", e)}
+            />
+          }
+          label="모자이크"
+        />
+      </Box>
 
-        {/* 마스크 강도 섹션 */}
-        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
-          <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
-            마스크 강도
-          </Typography>
-          <Slider
-            value={settings.intensity - 70}
-            onChange={(e, newValue) => setSettings(prev => ({ ...prev, intensity: newValue + 70 }))}
-            min={1}
-            max={10}
-            step={1}
-            valueLabelDisplay="auto"
-          />
-        </Box>
+      {/* 마스크 강도 섹션 */}
+      <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+        <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+          마스크 강도
+        </Typography>
+        <Slider
+          value={settings[tab].intensity - 70} // 해당 탭의 intensity 사용
+          onChange={handleIntensityChange(tab)} // 해당 탭의 intensity 업데이트
+          min={1}
+          max={10}
+          step={1}
+          valueLabelDisplay="auto"
+        />
+      </Box>
 
-        {/* 마스크 크기 섹션 */}
-        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+      {/* 마스크 크기 섹션 */}
+      <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+        <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+          마스크 크기
+        </Typography>
+        <Slider
+          value={settings[tab].size - 70} // 해당 탭의 size 사용
+          onChange={handleSizeChange(tab)} // 해당 탭의 size 업데이트
+          min={1}
+          max={10}
+          step={1}
+          valueLabelDisplay="auto"
+        />
+      </Box>
+
+      {/* 유해요소 탭 */}
+      {tab === "harmful" && (
+        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
           <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
-            마스크 크기
+            마스크 체크
           </Typography>
-          <Slider
-            value={settings.size - 70}
-            onChange={(e, newValue) => setSettings(prev => ({ ...prev, size: newValue + 70 }))}
-            min={1}
-            max={10}
-            step={1}
-            valueLabelDisplay="auto"
-          />
+          {[
+            { label: "술병", class: "alcohol" },
+            { label: "담배", class: "cigarette" },
+            { label: "혈흔", class: "blood" },
+            { label: "총기류", class: "gun" },
+            { label: "칼", class: "knife" },
+          ].map((item) => (
+            <FormControlLabel
+              key={item.class}
+              control={
+                <Checkbox
+                  checked={settings.harmful.checkedItems.includes(item.class) || false}
+                  onChange={(e) => handleHarmfulCheck(item.class, e.target.checked)}
+                />
+              }
+              label={item.label}
+            />
+          ))}
         </Box>
-        {tab === "harmful" && (
-  <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
-    <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
-      마스크 체크
-    </Typography>
-    {[
-      { label: "술병", class: "alcohol" },
-      { label: "담배", class: "cigarette" },
-      { label: "혈흔", class: "blood" },
-      { label: "총기류", class: "gun" },
-      { label: "칼", class: "knife" },
-    ].map((item) => (
-      <FormControlLabel
-        key={item.class}
-        control={
-          <Checkbox
-            checked={settings.harmful?.checkedItems?.includes(item.class) || false}
-            onChange={(e) => handleHarmfulCheck(item.class, e.target.checked)}
-          />
-        }
-        label={item.label}
-      />
-    ))}
-  </Box>
-)}
-        {/* 개인정보 탭에서만 마스크 체크 표시 */}
-        {tab === "privacy" && (
-          <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
-            <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
-              마스크 체크
-            </Typography>
-            {[
-              { label: "민증/운전면허증", class: "ID_card" },
-              { label: "도로명주소판", class: "address_sign" },
-              { label: "차량번호판", class: "license_plate" },
-            ].map((item) => (
+      )}
+
+      {/* 개인정보 탭 */}
+      {tab === "privacy" && (
+        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
+          <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+            마스크 체크
+          </Typography>
+          {[
+            { label: "민증/운전면허증", class: "ID_card" },
+            { label: "도로명주소판", class: "address_sign" },
+            { label: "차량번호판", class: "license_plate" },
+          ].map((item) => (
+            <FormControlLabel
+              key={item.class}
+              control={
+                <Checkbox
+                  checked={settings.privacy.checkedItems.includes(item.class) || false}
+                  onChange={(e) => handlePrivacyCheck(item.class, e.target.checked)}
+                />
+              }
+              label={item.label}
+            />
+          ))}
+        </Box>
+      )}
+
+      {/* 사람 탭 */}
+      {tab === "person" && (
+        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
+          <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+            마스크 체크
+          </Typography>
+          {faceIds.map((id) => {
+            const imageUrl = getFaceImage(id);
+            return (
               <FormControlLabel
-                key={item.class}
+                key={id}
                 control={
                   <Checkbox
-                    checked={settings.privacy?.checkedItems?.includes(item.class) || false}
-                    onChange={(e) => handlePrivacyCheck(item.class, e.target.checked)}
+                    checked={settings.person.checkedPeople.includes(id) || false}
+                    onChange={handlePersonCheck(id)}
                   />
                 }
-                label={item.label}
-              />
-            ))}
-          </Box>
-        )}
-
-        {/* 사람 탭에서만 마스크 체크 표시 */}
-        {tab === "person" && (
-          <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
-            <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
-              마스크 체크
-            </Typography>
-            {faceIds.map((id) => {
-              const imageUrl = getFaceImage(id);
-              return (
-                <FormControlLabel
-                  key={id}
-                  control={
-                    <Checkbox
-                      checked={settings.person?.checkedPeople?.includes(id) || false}
-                      onChange={handlePersonCheck(id)}
+                label={
+                  imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={`사람 ${id}`}
+                      style={{ width: '50px', height: '50px', border: "1px solid #ddd", borderRadius: 2 }}
                     />
-                  }
-                  label={
-                    imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={`사람 ${id}`}
-                        style={{ width: '50px', height: '50px', border: "1px solid #ddd", borderRadius: 2 }}
-                      />
-                    ) : (
-                      `사람 ${id}`
-                    )
-                  }
-                />
-              );
-            })}
-          </Box>
-        )}
-      </Box>
-    )
-  )}
+                  ) : (
+                    `사람 ${id}`
+                  )
+                }
+              />
+            );
+          })}
+        </Box>
+      )}
+    </Box>
+  )
+)}
 </Box>
       </Box>
 
