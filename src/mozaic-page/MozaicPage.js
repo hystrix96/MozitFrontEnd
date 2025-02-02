@@ -581,15 +581,32 @@ const getFaceImage = (id) => {
 // ✅편집 완료 버튼 클릭 시 상태를 전달하는 함수 추가
 const handleEditComplete = () => {
   const settingsToSend = {
-    mosaic: settings.mosaic,
-    blur: settings.blur,
-    intensity: settings.intensity,
-    size: settings.size,
-    checkedPeople: settings.person.checkedPeople,
+    harmfulElements: {
+      intensity: settings.harmful.intensity, // 유해요소 모자이크 강도
+      size: settings.harmful.size, // 유해요소 모자이크 크기
+      checkedItems: settings.harmful.checkedItems, // 체크된 유해요소
+    },
+
+    personalInfo: {
+      intensity: settings.privacy.intensity, // 개인정보 모자이크 강도
+      size: settings.privacy.size, // 개인정보 모자이크 크기
+      checkedItems: settings.privacy.checkedItems, // 체크된 개인정보
+    },
+
+    person: {
+      intensity: settings.person.intensity, // 사람 모자이크 강도
+      size: settings.person.size, // 사람 모자이크 크기
+      checkedPeople: settings.person.checkedPeople, // 체크된 사람의 ID 배열
+    }
   };
 
-  navigate('/download', { state: { settings: settingsToSend },savedFileName, editNum });
+  // 로그 찍기
+  console.log('전송할 설정:', settingsToSend);
+
+  // 설정을 다운로드 페이지로 전송
+  navigate('/download', { state: { settings: settingsToSend }, savedFileName, editNum });
 };
+
 
 
 
