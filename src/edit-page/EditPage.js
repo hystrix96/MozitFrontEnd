@@ -54,13 +54,26 @@ export default function EditPage(props) {
   const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
   const { accessToken } = useAuth();
 
+  const allowedExtensions = ['.mp4']; // 허용할 확장자 목록 (mp4만 허용)
+  const allowedMimeTypes = ['video/mp4']; // 허용할 MIME 타입 (mp4만 허용)
+
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (file && file.type.startsWith('video/')) {
-      setVideoFile(file);
-      setVideoSrc(URL.createObjectURL(file));
+    if (file) {
+      const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase(); // 안정적인 확장자 추출
+      console.log("선택한 파일 확장자:", fileExtension);
+      console.log("선택한 파일 MIME 타입:", file.type);
+      
+      if (allowedExtensions.includes(fileExtension) && (!file.type || allowedMimeTypes.includes(file.type))) { 
+        setVideoFile(file);
+        setVideoSrc(URL.createObjectURL(file));
+        setError(''); // 에러 메시지 초기화
+      } else {
+        setError('허용되지 않는 파일 형식입니다. MP4 파일만 업로드 가능합니다.');
+        console.error("파일 형식 오류");
+      }
     } else {
-      setError('동영상 파일을 업로드해주세요.');
+      setError('파일을 업로드해주세요.');
     }
   };
 
@@ -71,11 +84,17 @@ export default function EditPage(props) {
       return;
     }
     const file = event.dataTransfer.files[0];
-    if (file && file.type.startsWith('video/')) {
-      setVideoFile(file);
-      setVideoSrc(URL.createObjectURL(file));
+    if (file) {
+      const fileExtension = `.${file.name.split('.').pop().toLowerCase()}`; // 파일 확장자 추출
+      if (allowedExtensions.includes(fileExtension) && allowedMimeTypes.includes(file.type)) {
+        setVideoFile(file);
+        setVideoSrc(URL.createObjectURL(file));
+        setError(''); // 에러 메시지 초기화
+      } else {
+        setError('허용되지 않는 파일 형식입니다. MP4 파일만 업로드 가능합니다.');
+      }
     } else {
-      setError('동영상 파일을 드롭해주세요.');
+      setError('파일을 드롭해주세요.');
     }
   };
 
@@ -203,6 +222,14 @@ export default function EditPage(props) {
           편집 시작
         </Button>
       </Stack>
+
+      <div style={{ paddingTop: '15px', display: 'flex', justifyContent: 'center' }}>
+        {error && (
+          <Alert severity="error" sx={{ width: '50%' }}>
+            {error}
+          </Alert>
+        )}
+      </div>
 
       {/* Popover 추가 */}
       <Popover

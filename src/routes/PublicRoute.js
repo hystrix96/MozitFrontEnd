@@ -20,13 +20,18 @@ import MyPageUpdate from '../my-page/MyPageUpdate';
 import MySubPage from '../my-page/MySubPage';
 import MyWorkPage from '../my-page/MyWorkPage';
 
+import ErrorPage from '../error/ErrorPage';
+import ServerErrorPage from '../error/ServerErrorPage';
+import ErrorBoundary from '../error/ErrorBoundary';
 
 const PublicRoutes = () => {
     const { userId } = useAuth();
     return (
+        <ErrorBoundary>
         <Routes>
         {/* Public Routes */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<ErrorPage />} />
+        <Route path="/500" element={<ServerErrorPage />} />
         <Route path="/" element={<MarketingPage />} />
         <Route path="/agree" element={<Agree />} />
         <Route path="/sign-in" element={<SignIn />} />
@@ -53,6 +58,7 @@ const PublicRoutes = () => {
         <Route path="*" element={<Navigate to="/sign-in" replace />} />
         )}
         </Routes>
+        </ErrorBoundary>
     );
 };
 
