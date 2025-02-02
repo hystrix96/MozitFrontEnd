@@ -320,21 +320,23 @@ const drawMosaicOrBlur = () => {
   currentDetections.forEach(({ x, y, width, height, objectId, className,confidence }) => {
 
 
-     // ✅ 빨간 글씨로 objectId와 className 출력
-    ctx.fillStyle = "red"; 
-    ctx.font = "bold 14px Arial"; 
-    ctx.fillText(`ID: ${objectId}`, x+width+5, y+10 ); // 박스 오른쪽에 ID 표시
-    ctx.fillText(`Class: ${className}`, x+width+5, y+30 ); // 박스 오른쪽에 className 표시
-    ctx.fillText(`Confidence: ${confidence}`, x+width+5, y+50 ); // 박스 오른쪽에 confidence 표시
-     // 박스 색상 조건부 설정
-      ctx.strokeStyle = "red"
+    //  // ✅ 빨간 글씨로 objectId와 className 출력
+    // ctx.fillStyle = "red"; 
+    // ctx.font = "bold 14px Arial"; 
+    // ctx.fillText(`ID: ${objectId}`, x+width+5, y+10 ); // 박스 오른쪽에 ID 표시
+    // ctx.fillText(`Class: ${className}`, x+width+5, y+30 ); // 박스 오른쪽에 className 표시
+    // ctx.fillText(`Confidence: ${confidence}`, x+width+5, y+50 ); // 박스 오른쪽에 confidence 표시
+    //  // 박스 색상 조건부 설정
+    //   ctx.strokeStyle = "red"
 
-      // 박스 그리기
-      ctx.lineWidth = 2; // 박스 두께
-      ctx.strokeRect(x, y, width, height); // 박스 그리기
+    //   // 박스 그리기
+    //   ctx.lineWidth = 2; // 박스 두께
+    //   ctx.strokeRect(x, y, width, height); // 박스 그리기
     // 모든 객체에 대해 박스를 그립니다.
  // 사람(face)인 경우
     if (className === "face") {
+
+      
       // 체크된 사람에 대해서만 모자이크 또는 블러 적용
           const maskSize = settings.person.size;
         const newWidth = width * (maskSize / 50);
@@ -346,6 +348,11 @@ const drawMosaicOrBlur = () => {
           applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
         }
       }
+
+      // 빨간 글씨
+      ctx.fillStyle = "red"; 
+      // 박스 색상 조건부 설정
+      ctx.strokeStyle = "red"
     }
     // 개인정보인 경우
     else if (["ID_card", "address_sign", "license_plate"].includes(className)) {
@@ -360,6 +367,10 @@ const drawMosaicOrBlur = () => {
           applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
         }
       }
+      // 파란글씨
+      ctx.fillStyle = "blue"; 
+      // 박스 색상 조건부 설정
+      ctx.strokeStyle = "blue"
     }
     // 유해요소인 경우
     else if (["blood", "gun", "knife", "cigarette", "alcohol"].includes(className)) {
@@ -374,7 +385,18 @@ const drawMosaicOrBlur = () => {
           applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
         }
       }
+      // 초록 글씨
+      ctx.fillStyle = "green"; 
+      // 박스 색상 조건부 설정
+      ctx.strokeStyle = "green"
     }
+
+    ctx.font = "bold 14px Arial"; 
+    ctx.fillText(`ID: ${objectId}`, x+width+5, y+10 ); // 박스 오른쪽에 ID 표시
+    ctx.fillText(`Class: ${className}`, x+width+5, y+30 ); // 박스 오른쪽에 className 표시
+    ctx.fillText(`Confidence: ${confidence}`, x+width+5, y+50 ); // 박스 오른쪽에 confidence 표시
+    ctx.lineWidth = 2; // 박스 두께
+    ctx.strokeRect(x, y, width, height); // 박스 그리기
   });
 
 };
@@ -773,6 +795,12 @@ const handleMouseLeave = () => {
                 <Checkbox
                   checked={settings.harmful.checkedItems.includes(item.class) || false}
                   onChange={(e) => handleHarmfulCheck(item.class, e.target.checked)}
+                  sx={{
+                  "&.MuiButtonBase-root": {
+                    border: "4px solid green !important", // 테두리 강제 적용
+                    borderRadius: "4px", // 둥글게 만들고 싶다면 추가
+                  },
+                  }}
                 />
               }
               label={item.label}
@@ -798,6 +826,12 @@ const handleMouseLeave = () => {
                 <Checkbox
                   checked={settings.privacy.checkedItems.includes(item.class) || false}
                   onChange={(e) => handlePrivacyCheck(item.class, e.target.checked)}
+                  sx={{
+                    "&.MuiButtonBase-root": {
+                      border: "4px solid blue !important", // 테두리 강제 적용
+                      borderRadius: "4px", // 둥글게 만들고 싶다면 추가
+                    },
+                  }}
                 />
               }
               label={item.label}
@@ -821,6 +855,13 @@ const handleMouseLeave = () => {
                   <Checkbox
                     checked={settings.person.checkedPeople.includes(id) || false}
                     onChange={handlePersonCheck(id)}
+                    sx={{
+                  "&.MuiButtonBase-root": {
+                    border: "4px solid red !important", // 테두리 강제 적용
+                    borderRadius: "4px", // 둥글게 만들고 싶다면 추가
+                  },
+                  
+                  }}
                   />
                 }
                 label={
