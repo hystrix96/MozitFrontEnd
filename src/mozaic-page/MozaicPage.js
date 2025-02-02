@@ -95,6 +95,12 @@ useEffect(() => {
     person: {
       checkedPeople: [], // 초기값을 빈 배열로 설정
     },
+    privacy: {
+    checkedItems: [], // 기본값으로 빈 배열 설정
+    harmful: {
+    checkedItems: [], // 유해요소 체크 항목
+  },
+  },
   });
 
   useEffect(() => {
@@ -107,8 +113,15 @@ useEffect(() => {
       person: {
         checkedPeople: [], // 체크된 사람들을 저장할 배열
       },
+      privacy: {
+    checkedItems: [], // 기본값으로 빈 배열 설정
+    harmful: {
+    checkedItems: [], // 유해요소 체크 항목
+  },
+  },
     });
   }, []);
+
 
   
   // ✅ 모자이크 또는 블러 중 하나만 선택 가능하게 함
@@ -128,13 +141,13 @@ useEffect(() => {
     });
   };
 
-  // 슬라이더 핸들러=> 이게 모자이크
-  const handleSliderChange2 = (tab, key) => (event, newValue) => {
-    setSettings((prev) => ({
-      ...prev,
-      [tab]: { ...prev[tab], [key]: newValue },
-    }));
-  };
+  // // 슬라이더 핸들러=> 이게 모자이크
+  // const handleSliderChange2 = (tab, key) => (event, newValue) => {
+  //   setSettings((prev) => ({
+  //     ...prev,
+  //     [tab]: { ...prev[tab], [key]: newValue },
+  //   }));
+  // };
 
   // 사람 체크박스 핸들러 (사람 탭 전용)
   const handlePersonCheck = (personId) => (event) => {
@@ -148,6 +161,42 @@ useEffect(() => {
       },
     }));
   };
+
+  //개인정보 체크박스 핸들러(개인정보 탭 전용)
+  const handlePrivacyCheck = (itemClass, isChecked) => {
+  setSettings((prev) => {
+    const checkedItems = prev.privacy?.checkedItems || [];
+    const updatedItems = isChecked
+      ? [...checkedItems, itemClass] // 체크된 경우 추가
+      : checkedItems.filter((item) => item !== itemClass); // 체크 해제된 경우 제거
+
+    return {
+      ...prev,
+      privacy: {
+        ...prev.privacy,
+        checkedItems: updatedItems,
+      },
+    };
+  });
+};
+
+  //유해요소 체크박스 핸들러(유해요소 탭 전용)
+const handleHarmfulCheck = (itemClass, isChecked) => {
+  setSettings((prev) => {
+    const checkedItems = prev.harmful?.checkedItems || [];
+    const updatedItems = isChecked
+      ? [...checkedItems, itemClass] // 체크된 경우 추가
+      : checkedItems.filter((item) => item !== itemClass); // 체크 해제된 경우 제거
+
+    return {
+      ...prev,
+      harmful: {
+        ...prev.harmful,
+        checkedItems: updatedItems,
+      },
+    };
+  });
+};
 
   const handleTabChange2 = (_, newValue) => setValue(newValue);
 
@@ -240,7 +289,7 @@ const drawMosaicOrBlur = () => {
   const currentFrame = Math.floor(video.currentTime * 30); // 현재 프레임 계산
   const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
 
-  currentDetections.forEach(({ x, y, width, height, objectId, className }) => {
+  currentDetections.forEach(({ x, y, width, height, objectId, className,confidence }) => {
     const maskSize = settings.size;
     const newWidth = width * (maskSize / 50);
     const newHeight = height * (maskSize / 50);
@@ -248,8 +297,9 @@ const drawMosaicOrBlur = () => {
      // ✅ 빨간 글씨로 objectId와 className 출력
     ctx.fillStyle = "red"; 
     ctx.font = "bold 14px Arial"; 
-    ctx.fillText(`ID: ${objectId}`, x+width+5, y+10 ); // 박스 위쪽에 ID 표시
-    ctx.fillText(`Class: ${className}`, x+width+5, y+30 ); // 박스 아래쪽에 className 표시
+    ctx.fillText(`ID: ${objectId}`, x+width+5, y+10 ); // 박스 오른쪽에 ID 표시
+    ctx.fillText(`Class: ${className}`, x+width+5, y+30 ); // 박스 오른쪽에 className 표시
+    ctx.fillText(`Confidence: ${confidence}`, x+width+5, y+50 ); // 박스 오른쪽에 confidence 표시
      // 박스 색상 조건부 설정
       ctx.strokeStyle = "red"
 
@@ -257,6 +307,7 @@ const drawMosaicOrBlur = () => {
       ctx.lineWidth = 2; // 박스 두께
       ctx.strokeRect(x, y, width, height); // 박스 그리기
     // 모든 객체에 대해 박스를 그립니다.
+ // 사람(face)인 경우
     if (className === "face") {
       // 체크된 사람에 대해서만 모자이크 또는 블러 적용
       if (settings.person.checkedPeople.includes(objectId)) {
@@ -266,8 +317,33 @@ const drawMosaicOrBlur = () => {
           applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
         }
       }
-    } else {
-      // 다른 객체(예: 유해요소, 개인정보)에 대해서는 기존 로직 유지
+    }
+    // 개인정보인 경우
+    else if (["ID_card", "address_sign", "license_plate"].includes(className)) {
+      // 체크된 개인정보에 대해서만 모자이크 또는 블러 적용
+      if (settings.privacy.checkedItems.includes(className)) {
+        if (settings.mosaic) {
+          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+        } else if (settings.blur) {
+          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+        }
+      }
+    }
+    // 유해요소인 경우
+    else if (["blood", "gun", "knife", "cigarette", "alcohol"].includes(className)) {
+      // settings.harmful가 없는 경우 기본값 사용
+      const checkedItems = settings.harmful?.checkedItems || [];
+      // 체크된 유해요소에 대해서만 모자이크 또는 블러 적용
+      if (checkedItems.includes(className)) {
+        if (settings.mosaic) {
+          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+        } else if (settings.blur) {
+          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
+        }
+      }
+    }
+    // 그 외 객체
+    else {
       if (settings.mosaic) {
         applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.intensity);
       } else if (settings.blur) {
@@ -482,7 +558,17 @@ const handleMouseLeave = () => {
 ////////////////////////////////////////////////////////////
 
 
-
+    // settings가 변경될 때마다 재생바 초기화
+  useEffect(() => {
+    
+    if (videoRef.current) {
+      const video = videoRef.current;
+       video.pause();
+        setIsPlaying(false);
+      videoRef.current.currentTime = 0; // 재생 위치를 0으로 초기화
+      //videoRef.current.play(); // 필요에 따라 자동 재생
+    }
+  }, [settings]); // settings가 변경될 때마다 실행
 
 
   return (
@@ -586,83 +672,153 @@ const handleMouseLeave = () => {
             )}
         </Box>
 
-        <Box sx={{ width: "25%", padding: 2 }}>
-          <Tabs value={value} onChange={handleTabChange2} sx={{ marginBottom: 2 }} >
-            <Tab label="유해요소" />
-            <Tab label="개인정보" />
-            <Tab label="사람" />
-          </Tabs>
+<Box sx={{ width: "25%", padding: 2, border: "1px solid #ccc", borderRadius: 2 }}>
+  <Tabs value={value} onChange={handleTabChange2} sx={{ marginBottom: 2 }}>
+    <Tab label="유해요소" sx={{ border: "1px solid #ddd", borderRadius: 1, marginRight: 1 }} />
+    <Tab label="개인정보" sx={{ border: "1px solid #ddd", borderRadius: 1, marginRight: 1 }} />
+    <Tab label="사람" sx={{ border: "1px solid #ddd", borderRadius: 1 }} />
+  </Tabs>
 
-          {/* 공통 UI */}
-          {["harmful", "privacy", "person"].map((tab, index) =>
-            value === index && (
-              <Box key={tab}>
-                <Typography variant="h6">마스크 설정</Typography>
+  {/* 공통 UI */}
+  {["harmful", "privacy", "person"].map((tab, index) =>
+    value === index && (
+      <Box key={tab} sx={{ border: "1px solid #eee", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+        {/* 마스크 설정 섹션 */}
+        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+          <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+            마스크 설정
+          </Typography>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={settings.mosaic}
+                onChange={(e) => handleCheckboxChange("mosaic", e)}
+              />
+            }
+            label="모자이크"
+          />
+          {/* <FormControlLabel
+            control={<Checkbox checked={settings.blur} onChange={(e) => handleCheckboxChange("blur", e)} />}
+            label="블러"
+          /> */}
+        </Box>
+
+        {/* 마스크 강도 섹션 */}
+        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+          <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+            마스크 강도
+          </Typography>
+          <Slider
+            value={settings.intensity - 70}
+            onChange={(e, newValue) => setSettings(prev => ({ ...prev, intensity: newValue + 70 }))}
+            min={1}
+            max={10}
+            step={1}
+            valueLabelDisplay="auto"
+          />
+        </Box>
+
+        {/* 마스크 크기 섹션 */}
+        <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2, marginBottom: 2 }}>
+          <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+            마스크 크기
+          </Typography>
+          <Slider
+            value={settings.size - 70}
+            onChange={(e, newValue) => setSettings(prev => ({ ...prev, size: newValue + 70 }))}
+            min={1}
+            max={10}
+            step={1}
+            valueLabelDisplay="auto"
+          />
+        </Box>
+        {tab === "harmful" && (
+  <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
+    <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+      마스크 체크
+    </Typography>
+    {[
+      { label: "술병", class: "alcohol" },
+      { label: "담배", class: "cigarette" },
+      { label: "혈흔", class: "blood" },
+      { label: "총기류", class: "gun" },
+      { label: "칼", class: "knife" },
+    ].map((item) => (
+      <FormControlLabel
+        key={item.class}
+        control={
+          <Checkbox
+            checked={settings.harmful?.checkedItems?.includes(item.class) || false}
+            onChange={(e) => handleHarmfulCheck(item.class, e.target.checked)}
+          />
+        }
+        label={item.label}
+      />
+    ))}
+  </Box>
+)}
+        {/* 개인정보 탭에서만 마스크 체크 표시 */}
+        {tab === "privacy" && (
+          <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
+            <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+              마스크 체크
+            </Typography>
+            {[
+              { label: "민증/운전면허증", class: "ID_card" },
+              { label: "도로명주소판", class: "address_sign" },
+              { label: "차량번호판", class: "license_plate" },
+            ].map((item) => (
+              <FormControlLabel
+                key={item.class}
+                control={
+                  <Checkbox
+                    checked={settings.privacy?.checkedItems?.includes(item.class) || false}
+                    onChange={(e) => handlePrivacyCheck(item.class, e.target.checked)}
+                  />
+                }
+                label={item.label}
+              />
+            ))}
+          </Box>
+        )}
+
+        {/* 사람 탭에서만 마스크 체크 표시 */}
+        {tab === "person" && (
+          <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
+            <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
+              마스크 체크
+            </Typography>
+            {faceIds.map((id) => {
+              const imageUrl = getFaceImage(id);
+              return (
                 <FormControlLabel
+                  key={id}
                   control={
                     <Checkbox
-                      checked={settings.mosaic}
-                      onChange={(e) => handleCheckboxChange("mosaic", e)}
+                      checked={settings.person?.checkedPeople?.includes(id) || false}
+                      onChange={handlePersonCheck(id)}
                     />
                   }
-                  label="모자이크"
+                  label={
+                    imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={`사람 ${id}`}
+                        style={{ width: '50px', height: '50px', border: "1px solid #ddd", borderRadius: 2 }}
+                      />
+                    ) : (
+                      `사람 ${id}`
+                    )
+                  }
                 />
-                <FormControlLabel
-                  control={<Checkbox checked={settings.blur} onChange={(e) => handleCheckboxChange("blur", e)} />}
-                  label="블러"
-                />
-                <Typography variant="h6">마스크 강도</Typography>
-                <Slider value={settings.intensity - 70} onChange={(e, newValue) => setSettings(prev => ({ ...prev, intensity: newValue + 70 }))} min={1} // 최소 크기
-                  max={10} // 최대 크기
-                  step={1}
-                  valueLabelDisplay="auto" />
-                <Typography variant="h6">마스크 크기</Typography>
-                <Slider
-                  value={settings.size - 70}
-                  onChange={(e, newValue) => setSettings(prev => ({ ...prev, size: newValue + 70 }))}
-                  min={1} // 최소 크기
-                  max={10} // 최대 크기
-                  step={1}
-                  valueLabelDisplay="auto"
-                />
-
-                {/* 사람 탭에서만 마스크 체크 표시 */}
-                {tab === "person" && (
-                  <>
-                    <Typography variant="h6">마스크 체크</Typography>
-                    {faceIds.map((id) => {
-                      // 탐지된 얼굴 영역 캡처
-                      const imageUrl = getFaceImage(id);
-
-                      return (
-                        <FormControlLabel
-                          key={id}
-                          control={
-                            <Checkbox
-                              checked={settings.person?.checkedPeople?.includes(id) || false}
-                              onChange={handlePersonCheck(id)}
-                            />
-                          }
-                          label={
-                            imageUrl ? (
-                              <img
-                                src={imageUrl}
-                                alt={`사람 ${id}`}
-                                style={{ width: '50px', height: '50px' }}
-                              />
-                            ) : (
-                              `사람 ${id}`
-                            )
-                          }
-                        />
-                      );
-                    })}
-                  </>
-                )}
-              </Box>
-            )
-          )}
-        </Box>
+              );
+            })}
+          </Box>
+        )}
+      </Box>
+    )
+  )}
+</Box>
       </Box>
 
       <Stack direction="row" spacing={2} sx={{ marginTop: 2, justifyContent: 'center' }}>
