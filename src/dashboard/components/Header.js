@@ -50,7 +50,7 @@ export default function Header() {
       {/* <NavbarBreadcrumbs /> */}
       <Sitemark height={20} />
       <Stack direction="row" sx={{ gap: 1 }}>
-        <Search />
+        {/* <Search /> */}
         <CustomDatePicker />
         <Button variant="contained" color="primary" size="small" onClick={handleLogout}>
                         로그아웃

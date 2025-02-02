@@ -344,8 +344,8 @@ export default function MyPageCheck(props) {
                     isPasswordSameAsOld
                       ? "기존 비밀번호와 같습니다." // 기존 비밀번호와 같을 때 메시지
                       : !isPasswordValid && userPwd.length > 0
-                        ? "영문, 숫자, 특수문자 중 2개 이상 조합하여 8자 이상 입력하세요."
-                        : "영문, 숫자, 특수문자 중 2개 이상 조합하여 8자 이상 입력하세요."
+                        ? "영문소문자, 영어대문자, 숫자, 특수문자 중 2개 이상 조합하여 8자 이상 입력하세요."
+                        : "영문소문자, 영어대문자, 숫자, 특수문자 중 2개 이상 조합하여 8자 이상 입력하세요."
                   }
                   InputProps={{
                     endAdornment: !isPasswordSameAsOld && isPasswordValid ? (

@@ -54,7 +54,8 @@ ButtonField.propTypes = {
 };
 
 export default function CustomDatePicker() {
-  const [value, setValue] = React.useState(dayjs('2023-04-17'));
+  // 📌 날짜를 오늘로 설정
+  const [value, setValue] = React.useState(dayjs());  // 오늘 날짜로 초기화
   const [open, setOpen] = React.useState(false);
 
   return (

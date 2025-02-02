@@ -274,17 +274,18 @@ export default function SignUp(props) {
     const value = event.target.value;
     setPassword(value);
 
-    const hasLetters = /[a-zA-Z]/.test(value);
+    const hasLetters_s = /[a-z]/.test(value);
+    const hasLetters_b = /[A-Z]/.test(value);
     const hasNumbers = /\d/.test(value);
     const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(value);
-    const validTypes = [hasLetters, hasNumbers, hasSpecialChars].filter(Boolean).length;
+    const validTypes = [hasLetters_s, hasLetters_b, hasNumbers, hasSpecialChars].filter(Boolean).length;
 
     if (value.length < 8) {
       setPasswordError(true);
       setPasswordErrorMessage('비밀번호는 8자 이상이어야 합니다.');
     } else if (validTypes < 2) {
       setPasswordError(true);
-      setPasswordErrorMessage('비밀번호는 영어, 숫자, 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
+      setPasswordErrorMessage('비밀번호는 영어소문자, 영어대문자, 숫자, 특수문자 중 두 가지 유형 이상을 포함해야 합니다.');
     } else if (value.length >= 8 && validTypes >= 2) {
       setPasswordVerified(true);
       setPasswordError(false);
