@@ -181,7 +181,7 @@ export default function EditPage(props) {
     const video = videoRef.current;
     video.currentTime = (newValue / 100) * videoDuration; // 슬라이더 값에 비례하여 현재 재생 시간 조정
   };
-  //캔버스 클릭시 재생및 일시정지지
+  //캔버스 클릭시 재생및 일시정지
   const handleCanvasClick = () => {
     const video = videoRef.current;
     if (video) {
@@ -192,6 +192,27 @@ export default function EditPage(props) {
       }
     }
   };
+
+
+  // 비디오 시간 업데이트 시 슬라이더 값 갱신
+useEffect(() => {
+  const video = videoRef.current;
+
+  const updateSliderValue = () => {
+    if (video) {
+      const currentTime = video.currentTime;
+      const newValue = (currentTime / videoDuration) * 100; // 비디오 길이에 비례하여 슬라이더 값 계산
+      setSliderValue(newValue);
+    }
+  };
+
+  video.addEventListener('timeupdate', updateSliderValue);
+
+  return () => {
+    video.removeEventListener('timeupdate', updateSliderValue);
+  };
+}, [videoDuration]);
+
 ///////////////////////////////////////////////////////////////////
 
 
@@ -217,6 +238,7 @@ export default function EditPage(props) {
         }));
   
         setDetectionData(flattenedDetections);
+        console.log('탐지 데이터:', flattenedDetections);
       } catch (error) {
         console.error("Error fetching detection data:", error);
       }
@@ -225,6 +247,7 @@ export default function EditPage(props) {
     fetchDetections();
   }, [savedFileName]);
 
+    // 모자이크 처리 함수 수정
     const drawMosaicOrBlur = () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -239,55 +262,57 @@ export default function EditPage(props) {
       const currentFrame = Math.floor(video.currentTime * 30); // 현재 프레임 계산
       const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
     
-      const { mosaic = false, blur = false, intensity = 50, size = 50, checkedPeople = [] } = settings || {};
+      const { person } = settings || {};
+      const { intensity: personIntensity = 50, size: personSize = 50, checkedPeople = [] } = person || {};
     
       currentDetections.forEach(({ x, y, width, height, objectId, className }) => {
-        const maskSize = size; // settings에서 가져온 모자이크 크기
+        const maskSize = personSize; // 사람 관련 크기 설정
         const newWidth = width * (maskSize / 50);
         const newHeight = height * (maskSize / 50);
     
         if (className === "face") {
           // 얼굴인 경우, checkedPeople에 포함된 objectId에 대해서만 모자이크 적용
           if (checkedPeople.includes(objectId)) {
-            if (mosaic) {
-              applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, intensity);
-            } else if (blur) {
-              applyBlur(ctx, x, y, newWidth, newHeight, maskSize, intensity);
-            }
+            applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, personIntensity); // 사람 강도 사용
           }
         } else {
-          // 얼굴이 아닌 경우, 모두 모자이크 처리
-          if (mosaic) {
-            applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, intensity);
+          // 얼굴이 아닌 경우, harmfulElements의 checkedItems에 포함된 경우 모자이크 처리
+          const { harmfulElements } = settings || {};
+          const { checkedItems = [] } = harmfulElements || {};
+          if (checkedItems.includes(className)) {
+            const { intensity: harmfulIntensity = 50, size: harmfulSize = 50 } = harmfulElements || {};
+            applyMosaic(ctx, x, y, newWidth, newHeight, harmfulSize, harmfulIntensity); // 유해 요소 강도 사용
           }
         }
       });
     };
     
     
-    // ✅ 모자이크 & 블러 처리 함수
-      const applyEffect = (ctx, x, y, width, height, effectType) => {
-        if (effectType === "mosaic") {
-          applyMosaic(ctx, x, y, width, height);
-        } else if (effectType === "blur") {
-          applyBlur(ctx, x, y, width, height);
-        }
-      };
-      
-      // ✅ 블러 처리 함수 추가
-      const applyMosaic = (ctx, x, y, width, height, size, intensity) => {
-        const blockSize = Math.max(size / 4, 4) * (intensity / 100); // 모자이크 블록 크기를 절반으로 줄임 (최소 5 유지)
-        
-        for (let i = x; i < x + width; i += blockSize) {
-          for (let j = y; j < y + height; j += blockSize) {
+
+    
+    
+  // ✅ 모자이크 & 블러 처리 함수
+  const applyMosaic = (ctx, x, y, width, height, size, intensity) => {
+    const blockSize = Math.max(size / 4, 4) * (intensity / 100); // 모자이크 블록 크기 조정
+
+    // ✅ 중심 좌표에서 크기 조정
+    x = x + width / 3;
+    y = y + height / 4;
+    const startX = x - width / 2;
+    const startY = y - height / 2;
+    const endX = x + width / 2;
+    const endY = y + height / 2;
+
+    for (let i = startX; i < endX; i += blockSize) {
+        for (let j = startY; j < endY; j += blockSize) {
             const pixel = ctx.getImageData(i, j, blockSize, blockSize);
             const avgColor = getAverageColor(pixel.data);
-            
+
             ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
             ctx.fillRect(i, j, blockSize, blockSize);
-          }
         }
-      };
+    }
+  };
       
       
       const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
@@ -320,6 +345,13 @@ export default function EditPage(props) {
           b: Math.floor(b / pixelCount),
         };
       }, []);
+
+
+      useEffect(() => {
+        console.log('다운로드 설정:', settings);
+        console.log('저장된 파일 이름:', savedFileName);
+        console.log('편집 번호:', editNum);
+      }, [settings, savedFileName, editNum]);
 ///////////////////////////////////////////////////////////////////
 
 
