@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
@@ -13,6 +13,7 @@ import SitemarkIcon from '../components/SitemarkIcon';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; 
 import { useAuth } from '../Context/AuthContext';
+import axiosInstance from '../api/axiosInstance'
 
 const StyledBox = styled('div')(({ theme }) => ({
   alignSelf: 'center',
@@ -53,48 +54,95 @@ export default function EditPage(props) {
   const editButtonRef = useRef(null); // 편집 시작 버튼 참조 추가
   const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
   const { accessToken } = useAuth();
+  const [sub, setSub] = useState(null);
+
+  const maxFileSize = {
+    Basic: 100,
+    Pro: 1000,
+    Premium: 30000,
+  }
+
+  useEffect(() => {
+    const fetchSub = async () => {
+      try{
+          const response = await axiosInstance.get('/my');
+          if(!response.data.userSub){
+            alert("구독자 전용 서비스입니다.");
+            navigate("/mysubpage");
+            return;
+          }
+          setSub(response.data.userSub);
+      }catch(error){
+          console.error('구독 정보 가져오는 중 오류 발생:', error);
+          alert("구독 정보 가져오는 중 오류가 발생했습니다.");
+          navigate("/mysubpage");
+      }
+    };
+
+    fetchSub();
+  }, [navigate]);
+
+  const maxFileSizeMB = maxFileSize[sub] || 200;
+  const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
 
   const allowedExtensions = ['.mp4']; // 허용할 확장자 목록 (mp4만 허용)
   const allowedMimeTypes = ['video/mp4']; // 허용할 MIME 타입 (mp4만 허용)
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase(); // 안정적인 확장자 추출
-      console.log("선택한 파일 확장자:", fileExtension);
-      console.log("선택한 파일 MIME 타입:", file.type);
-      
-      if (allowedExtensions.includes(fileExtension) && (!file.type || allowedMimeTypes.includes(file.type))) { 
-        setVideoFile(file);
-        setVideoSrc(URL.createObjectURL(file));
-        setError(''); // 에러 메시지 초기화
-      } else {
-        setError('허용되지 않는 파일 형식입니다. MP4 파일만 업로드 가능합니다.');
-        console.error("파일 형식 오류");
-      }
+    if (!file) {
+      setError("파일을 업로드해주세요.");
+      return;
+    }
+
+    if (!sub) {
+      setError("구독 정보를 확인할 수 없습니다. 다시 시도해주세요.");
+      return;
+    }
+  
+    const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+    console.log((file.size / (1024 * 1024)).toFixed(2));
+  
+    if (file.size > maxFileSizeBytes) {
+      setError(`파일 크기가 너무 큽니다! (${maxFileSizeMB}MB 이하만 업로드 가능)`);
+      return;
+    }
+  
+    if (allowedExtensions.includes(fileExtension) && (!file.type || allowedMimeTypes.includes(file.type))) {
+      setVideoFile(file);
+      setVideoSrc(URL.createObjectURL(file));
+      setError(""); // 에러 메시지 초기화
     } else {
-      setError('파일을 업로드해주세요.');
+      setError("허용되지 않는 파일 형식입니다. MP4 파일만 업로드 가능합니다.");
     }
   };
-
+  
   const handleDrop = (event) => {
     event.preventDefault();
     if (event.dataTransfer.files.length > 1) {
-      setError('한 번에 하나의 동영상만 업로드 가능합니다.');
+      setError("한 번에 하나의 동영상만 업로드 가능합니다.");
       return;
     }
+  
     const file = event.dataTransfer.files[0];
-    if (file) {
-      const fileExtension = `.${file.name.split('.').pop().toLowerCase()}`; // 파일 확장자 추출
-      if (allowedExtensions.includes(fileExtension) && allowedMimeTypes.includes(file.type)) {
-        setVideoFile(file);
-        setVideoSrc(URL.createObjectURL(file));
-        setError(''); // 에러 메시지 초기화
-      } else {
-        setError('허용되지 않는 파일 형식입니다. MP4 파일만 업로드 가능합니다.');
-      }
+    if (!file) {
+      setError("파일을 드롭해주세요.");
+      return;
+    }
+  
+    const fileExtension = `.${file.name.split(".").pop().toLowerCase()}`;
+  
+    if (file.size > maxFileSizeBytes) {
+      setError(`파일 크기가 너무 큽니다! (${maxFileSizeMB}MB 이하만 업로드 가능)`);
+      return;
+    }
+  
+    if (allowedExtensions.includes(fileExtension) && allowedMimeTypes.includes(file.type)) {
+      setVideoFile(file);
+      setVideoSrc(URL.createObjectURL(file));
+      setError(""); // 에러 메시지 초기화
     } else {
-      setError('파일을 드롭해주세요.');
+      setError("허용되지 않는 파일 형식입니다. MP4 파일만 업로드 가능합니다.");
     }
   };
 

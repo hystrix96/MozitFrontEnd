@@ -21,20 +21,26 @@ export default function Pricing(props) {
     const [tiers, setTiers] = useState([]);
     const [user, setUser] = useState([]);
     const authUser = useAuth();
+    const [loading, setLoading] = useState(true);
 
     const fetchUserData = async () => {
         try{
             const response = await axiosInstance.get('/my');
-            setUser(response.data);
+            setUser(prevUser => ({ ...prevUser, ...response.data }));
         }catch(error){
             console.error('사용자 정보 가져오는 중 오류 발생:', error);
+        }finally{
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-        if(authUser){
+        if (authUser) {
             setUser(authUser);
-        }else{
+            if (!authUser.userSub) {
+                fetchUserData();
+            }
+        } else {
             fetchUserData();
         }
     }, [authUser]);
