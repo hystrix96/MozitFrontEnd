@@ -53,9 +53,21 @@ const PublicRoutes = () => {
             <Route path="/mysubpage" element={<MySubPage />} />
             <Route path="/myworkpage" element={<MyWorkPage />} />
             <Route path="/mozaic" element={<MozaicPage />} />
+            <Route path="*" element={<ErrorPage />} />
         </>
         ) : (
-        <Route path="*" element={<Navigate to="/sign-in" replace />} />
+        <>
+            <Route path="/question" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/edit" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/download" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/myquestion" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/myquestion/:id" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/mypageupdate" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/mysubpage" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/myworkpage" element={<Navigate to="/sign-in" replace />} />
+            <Route path="/mozaic" element={<Navigate to="/sign-in" replace />} />
+            <Route path="*" element={<ErrorPage />} />
+        </>
         )}
         </Routes>
         </ErrorBoundary>
