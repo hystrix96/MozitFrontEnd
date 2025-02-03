@@ -1,4 +1,4 @@
-  import React, {useEffect, useState, useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -90,12 +90,10 @@ const StyledLearnMoreButton = styled("button")(({ theme }) => ({
       right: "0.05rem",
       width: "0.5rem", // 화살표 선 크기 줄이기
       height: "0.5rem",
-      borderTop: `0.1rem solid ${
-        theme.palette.mode === "dark" ? "#282936" : "#fff"
-      }`,
-      borderRight: `0.1rem solid ${
-        theme.palette.mode === "dark" ? "#282936" : "#fff"
-      }`,
+      borderTop: `0.1rem solid ${theme.palette.mode === "dark" ? "#282936" : "#fff"
+        }`,
+      borderRight: `0.1rem solid ${theme.palette.mode === "dark" ? "#282936" : "#fff"
+        }`,
       transform: "rotate(45deg)",
     },
   },
@@ -123,7 +121,7 @@ const StyledLearnMoreButton = styled("button")(({ theme }) => ({
     transform: "translate(0.8rem, 0)", // 이동 거리 조정
   },
   "&:hover .button-text": {
-    color: theme.palette.mode === "dark" ? "#282936":"#ffffff", // 다크 모드 글자 색상
+    color: theme.palette.mode === "dark" ? "#282936" : "#ffffff", // 다크 모드 글자 색상
   },
 }));
 
@@ -148,25 +146,25 @@ const IconContainer = styled(Box)(({ theme }) => ({
   "& img": {
     position: "absolute",
     opacity: 0,
-    animation: "fadeInOut 8s infinite", 
+    animation: "fadeInOut 8s infinite",
   },
   "& img:nth-of-type(1)": {
-    animationDelay: "0s", 
+    animationDelay: "0s",
   },
   "& img:nth-of-type(2)": {
-    animationDelay: "2s", 
+    animationDelay: "2s",
   },
   "& img:nth-of-type(3)": {
-    animationDelay: "4s", 
+    animationDelay: "4s",
   },
   "& img:nth-of-type(4)": {
-    animationDelay: "6s", 
+    animationDelay: "6s",
   },
   "@keyframes fadeInOut": {
     "0%": { opacity: 0 },
-    "10%": { opacity: 1 }, 
-    "20%": { opacity: 1 }, 
-    "40%": { opacity: 0 }, 
+    "10%": { opacity: 1 },
+    "20%": { opacity: 1 },
+    "40%": { opacity: 0 },
     "100%": { opacity: 0 },
   },
 }));
@@ -192,7 +190,7 @@ const FloatingIcons = styled(Box)(({ theme }) => ({
   width: "100%",
   height: "100vh",
   overflow: "hidden",
-  zIndex: 2, 
+  zIndex: 2,
 }));
 
 const Icon = styled("img")(({ theme }) => ({
@@ -205,19 +203,16 @@ const Icon = styled("img")(({ theme }) => ({
       transform: "translate(0, 0)",
     },
     "25%": {
-      transform: `translate(${Math.random() * 20 - 10}px, ${
-        Math.random() * 20 - 10
-      }px)`, // 덜 움직이는 범위 설정 (최대 ±10px)
+      transform: `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10
+        }px)`, // 덜 움직이는 범위 설정 (최대 ±10px)
     },
     "50%": {
-      transform: `translate(${Math.random() * 30 - 15}px, ${
-        Math.random() * 30 - 15
-      }px)`, // 덜 움직이는 범위 설정 (최대 ±15px)
+      transform: `translate(${Math.random() * 30 - 15}px, ${Math.random() * 30 - 15
+        }px)`, // 덜 움직이는 범위 설정 (최대 ±15px)
     },
     "75%": {
-      transform: `translate(${Math.random() * 20 - 10}px, ${
-        Math.random() * 20 - 10
-      }px)`, // 덜 움직이는 범위 설정
+      transform: `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10
+        }px)`, // 덜 움직이는 범위 설정
     },
     "100%": {
       transform: "translate(0, 0)", // 원래 위치로 돌아옴
@@ -417,7 +412,7 @@ export default function Hero({ onPricingButtonClick }) {
               textAlign: 'center', // 텍스트 중앙 정렬
               color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
               lineHeight: 1.2, // 줄 간격 조정
-              mt: 3, // 위쪽 여백
+              mt: 2, // 위쪽 여백
             })}
           >
             Mosaic&nbsp;
@@ -434,15 +429,15 @@ export default function Hero({ onPricingButtonClick }) {
             </Typography>
           </Typography>
 
-          <SitemarkIcon height={70} sx={{marginTop: "10px", marginBottom: "10px"}}></SitemarkIcon>
+          <SitemarkIcon height={70} sx={{ marginTop: "10px", marginBottom: "10px" }}></SitemarkIcon>
         </Stack>
 
         {/* 이미지 슬라이더 */}
-        <StyledBox>
+        {/* <StyledBox>
           <img-comparison-slider ref={sliderRef} style={{ width: "100%", height: "100%" }}>
             <img
               slot="first"
-              src="/assets/img/brand/face.png"
+              src="/assets/img/brand/face1.jpg"
               alt="Before"
               style={{
                 width: "100%",
@@ -452,12 +447,47 @@ export default function Hero({ onPricingButtonClick }) {
             />
             <img
               slot="second"
-              src="/assets/img/brand/face2.png"
+              src="/assets/img/brand/face2.jpg"
               alt="After"
               style={{
                 width: "100%",
                 height: "100%",
                 objectFit: "cover", // 컨테이너에 맞게 채우기
+              }}
+            />
+          </img-comparison-slider>
+        </StyledBox> */}
+        <StyledBox style={{ width: "100%", height: "600px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <img-comparison-slider
+            ref={sliderRef}
+            style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
+          >
+            <img
+              slot="first"
+              src="/assets/img/brand/face1.jpg"
+              alt="Before"
+              style={{
+                width: "100%",
+                height: "100%",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                display: "block",
+              }}
+            />
+            <img
+              slot="second"
+              src="/assets/img/brand/face3.jpg"
+              alt="After"
+              style={{
+                width: "100%",
+                height: "100%",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                display: "block",
               }}
             />
           </img-comparison-slider>
@@ -492,7 +522,7 @@ export default function Hero({ onPricingButtonClick }) {
             <span className="button-text">요금제 알아보기</span>
           </StyledLearnMoreButton>
         </Stack>
-        
+
 
         <Box id="hero" sx={{ position: "relative", width: "100%" }}>
           {/* 움직이는 아이콘 */}

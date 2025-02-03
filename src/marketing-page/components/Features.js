@@ -34,8 +34,8 @@ const items = [
     title: '인물',
     description:
       '사용자가 선택한 인물을 자동으로 모자이크 처리하여 개인의 프라이버시를 보호하는 서비스를 제공합니다.',
-    image1: `url("/assets/img/brand/mina.png")`, // 공통 이미지
-    image2: `url("/assets/img/brand/mina.png")`,
+    image1: `url("/assets/img/brand/cha1.png")`, // 공통 이미지
+    image2: `url("/assets/img/brand/cha2.png")`,
   },
 ];
 

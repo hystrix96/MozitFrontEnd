@@ -21,7 +21,7 @@ const items = [
     },
   },
   {
-    icon: '/assets/img/brand/mina.png',
+    icon: '/assets/img/brand/kma.png',
     title: '강민아',
     description: 'Backend',
     links: {
@@ -30,7 +30,7 @@ const items = [
     },
   },
   {
-    icon: '/assets/img/brand/yunho.png',
+    icon: '/assets/img/brand/jhh.jpg',
     title: '장현호',
     description: 'AI/Data',
     links: {
@@ -48,7 +48,7 @@ const items = [
     },
   },
   {
-    icon: '/assets/img/brand/yunho.png',
+    icon: '/assets/img/brand/lsh.jpg',
     title: '이세훈',
     description: 'Frontend',
     links: {
@@ -57,7 +57,7 @@ const items = [
     },
   },
   {
-    icon: '/assets/img/brand/mina.png',
+    icon: '/assets/img/brand/jyj.jpg',
     title: '정연주',
     description: 'Backend/Frontend',
     links: {
@@ -66,7 +66,7 @@ const items = [
     },
   },
   {
-    icon: '/assets/img/brand/yunho.png',
+    icon: '/assets/img/brand/kjw.jpg',
     title: '고정우',
     description: 'Frontend',
     links: {
@@ -75,7 +75,7 @@ const items = [
     },
   },
   {
-    icon: '/assets/img/brand/mina.png',
+    icon: '/assets/img/brand/ljh.jpg',
     title: '이지현',
     description: 'Backend/Frontend',
     links: {
