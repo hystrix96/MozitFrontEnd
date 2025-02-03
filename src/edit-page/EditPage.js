@@ -152,7 +152,7 @@ export default function EditPage(props) {
 
   const handleEditStart = async () => {
     if (!videoFile) {
-      setAnchorEl(editButtonRef.current);
+      //setAnchorEl(editButtonRef.current);
       setError("동영상을 업로드해주세요.");
       return;
     }
