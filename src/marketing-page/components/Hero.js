@@ -353,7 +353,7 @@ export default function Hero({ onPricingButtonClick }) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          pt: { xs: 14, sm: 20 },
+          pt: { xs: 14, sm: 15 }, //네비게이션바랑 Mosaic It! 간격줄이기(sm)
           pb: { xs: 8, sm: 12 },
         }}
       >
@@ -412,6 +412,7 @@ export default function Hero({ onPricingButtonClick }) {
               textAlign: 'center', // 텍스트 중앙 정렬
               color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
               lineHeight: 1.2, // 줄 간격 조정
+              // marginTop: "-20px" //네비게이션바랑 Mosaic It! 간격 줄이기
             })}
           >
             Mosaic&nbsp;

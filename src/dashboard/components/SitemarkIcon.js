@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
+import { Link } from 'react-router-dom'; // ✅ 추가
 
 export default function SitemarkIcon({ height = 30, sx }) {
   const theme = useTheme();
@@ -18,13 +19,14 @@ export default function SitemarkIcon({ height = 30, sx }) {
       
       ...sx // 여기서 전달된 추가 스타일을 덮어쓰게 함
     }}>
-      <a href="/admin/dashboard" style={{ textDecoration: 'none' }}>  {/* 경로를 /로 고정 */}
+      
+      <Link to="/admin/dashboard" style={{ textDecoration: 'none' }}>
         <img
           src={imageUrl}  // public 폴더 기준 경로
           alt="Logo"
           style={{ height: `${height}px` }}  // height를 props로 설정
         />
-      </a>
+      </Link>
     </Box>
   );
 }

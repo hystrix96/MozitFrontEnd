@@ -35,10 +35,10 @@ export default function NoticeListPage(props) {
     setPage(0); // Reset to the first page when rows per page changes
   };
 
-  const handleRowClick = (id) => {
-    // 클릭한 행의 ID에 해당하는 상세 페이지로 이동
-    window.location.href = `/admin/notice/${id}`;
-  };
+  // const handleRowClick = (id) => {
+  //   // 클릭한 행의 ID에 해당하는 상세 페이지로 이동
+  //   window.location.href = `/admin/notice/${id}`;
+  // };
 
   return (
     <AppTheme {...props}>
@@ -90,16 +90,30 @@ export default function NoticeListPage(props) {
                         {notices
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // Pagination
                             .map((notice, index) => (
-                            <TableRow
-                                key={notice.noticeNum}
-                                hover
-                                sx={{ cursor: 'pointer' }} // 클릭 시 커서 변경
-                                onClick={() => handleRowClick(notice.noticeNum)} // 클릭 시 상세 페이지로 이동
+                            // <TableRow
+                            //     key={notice.noticeNum}
+                            //     hover
+                            //     sx={{ cursor: 'pointer' }} // 클릭 시 커서 변경
+                            //     onClick={() => handleRowClick(notice.noticeNum)} // 클릭 시 상세 페이지로 이동
+                            // >
+                            //     <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
+                            //     <TableCell align="left">{notice.noticeTitle}</TableCell>
+                            //     <TableCell align="left">{dayjs(notice.createdAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
+                            // </TableRow>
+                            <TableRow key={notice.noticeNum} hover>
+                          <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
+                          <TableCell align="left">
+                            <Link 
+                              to={`/admin/notice/${notice.noticeNum}`} 
+                              style={{ textDecoration: 'none', color: 'inherit' }}
                             >
-                                <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
-                                <TableCell align="left">{notice.noticeTitle}</TableCell>
-                                <TableCell align="left">{dayjs(notice.createdAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
-                            </TableRow>
+                              {notice.noticeTitle}
+                            </Link>
+                          </TableCell>
+                          <TableCell align="left">
+                            {dayjs(notice.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                          </TableCell>
+                        </TableRow>
                         ))}
                     </TableBody>
                     </Table>
