@@ -137,7 +137,7 @@ export default function Pricing(props) {
                     justifyContent: 'flex-start', // 상단 정렬
                     minHeight: 'calc(100vh - 64px)', // AppBar를 제외한 전체 높이
                     padding: 4,
-                    marginTop: '64px', // AppBar를 위한 상단 여백
+                    marginTop: '80px', // AppBar를 위한 상단 여백
                 }}
             >
                 <Box
@@ -146,7 +146,7 @@ export default function Pricing(props) {
                         width: '100%',
                     }}
                 >
-                    <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
+                    <Typography variant="h4" gutterBottom>
                         내 구독
                     </Typography>
                     <Box
@@ -154,7 +154,7 @@ export default function Pricing(props) {
                     >
                         <Grid
                             container
-                            spacing={4} // 카드들 사이 간격 조정
+                            spacing={6} // 카드들 사이 간격 조정
                             wrap='nowrap'
                             sx={{
                                 justifyContent: 'center', // 카드들이 중앙에 정렬되도록 설정
@@ -174,7 +174,7 @@ export default function Pricing(props) {
                                         sx={{
                                             p: 4,
                                             width: '100%', // 카드가 Grid의 너비를 따르도록 설정
-                                            maxWidth: '400px', // 카드의 최대 너비 제한
+                                            width: '300px', // 카드의 최대 너비 제한
                                             height: '550px',
                                             display: 'flex',
                                             flexDirection: 'column',

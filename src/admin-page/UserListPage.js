@@ -76,7 +76,7 @@ export default function UserListPage(props) {
                     <TableCell align="left">소속 기업</TableCell>
                     <TableCell align="left">작업 수</TableCell>
                     <TableCell align="left">다운로드 수</TableCell>
-                    <TableCell align="left">다운로드 비율</TableCell>
+                    <TableCell align="center">다운로드 비율</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -86,7 +86,7 @@ export default function UserListPage(props) {
                       const downloadRatio =
                         user.workCount > 0
                           ? ((user.downloadCount / user.workCount) * 100).toFixed(2)
-                          : 'N/A';
+                          : 0;
 
                       return (
                         <TableRow key={user.id}>
@@ -95,7 +95,7 @@ export default function UserListPage(props) {
                           <TableCell align="left">{user.enterpriseName}</TableCell>
                           <TableCell align="left">{user.workCount}</TableCell>
                           <TableCell align="left">{user.downloadCount}</TableCell>
-                          <TableCell align="left">{downloadRatio}%</TableCell>
+                          <TableCell align="center">{downloadRatio}%</TableCell>
                         </TableRow>
                       );
                     })}
