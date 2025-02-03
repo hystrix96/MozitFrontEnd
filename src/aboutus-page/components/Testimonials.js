@@ -39,7 +39,7 @@ const items = [
     },
   },
   {
-    icon: '/assets/img/brand/mina.png',
+    icon: '/assets/img/brand/mjy.jpg',
     title: '민지영',
     description: 'AI/Data',
     links: {
