@@ -17,7 +17,20 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import { imageDataRGB } from 'stackblur-canvas';
 import { useNavigate } from 'react-router-dom';
-
+import { styled } from '@mui/material/styles';
+const ControlBox = styled(Box)(({ showControls }) => ({
+  position: 'absolute',
+  bottom: '5px',
+  left: '20px',
+  right: '20px',
+  display: 'flex',
+  alignItems: 'center',
+  zIndex: 3,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
+  borderRadius: '5px',
+  opacity: showControls ? 1 : 0, // 마우스 오버 시만 보이게 설정
+  transition: 'opacity 0.3s ease', // 부드러운 전환
+}));
 
 export default function MozaicPage() {
   const location = useLocation();
@@ -38,33 +51,8 @@ export default function MozaicPage() {
   const navigate = useNavigate();
   const [faceImages, setFaceImages] = useState({}); // 각 faceId에 해당하는 이미지를 저장할 상태
   const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
-  const [fps,setFps]=useState();
  
-//fps 설정
-useEffect(() => {
-    const fetchFPS = async () => {
-        if (!savedFileName) return;  // 파일명이 없으면 실행하지 않음
-
-        try {
-            const response = await fetch(`http://localhost:8000/fps-video/?filename=${savedFileName}`, {
-                method: "GET"
-            });
-
-            if (!response.ok) throw new Error("Error fetching FPS");
-
-            const data = await response.json();
-            console.log("FPS:", data.fps);
-            setFps(data.fps);
-
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
-
-    fetchFPS();  // ✅ 비동기 함수를 useEffect 내부에서 실행
-
-}, []);  // ✅ 의존성 배열이 빈 배열이면 처음 한 번만 실행됨
-
+ 
  
   // ✅ Face ID
   const getUniqueFaceIds = (detections) => {
@@ -76,7 +64,6 @@ useEffect(() => {
     console.log("Filtered Face IDs:", faceIds); // 로그 추가
     return [...new Set(faceIds)]; // 중복 제거
   };
-
 
 
   // 컴포넌트 마운트 시 로컬 스토리지에서 데이터 불러오기
@@ -177,7 +164,7 @@ const handleSizeChange = (tab) => (event, newValue) => {
         updatedSettings.blur = true;
         updatedSettings.mosaic = false;
       }
-      console.log(fps);
+
       return updatedSettings;
     });
   };
@@ -300,7 +287,7 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
         video.removeEventListener('timeupdate', updateSlider);
       };
     }
-  }, [videoDuration,fps]);
+  }, [videoDuration]);
 
   // 캔버스에 투명한 색을 그리는 함수
   const drawTransparentOverlay = () => {
@@ -327,8 +314,7 @@ const drawMosaicOrBlur = () => {
   // 캔버스에 비디오 프레임을 그립니다.
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  
-  const currentFrame = Math.floor(video.currentTime * fps); // 현재 프레임 계산
+  const currentFrame = Math.floor(video.currentTime * 30); // 현재 프레임 계산
   const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
 
   currentDetections.forEach(({ x, y, width, height, objectId, className,confidence }) => {
@@ -499,7 +485,7 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
     video.removeEventListener("play", render);
     cancelAnimationFrame(animationFrameId);
   };
-}, [canvasSize, detectionData, settings,fps]);
+}, [canvasSize, detectionData, settings]);
 
   
   useEffect(() => {
@@ -507,7 +493,7 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
     try {
       const response = await fetch(`http://localhost:8080/edit/videos/${savedFileName}/info`);
       const data = await response.json();
-      
+
       // 각 프레임의 detections을 포함한 객체를 유지하면서 평탄화
       const flattenedDetections = data.detections.map(item => ({
         frame: item.frame,
@@ -549,7 +535,7 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
   };
 
   fetchDetections();
-}, [fps]);
+}, [savedFileName]);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -647,7 +633,6 @@ const handleMouseLeave = () => {
       //videoRef.current.play(); // 필요에 따라 자동 재생
     }
   }, [settings]); // settings가 변경될 때마다 실행
-
 
 
   return (
