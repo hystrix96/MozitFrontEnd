@@ -212,7 +212,7 @@ export default function Pricing() {
                 sx={{
                   p: 4,
                   width: '100%', // 카드가 Grid의 너비를 따르도록 설정
-                  maxWidth: '400px', // 카드의 최대 너비 제한
+                  width: '300px', // 카드의 최대 너비 제한
                   height: '550px',
                   display: 'flex',
                   flexDirection: 'column',

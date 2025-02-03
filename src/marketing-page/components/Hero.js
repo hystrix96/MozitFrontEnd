@@ -412,7 +412,6 @@ export default function Hero({ onPricingButtonClick }) {
               textAlign: 'center', // 텍스트 중앙 정렬
               color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
               lineHeight: 1.2, // 줄 간격 조정
-              mt: 2, // 위쪽 여백
             })}
           >
             Mosaic&nbsp;
