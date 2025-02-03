@@ -64,7 +64,7 @@ export default function MyQuestionPage(props) {
             justifyContent: 'flex-start',
             minHeight: 'calc(100vh - 64px)',
             padding: 4,
-            marginTop: '64px',
+            marginTop: '80px',
           }}
         >
           <Box sx={{ maxWidth: 1000, width: '100%' }}>

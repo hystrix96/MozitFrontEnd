@@ -79,7 +79,7 @@ export default function NoticeDetailPage(props) {
             justifyContent: 'flex-start', // 상단 정렬
             minHeight: 'calc(100vh - 64px)', // AppBar를 제외한 전체 높이
             padding: 4,
-            marginTop: '64px', // AppBar를 위한 상단 여백
+            marginTop: '80px', // AppBar를 위한 상단 여백
         }}
       >
         <Box sx={{
