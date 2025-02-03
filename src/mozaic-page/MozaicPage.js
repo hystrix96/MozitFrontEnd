@@ -18,6 +18,8 @@ import PauseIcon from '@mui/icons-material/Pause';
 import { imageDataRGB } from 'stackblur-canvas';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
+import axios from 'axios';
+
 const ControlBox = styled(Box)(({ showControls }) => ({
   position: 'absolute',
   bottom: '5px',
@@ -51,7 +53,7 @@ export default function MozaicPage() {
   const navigate = useNavigate();
   const [faceImages, setFaceImages] = useState({}); // 각 faceId에 해당하는 이미지를 저장할 상태
   const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
- 
+  const [title, setTitle] = useState('');
  
  
   // ✅ Face ID
@@ -579,32 +581,45 @@ const getFaceImage = (id) => {
 
 
 // ✅편집 완료 버튼 클릭 시 상태를 전달하는 함수 추가
-const handleEditComplete = () => {
+const handleEditComplete = async () => {
   const settingsToSend = {
     harmfulElements: {
       intensity: settings.harmful.intensity, // 유해요소 모자이크 강도
       size: settings.harmful.size, // 유해요소 모자이크 크기
       checkedItems: settings.harmful.checkedItems, // 체크된 유해요소
     },
-
     personalInfo: {
       intensity: settings.privacy.intensity, // 개인정보 모자이크 강도
       size: settings.privacy.size, // 개인정보 모자이크 크기
       checkedItems: settings.privacy.checkedItems, // 체크된 개인정보
     },
-
     person: {
       intensity: settings.person.intensity, // 사람 모자이크 강도
       size: settings.person.size, // 사람 모자이크 크기
       checkedPeople: settings.person.checkedPeople, // 체크된 사람의 ID 배열
-    }
+    },
   };
 
   // 로그 찍기
   console.log('전송할 설정:', settingsToSend);
 
+  // 제목을 Spring API에 전송
+  try {
+    axios.put(`http://localhost:8080/edit/${editNum}`, {
+      editTitle: title
+  }, {
+      headers: {
+          'Content-Type': 'application/json'
+      }
+    });
+    console.log('제목 업데이트 완료');
+  } catch (error) {
+    console.error('제목 업데이트 실패:', error);
+    return; // 제목 업데이트에 실패하면 이후 로직을 중단
+  }
+
   // 설정을 다운로드 페이지로 전송
-  navigate('/download', { state: { settings: settingsToSend }, savedFileName, editNum });
+  navigate('/download', { state: { settings: settingsToSend, savedFileName, editNum } });
 };
 
 
@@ -640,17 +655,52 @@ const handleMouseLeave = () => {
       <CssBaseline />
       <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
       <Box sx={{ display: 'flex', height: '100%', padding: 2 }}>
-        <Box sx={{ width: '75%', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-          <Typography
-            variant="h4"
-            sx={{
-              textAlign: 'center',
-              marginTop: 4,
-              color: 'text.primary',
-            }}
-          >
-            모자이크 처리된 동영상
-          </Typography>
+    {/* <Box sx={{ width: '25%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 2 }}>
+      <Typography variant="h6" sx={{ marginBottom: 1, color: 'text.primary' }}>
+        제목:
+      </Typography>
+      <input
+        type="text"
+        placeholder="제목을 입력하세요"
+        style={{
+          width: '100%', // 너비를 100%로 설정
+          padding: '10px',
+          borderRadius: '4px',
+          border: '1px solid #ccc',
+          marginBottom: '20px',
+        }}
+      />
+    </Box> */}
+    
+    <Box sx={{ width: '75%', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 4 , marginRight:40}}>
+      <Typography variant="h6" sx={{ color: 'text.primary' , marginRight:1, marginLeft:10}}>
+        제목:
+      </Typography> 
+        <input
+          type="text"
+          placeholder="제목을 입력하세요"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          style={{
+            width: '300px', // 원하는 너비로 설정
+            padding: '10px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            marginRight: '16px', // 텍스트와의 간격
+          }}
+        />
+        <Typography
+          variant="h4"
+          sx={{
+            // textAlign: 'right', // 왼쪽 정렬
+            color: 'text.primary',
+            marginLeft :'30px'
+          }}
+        >
+          모자이크 처리된 동영상
+        </Typography>
+        </Box>
             {videoUrl ? (
               <>
                 <video
