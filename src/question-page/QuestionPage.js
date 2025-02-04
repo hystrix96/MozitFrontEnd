@@ -32,8 +32,6 @@ export default function QuestionPage(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-
     const requestBody = {
       questionTitle: title,        
       questionDetail: detail,      
@@ -41,6 +39,10 @@ export default function QuestionPage(props) {
       questionImage: selectedImage || null,
     };  
 
+    if (!title || !detail) {
+      alert('제목과 내용은 반드시 입력해주세요.'); // 제목이 비어 있으면 알림 표시
+      return;
+    }
     try {
       const response = await axiosInstance.post('/questions', requestBody, {
         headers: {
@@ -192,9 +194,7 @@ export default function QuestionPage(props) {
                       )}
                     </Box>
                     <Grid2 item xs={12} display="flex" justifyContent="center">
-                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit} sx={{
-                                                        pointerEvents: isSubmitDisabled  ? 'none' : 'auto', // 비활성화 상태에서 클릭 방지      
-}}>
+                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit}>
                         제출
                         </Button>
                     </Grid2>

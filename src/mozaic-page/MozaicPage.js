@@ -661,7 +661,7 @@ const handleEditComplete = async () => {
       intensity: settings.person.intensity, // 사람 모자이크 강도
       size: settings.person.size, // 사람 모자이크 크기
       checkedPeople: settings.person.checkedPeople, // 체크된 사람의 ID 배열
-    },
+    }
   };
 
   // 로그 찍기
@@ -683,7 +683,7 @@ const handleEditComplete = async () => {
   }
 
   // 설정을 다운로드 페이지로 전송
-  navigate('/download', { state: { settings: settingsToSend, savedFileName, editNum } });
+  navigate('/download', { state: { settings: settingsToSend, savedFileName, editNum,fps } });
 };
 
 
