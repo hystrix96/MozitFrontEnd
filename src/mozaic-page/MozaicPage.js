@@ -38,7 +38,7 @@ export default function MozaicPage() {
   const location = useLocation();
   const { editNum } = location.state || {}; // 상태를 받음
   const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
-  const videoUrl = savedFileName ? `http://localhost:8080/edit/videos/${savedFileName}` : null;
+  const videoUrl = savedFileName ? `/edit/videos/${savedFileName}` : null;
 
   // 캔버스와 비디오 참조
   const videoRef = useRef(null);
@@ -553,7 +553,7 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
   useEffect(() => {
   const fetchDetections = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/edit/videos/${savedFileName}/info`);
+      const response = await fetch(`/edit/videos/${savedFileName}/info`);
       const data = await response.json();
 
       // 각 프레임의 detections을 포함한 객체를 유지하면서 평탄화
@@ -669,7 +669,7 @@ const handleEditComplete = async () => {
 
   // 제목을 Spring API에 전송
   try {
-    axios.put(`http://localhost:8080/edit/${editNum}`, {
+    axios.put(`/edit/${editNum}`, {
       editTitle: title
   }, {
       headers: {

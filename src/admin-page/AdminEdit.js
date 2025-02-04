@@ -233,7 +233,7 @@ export default function AdminEdit(props) {
               width: '100%',
             }}
             >
-              <Typography>AdminEdit</Typography>
+              {/* <Typography>AdminEdit</Typography> */}
               <Stack sx={{ minHeight: '100vh' }} justifyContent="center">
                 <Card variant="outlined">
                   <Typography variant="h4" component="h1" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)', fontWeight: 'bold', textAlign: 'center' }}>
