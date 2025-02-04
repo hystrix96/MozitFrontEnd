@@ -457,7 +457,7 @@ export default function Hero({ onPricingButtonClick }) {
             />
           </img-comparison-slider>
         </StyledBox> */}
-        <StyledBox style={{ width: "100%", height: "600px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <StyledBox style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
           <img-comparison-slider
             ref={sliderRef}
             style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
