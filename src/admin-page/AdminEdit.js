@@ -23,6 +23,8 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';  // 사진 아이콘 
 import axiosInstance from '../api/axiosInstance';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -165,6 +167,7 @@ export default function AdminEdit(props) {
         setAccessToken(null);
         setUsername(null);
 
+        await handleLogout();  // 로그아웃 로직 호출
         navigate('/sign-in');
       }
     } catch (error) {
@@ -173,6 +176,23 @@ export default function AdminEdit(props) {
     }
   };
 
+    const handleLogout = async () => {
+  try {
+    const response = await axios.post('/users/logout', {}, {
+      headers: {
+        Authorization: accessToken, // 액세스 토큰을 헤더에 포함
+      },
+    });
+
+    if (response.status === 200) {
+    } else {
+      throw new Error('로그아웃 실패');
+    }
+  } catch (error) {
+    console.error('로그아웃 에러:', error);
+    alert('로그아웃 요청 중 문제가 발생했습니다.');
+  }
+};
 
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
@@ -233,7 +253,7 @@ export default function AdminEdit(props) {
               width: '100%',
             }}
             >
-              <Typography>AdminEdit</Typography>
+              {/* <Typography>AdminEdit</Typography> */}
               <Stack sx={{ minHeight: '100vh' }} justifyContent="center">
                 <Card variant="outlined">
                   <Typography variant="h4" component="h1" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)', fontWeight: 'bold', textAlign: 'center' }}>

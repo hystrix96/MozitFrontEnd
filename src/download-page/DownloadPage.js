@@ -65,7 +65,7 @@ const ControlBox = styled(Box)(({ showControls }) => ({
 }));
 
 
-export default function EditPage(props) {
+export default function DownloadPage(props) {
   const [videoSrc, setVideoSrc] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null); // Popover 상태 추가
   const [loading, setLoading] = useState(false); // 영상 처리 중 상태 추가
@@ -83,7 +83,7 @@ export default function EditPage(props) {
   const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
   const [detectionData, setDetectionData] = useState([]);
   const location = useLocation();
-  const { settings , editNum} = location.state || {}; // 전달된 마스크 상태 가져오기
+  const { settings , editNum, fps} = location.state || {}; // 전달된 마스크 상태 가져오기
 
 
 
@@ -155,31 +155,55 @@ export default function EditPage(props) {
 
 
 
+ //비디오 끝까지 재생되면 일시정지 
+  useEffect(() => {
+  const video = videoRef.current;
+  if (video) {
+    const handleVideoEnd = () => {
+      setIsPlaying(false); // 비디오가 끝나면 재생 상태를 false로 설정
+    };
+
+    video.addEventListener('ended', handleVideoEnd); // ended 이벤트 리스너 추가
+
+    return () => {
+      video.removeEventListener('ended', handleVideoEnd); // 컴포넌트 언마운트 시 리스너 제거
+    };
+  }
+}, []);
 
 
 
-
-////////////////////비디오 재생 및 일시정지 처리 /////////////////////////
   const handlePlayPause = () => {
     const video = videoRef.current;
-    if (video) {
-      if (video.paused) {
-        video.play().then(() => {
-          setIsPlaying(true);
-        }).catch(error => {
-          console.error("Error playing the video:", error);
-        });
-      } else {
-        video.pause();
-        setIsPlaying(false);
-      }
+  if (video) {
+    if (video.ended) {
+      video.currentTime = 0; // 비디오가 끝났다면 처음으로 이동
     }
+    if (video.paused) {
+      video.play().then(() => {
+        setIsPlaying(true);
+      }).catch(error => {
+        console.error("Error playing the video:", error);
+      });
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  }
   };
+
   //재생 슬라이드 바 
   const handleSliderChange = (event, newValue) => {
-    setSliderValue(newValue); // 슬라이더 값 업데이트
+  setSliderValue(newValue); // 슬라이더 값 업데이트
     const video = videoRef.current;
+    if (video) {
     video.currentTime = (newValue / 100) * videoDuration; // 슬라이더 값에 비례하여 현재 재생 시간 조정
+
+    // 슬라이더가 끝에 도달하면 재생 상태를 false로 설정
+    if (newValue >= 100) {
+      setIsPlaying(false);
+    }
+  }
   };
   //캔버스 클릭시 재생및 일시정지
   const handleCanvasClick = () => {
@@ -259,12 +283,17 @@ useEffect(() => {
       canvas.height = canvasSize.height;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-      const currentFrame = Math.floor(video.currentTime * 30); // 현재 프레임 계산
+      const currentFrame = Math.floor(video.currentTime * fps); // 현재 프레임 계산
       const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
     
       const { person } = settings || {};
       const { intensity: personIntensity = 50, size: personSize = 50, checkedPeople = [] } = person || {};
-    
+      const { harmfulElements } = settings || {};
+      const { intensity: harmfulIntensity = 50, size: harmfulSize = 50 } = harmfulElements || {};
+      const { checkedItems = [] } = harmfulElements || {};
+      const { personalInfo } = settings || {}; // 개인정보 설정 추가
+      const { intensity: privacyIntensity = 50, size: privacySize = 50, privacyElements= [] } = personalInfo || {};
+
       currentDetections.forEach(({ x, y, width, height, objectId, className }) => {
         const maskSize = personSize; // 사람 관련 크기 설정
         const newWidth = width * (maskSize / 50);
@@ -275,14 +304,13 @@ useEffect(() => {
           if (checkedPeople.includes(objectId)) {
             applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, personIntensity); // 사람 강도 사용
           }
-        } else {
-          // 얼굴이 아닌 경우, harmfulElements의 checkedItems에 포함된 경우 모자이크 처리
-          const { harmfulElements } = settings || {};
-          const { checkedItems = [] } = harmfulElements || {};
-          if (checkedItems.includes(className)) {
-            const { intensity: harmfulIntensity = 50, size: harmfulSize = 50 } = harmfulElements || {};
-            applyMosaic(ctx, x, y, newWidth, newHeight, harmfulSize, harmfulIntensity); // 유해 요소 강도 사용
-          }
+        }// 유해 요소 처리 
+        else if (checkedItems.includes(className)) {
+          applyMosaic(ctx, x, y, newWidth, newHeight, harmfulSize, harmfulIntensity); // 유해 요소 강도 사용
+        } 
+        // 개인정보 처리
+        else if (privacyElements.includes(className)) {
+          applyMosaic(ctx, x, y, newWidth, newHeight, privacySize, privacyIntensity); // 개인정보 강도 사용
         }
       });
     };
@@ -396,8 +424,137 @@ const handleReEdit = async () => {
 ///////////////////////////////////////////////////////////////////
 
 
+///////////////////  다운로드 클릭시   ////////////////////////
+// handleDownload 함수 정의
+// const handleDownload = async () => {
+//   const { settings, editNum } = location.state || {};
+  
+//   const { harmfulElements, person, personalInfo } = settings || {};
+  
+//   // 유해 요소 체크된 항목
+//   const hazardousList = harmfulElements?.checkedItems ? harmfulElements.checkedItems.join(", ") : "";
+  
+//   // 개인정보 체크된 항목
+//   const personalList = personalInfo?.checkedItems ? personalInfo.checkedItems.join(", ") : "";
+
+//   // 모자이크 여부 설정
+//   const faceMosaic = person?.checkedPeople?.length > 0; // 체크된 사람의 수에 따라 true/false 설정
+
+//   // 다운로드 요청 본문 구성
+//   const downloadInfo = {
+//       editNum: editNum, // 편집 번호
+//       faceMosaic: faceMosaic, // 얼굴 모자이크 여부
+//       hazardousList: hazardousList, // 유해 요소 목록
+//       personalList: personalList // 개인정보 목록
+//   };
+
+//   try {
+//       const response = await fetch('http://localhost:8080/edit/download', {
+//           method: 'POST',
+//           headers: {
+//               'Content-Type': 'application/json',
+//               'Authorization': accessToken,
+//           },
+//           body: JSON.stringify(downloadInfo),
+//       });
+
+//       if (!response.ok) {
+//           throw new Error('Network response was not ok');
+//       }
+
+//       const result = await response.json();
+//       console.log('다운로드 성공:', result);
+//   } catch (error) {
+//       console.error('다운로드 중 오류 발생:', error);
+//   }
+// };
+
+const handleDownload = async () => {
+  const { person } = settings || {};
+  const { intensity: personIntensity = 50, size: personSize = 50, checkedPeople = [] } = person || {};
+  const { harmfulElements } = settings || {};
+  const { intensity: harmfulIntensity = 50, size: harmfulSize = 50 } = harmfulElements || {};
+  const { checkedItems = [] } = harmfulElements || {};
+  const { personalInfo } = settings || {}; // 개인정보 설정 추가
+  const { intensity: privacyIntensity = 50, size: privacySize = 50, privacyElements= [] } = personalInfo || {};
+  const faceMosaic = person?.checkedPeople?.length > 0; // 체크된 사람의 수에 따라 true/false 설정
+
+ 
+
+  //다운로드 요청 본문 구성
+  const downloadInfo = {
+    editNum: {
+        editNum: Number(editNum) // Edits 객체 내에 있는 editNum
+    },
+    faceMosaic: faceMosaic, // 얼굴 모자이크 여부
+    hazardousList: Array.isArray(harmfulElements.checkedItems) ? harmfulElements.checkedItems.join(",") : '', // 유해 요소 목록
+    personalList: Array.isArray(personalInfo.checkedItems) ? personalInfo.checkedItems.join(",") : '', // 개인정보 목록
+};
+const payload = {
+  request: {
+      harmful_intensity: harmfulIntensity,
+      harmful_size: harmfulSize,
+      harmful_checklist: Array.isArray(harmfulElements) ? harmfulElements.join(", ") : "", // 문자열로 변환
+      privacy_intensity: privacyIntensity,
+      privacy_size: privacySize,
+      privacy_checklist: Array.isArray(privacyElements) ? privacyElements.join(", ") : "", // 문자열로 변환
+      person_intensity: personIntensity,
+      person_size: personSize,
+      person_checklist: Array.isArray(checkedPeople) ? checkedPeople.join(", ") : "", // 문자열로 변환
+  },
+  path_request: {
+      video_path: "uploads/mozit.mp4",  // 실제 경로로 수정
+      output_path: "uploads/output22.mp4",     // 실제 경로로 수정
+  }
+};
+
+try {
+  // 첫 번째 요청: input_editor로 payload 전송
+  const response = await fetch('http://localhost:8000/input_editor', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+      const errorResponse = await response.text(); // 텍스트로 응답 받기
+      throw new Error(`Network response was not ok for input_editor: ${errorResponse}`);
+  }
+
+  const result = await response.json();
+  console.log('input_editor 서버 응답:', result);
+
+    // 두 번째 요청: download로 downloadInfo 전송
+    const downloadResponse = await fetch('http://localhost:8080/edit/download', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(downloadInfo),
+    });
+
+    if (!downloadResponse.ok) {
+      const errorResponse = await downloadResponse.text();
+        throw new Error(`Network response was not ok for download: ${errorResponse}`);
+    }
+
+    const downloadResult = await downloadResponse.json();
+    console.log('download 서버 응답:', downloadResult);
 
 
+
+
+
+
+    
+    
+  } catch (error) {
+    console.error('오류 발생:', error);
+  }
+};
+///////////////////////////////////////////////////////////////////
 
 
   ///팝업창 
@@ -498,7 +655,7 @@ const handleReEdit = async () => {
           ref={editButtonRef}
           variant="contained"
           color="primary"
-          // onClick={handleEditStart}   //다운로드 클릭시 할 함수 넣기. 
+          onClick={handleDownload} // 다운로드 클릭 시 handleDownload 함수 호출
         >
           다운로드
         </Button>

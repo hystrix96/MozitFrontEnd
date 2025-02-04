@@ -14,6 +14,8 @@ import Edit from '../edit-page/EditPage';
 import Download from '../download-page/DownloadPage';
 import MyQuestionPage from '../my-page/MyQuestionPage';
 import MyQuestionDetailPage from '../my-page/MyQuestionDetailPage';
+import Privacy from '../privacy/Privacy'
+import TermOfService from '../term-of-service-page/TermOfServicePage'
 
 import MozaicPage from '../mozaic-page/MozaicPage';
 import MyPageUpdate from '../my-page/MyPageUpdate';
@@ -40,7 +42,9 @@ const PublicRoutes = () => {
         <Route path="/notice" element={<NoticePage />} />
         <Route path="/notice/:id" element={<NoticeDetailPage />} />
         <Route path="/aboutus" element={<AboutUs />} />
-
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/termofservicepage" element={<TermOfService />} />
+        
         {/* Private Routes */}
         {userId ? (
         <>

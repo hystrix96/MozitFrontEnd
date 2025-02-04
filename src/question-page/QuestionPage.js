@@ -201,9 +201,7 @@ export default function QuestionPage(props) {
                       )}
                     </Box>
                     <Grid2 item xs={12} display="flex" justifyContent="center">
-                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit} sx={{
-                                                        pointerEvents: isSubmitDisabled  ? 'none' : 'auto', // 비활성화 상태에서 클릭 방지      
-}}>
+                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit}>
                         제출
                         </Button>
                     </Grid2>
