@@ -55,7 +55,35 @@ export default function MozaicPage() {
   const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
   const [title, setTitle] = useState('');
  
+  const [fps,setFps]=useState();
  
+//fps 설정
+useEffect(() => {
+    const fetchFPS = async () => {
+        if (!savedFileName) return;  // 파일명이 없으면 실행하지 않음
+
+        try {
+            const response = await fetch(`http://localhost:8000/fps-video/?filename=${savedFileName}`, {
+                method: "GET"
+            });
+
+            if (!response.ok) throw new Error("Error fetching FPS");
+
+            const data = await response.json();
+            console.log("FPS:", data.fps);
+            setFps(data.fps);
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    fetchFPS();  // ✅ 비동기 함수를 useEffect 내부에서 실행
+
+}, []);  // ✅ 의존성 배열이 빈 배열이면 처음 한 번만 실행됨
+ 
+
+
   // ✅ Face ID
   const getUniqueFaceIds = (detections) => {
     const faceIds = detections
@@ -77,6 +105,10 @@ useEffect(() => {
 // faceImages 상태가 변경될 때마다 로컬 스토리지에 저장
 useEffect(() => {
   localStorage.setItem('faceImages', JSON.stringify(faceImages));
+  const video = videoRef.current;
+  if (video) {
+    video.currentTime = 0; // 초기화
+  }
 }, [faceImages]);
 
   useEffect(() => {
@@ -243,25 +275,35 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
 
   const handlePlayPause = () => {
     const video = videoRef.current;
-    if (video) {
-      if (video.paused) {
-        video.play().then(() => {
-          setIsPlaying(true);
-        }).catch(error => {
-          console.error("Error playing the video:", error);
-        });
-      } else {
-        video.pause();
-        setIsPlaying(false);
-      }
+  if (video) {
+    if (video.ended) {
+      video.currentTime = 0; // 비디오가 끝났다면 처음으로 이동
     }
+    if (video.paused) {
+      video.play().then(() => {
+        setIsPlaying(true);
+      }).catch(error => {
+        console.error("Error playing the video:", error);
+      });
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  }
   };
 
   // 이게 재생바
   const handleSliderChange = (event, newValue) => {
     setSliderValue(newValue); // 슬라이더 값 업데이트
     const video = videoRef.current;
+    if (video) {
     video.currentTime = (newValue / 100) * videoDuration; // 슬라이더 값에 비례하여 현재 재생 시간 조정
+
+    // 슬라이더가 끝에 도달하면 재생 상태를 false로 설정
+    if (newValue >= 100) {
+      setIsPlaying(false);
+    }
+  }
   };
 
   const handleCanvasClick = () => {
@@ -289,7 +331,25 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
         video.removeEventListener('timeupdate', updateSlider);
       };
     }
-  }, [videoDuration]);
+  }, [videoDuration,fps]);
+
+  //비디오 끝까지 재생되면 일시정지 
+  useEffect(() => {
+  const video = videoRef.current;
+  if (video) {
+    const handleVideoEnd = () => {
+      setIsPlaying(false); // 비디오가 끝나면 재생 상태를 false로 설정
+    };
+
+    video.addEventListener('ended', handleVideoEnd); // ended 이벤트 리스너 추가
+
+    return () => {
+      video.removeEventListener('ended', handleVideoEnd); // 컴포넌트 언마운트 시 리스너 제거
+    };
+  }
+}, []);
+
+
 
   // 캔버스에 투명한 색을 그리는 함수
   const drawTransparentOverlay = () => {
@@ -316,7 +376,7 @@ const drawMosaicOrBlur = () => {
   // 캔버스에 비디오 프레임을 그립니다.
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  const currentFrame = Math.floor(video.currentTime * 30); // 현재 프레임 계산
+  const currentFrame = Math.floor(video.currentTime * fps); // 현재 프레임 계산
   const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
 
   currentDetections.forEach(({ x, y, width, height, objectId, className,confidence }) => {
@@ -487,7 +547,7 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
     video.removeEventListener("play", render);
     cancelAnimationFrame(animationFrameId);
   };
-}, [canvasSize, detectionData, settings]);
+}, [canvasSize, detectionData, settings,fps]);
 
   
   useEffect(() => {
@@ -537,7 +597,7 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
   };
 
   fetchDetections();
-}, [savedFileName]);
+}, [fps]);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -582,6 +642,10 @@ const getFaceImage = (id) => {
 
 // ✅편집 완료 버튼 클릭 시 상태를 전달하는 함수 추가
 const handleEditComplete = async () => {
+  if (!title.trim()) {
+      alert('제목을 입력해주세요.'); // 제목이 비어 있으면 알림 표시
+      return;
+    }
   const settingsToSend = {
     harmfulElements: {
       intensity: settings.harmful.intensity, // 유해요소 모자이크 강도
@@ -621,6 +685,7 @@ const handleEditComplete = async () => {
   // 설정을 다운로드 페이지로 전송
   navigate('/download', { state: { settings: settingsToSend, savedFileName, editNum } });
 };
+
 
 
 
@@ -957,7 +1022,7 @@ const handleMouseLeave = () => {
         <Button variant="contained" color="primary" component={Link} to="/edit">
           돌아가기
         </Button>
-        <Button variant="outlined" color="secondary"  onClick={handleEditComplete}>
+        <Button variant="outlined" color="secondary"  onClick={handleEditComplete} >
           편집완료
         </Button>
       </Stack>
