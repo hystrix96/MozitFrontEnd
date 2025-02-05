@@ -11,6 +11,7 @@ import NoticePage from '../notice-page/NoticePage';
 import NoticeDetailPage from '../notice-page/NoticeDetailPage';
 import QuestionPage from '../question-page/QuestionPage';
 import Edit from '../edit-page/EditPage';
+import Live from '../live-page/LivePage';
 import Download from '../download-page/DownloadPage';
 import MyQuestionPage from '../my-page/MyQuestionPage';
 import MyQuestionDetailPage from '../my-page/MyQuestionDetailPage';
@@ -46,6 +47,7 @@ const PublicRoutes = () => {
         <>
             <Route path="/question" element={<QuestionPage />} />
             <Route path="/edit" element={<Edit />} />
+            <Route path="/live" element={<Live />} />
             <Route path="/download" element={<Download />} />
             <Route path="/myquestion" element={<MyQuestionPage />} />
             <Route path="/myquestion/:id" element={<MyQuestionDetailPage />} />
