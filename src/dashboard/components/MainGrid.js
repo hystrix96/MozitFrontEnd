@@ -102,30 +102,30 @@ export default function MainGrid() {
 
   console.log("📌 unansweredByDate:", unansweredByDate);
   const data = [
-    {
-      title: '사용자',
-      value: `${userCount}명`,
-      interval: '사용자수',
-      trend: 'up',
-      data: [], // 최근 30일간 유지 (단순 예시)
-    },
     // {
-    //   title: 'Users',
-    //   value: '14k',
-    //   interval: 'Last 30 days',
+    //   title: '사용자',
+    //   value: `${userCount}명`,
+    //   interval: '사용자수',
     //   trend: 'up',
-    //   data: [
-    //     200, 24, 220, 260, 240, 380, 100, 240, 280, 240, 300, 340, 320, 360, 340, 380,
-    //     360, 400, 380, 420, 400, 640, 340, 460, 440, 480, 460, 600, 880, 920,
-    //   ],
+    //   data: [], // 최근 30일간 유지 (단순 예시)
     // },
-    {
-      title: '접속량',
-      value: '325',
-      interval: '일별/월별/연별',
-      trend: 'neutral',
-      data: [],
-    },
+    // // {
+    // //   title: 'Users',
+    // //   value: '14k',
+    // //   interval: 'Last 30 days',
+    // //   trend: 'up',
+    // //   data: [
+    // //     200, 24, 220, 260, 240, 380, 100, 240, 280, 240, 300, 340, 320, 360, 340, 380,
+    // //     360, 400, 380, 420, 400, 640, 340, 460, 440, 480, 460, 600, 880, 920,
+    // //   ],
+    // // },
+    // {
+    //   title: '접속량',
+    //   value: '325',
+    //   interval: '일별/월별/연별',
+    //   trend: 'neutral',
+    //   data: [],
+    // },
     {
       title: '문의사항',
       value: `${unansweredCount}건`, // 미답변 개수 표시
@@ -148,12 +148,15 @@ export default function MainGrid() {
         columns={12}
         sx={{ mb: (theme) => theme.spacing(2) }}
       >
+                    <ChartUserByCountry />
+                    <TotalDownload />
         {data.map((card, index) => (
           <Grid key={index} size={{ xs: 12, sm: 6, lg: 4 }}>
             <StatCard {...card} />
           </Grid>
         ))}
-        <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+      </Grid>
+      <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
           시스템 모니터링
         </Typography>
         <Grid container spacing={80}>
@@ -188,7 +191,6 @@ export default function MainGrid() {
             </Card>
           </Grid>
         </Grid>
-      </Grid>
       {/* <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
         실시간 모니터링
       </Typography> */}
@@ -212,6 +214,8 @@ export default function MainGrid() {
             <ChartUserByCountry />
           </Stack>
         </Grid> */}
+        {/* <ChartUserByCountry />
+        <TotalDownload /> */}
       </Grid>
       <Copyright sx={{ my: 4 }} />
     </Box>

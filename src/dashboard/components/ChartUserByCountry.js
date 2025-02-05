@@ -10,6 +10,7 @@ import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import Button from '@mui/material/Button';
 
 const StyledText = styled('text')(({ theme }) => ({
   textAnchor: 'middle',
@@ -34,6 +35,8 @@ function PieCenterLabel({ primaryText, secondaryText }) {
 export default function ChartUserByCountry() {
   const [companyUserCounts, setCompanyUserCounts] = useState({});
   const [totalUsers, setTotalUsers] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 2; // 한 페이지에 표시할 항목 수
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -62,6 +65,9 @@ export default function ChartUserByCountry() {
     label: name,
     value,
   }));
+// 페이지네이션에 필요한 데이터 잘라내기
+const paginatedData = chartData.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
 
   const colors = ['hsl(220, 20%, 65%)', 'hsl(220, 20%, 42%)', 'hsl(220, 20%, 35%)', 'hsl(220, 20%, 25%)'];
 
@@ -91,7 +97,7 @@ export default function ChartUserByCountry() {
             <PieCenterLabel primaryText={`${totalUsers}`} secondaryText="Total Users" />
           </PieChart>
         </Box>
-        {chartData.map((company, index) => (
+        {paginatedData.map((company, index) => (
           <Stack key={index} direction="row" sx={{ alignItems: 'center', gap: 2, pb: 2 }}>
             <Stack sx={{ gap: 1, flexGrow: 1 }}>
               <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
@@ -110,6 +116,22 @@ export default function ChartUserByCountry() {
             </Stack>
           </Stack>
         ))}
+        <Stack direction="row" spacing={2} justifyContent="center" sx={{ pt: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+          >
+            이전
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.floor(chartData.length / itemsPerPage)))}
+            disabled={(currentPage + 1) * itemsPerPage >= chartData.length}
+          >
+            다음
+          </Button>
+        </Stack>
       </CardContent>
     </Card>
   );

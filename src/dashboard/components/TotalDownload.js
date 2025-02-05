@@ -84,7 +84,7 @@ export default function TotalDownload() {
   width={260}
   slotProps={{ legend: { hidden: true } }}
 >
-            <PieCenterLabel primaryText={`${totalWorkCount + totalDownloadCount}`} secondaryText="Total Actions" />
+            <PieCenterLabel primaryText={`${(totalDownloadCount/(totalWorkCount + totalDownloadCount)*100).toFixed(0)}%`} secondaryText="Total Actions" />
           </PieChart>
         </Box>
         {chartData.map((item, index) => (
