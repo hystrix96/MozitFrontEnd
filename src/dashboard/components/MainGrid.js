@@ -7,6 +7,7 @@ import Copyright from '../internals/components/Copyright';
 import ChartUserByCountry from './ChartUserByCountry';
 import CustomizedTreeView from './CustomizedTreeView';
 import CustomizedDataGrid from './CustomizedDataGrid';
+import TotalDownload from './TotalDownload';
 import HighlightedCard from './HighlightedCard';
 import PageViewsBarChart from './PageViewsBarChart';
 import SessionsChart from './SessionsChart';
@@ -153,7 +154,8 @@ export default function MainGrid() {
           <HighlightedCard />
         </Grid> */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <SessionsChart />
+          {/* <SessionsChart /> */}
+          <TotalDownload />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <PageViewsBarChart />
