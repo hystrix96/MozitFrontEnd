@@ -65,7 +65,7 @@ const ControlBox = styled(Box)(({ showControls }) => ({
 }));
 
 
-export default function EditPage(props) {
+export default function DownloadPage(props) {
   const [videoSrc, setVideoSrc] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null); // Popover 상태 추가
   const [loading, setLoading] = useState(false); // 영상 처리 중 상태 추가
@@ -83,7 +83,7 @@ export default function EditPage(props) {
   const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
   const [detectionData, setDetectionData] = useState([]);
   const location = useLocation();
-  const { settings , editNum} = location.state || {}; // 전달된 마스크 상태 가져오기
+  const { settings , editNum, fps} = location.state || {}; // 전달된 마스크 상태 가져오기
 
 
 
@@ -155,31 +155,55 @@ export default function EditPage(props) {
 
 
 
+ //비디오 끝까지 재생되면 일시정지 
+  useEffect(() => {
+  const video = videoRef.current;
+  if (video) {
+    const handleVideoEnd = () => {
+      setIsPlaying(false); // 비디오가 끝나면 재생 상태를 false로 설정
+    };
+
+    video.addEventListener('ended', handleVideoEnd); // ended 이벤트 리스너 추가
+
+    return () => {
+      video.removeEventListener('ended', handleVideoEnd); // 컴포넌트 언마운트 시 리스너 제거
+    };
+  }
+}, []);
 
 
 
-
-////////////////////비디오 재생 및 일시정지 처리 /////////////////////////
   const handlePlayPause = () => {
     const video = videoRef.current;
-    if (video) {
-      if (video.paused) {
-        video.play().then(() => {
-          setIsPlaying(true);
-        }).catch(error => {
-          console.error("Error playing the video:", error);
-        });
-      } else {
-        video.pause();
-        setIsPlaying(false);
-      }
+  if (video) {
+    if (video.ended) {
+      video.currentTime = 0; // 비디오가 끝났다면 처음으로 이동
     }
+    if (video.paused) {
+      video.play().then(() => {
+        setIsPlaying(true);
+      }).catch(error => {
+        console.error("Error playing the video:", error);
+      });
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  }
   };
+
   //재생 슬라이드 바 
   const handleSliderChange = (event, newValue) => {
-    setSliderValue(newValue); // 슬라이더 값 업데이트
+  setSliderValue(newValue); // 슬라이더 값 업데이트
     const video = videoRef.current;
+    if (video) {
     video.currentTime = (newValue / 100) * videoDuration; // 슬라이더 값에 비례하여 현재 재생 시간 조정
+
+    // 슬라이더가 끝에 도달하면 재생 상태를 false로 설정
+    if (newValue >= 100) {
+      setIsPlaying(false);
+    }
+  }
   };
   //캔버스 클릭시 재생및 일시정지
   const handleCanvasClick = () => {
@@ -259,7 +283,7 @@ useEffect(() => {
       canvas.height = canvasSize.height;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-      const currentFrame = Math.floor(video.currentTime * 30); // 현재 프레임 계산
+      const currentFrame = Math.floor(video.currentTime * fps); // 현재 프레임 계산
       const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
     
       const { person } = settings || {};
@@ -502,22 +526,22 @@ try {
   const result = await response.json();
   console.log('input_editor 서버 응답:', result);
 
-    // // 두 번째 요청: download로 downloadInfo 전송
-    // const downloadResponse = await fetch('http://localhost:8080/edit/download', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(downloadInfo),
-    // });
+    // 두 번째 요청: download로 downloadInfo 전송
+    const downloadResponse = await fetch('http://localhost:8080/edit/download', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(downloadInfo),
+    });
 
-    // if (!downloadResponse.ok) {
-    //   const errorResponse = await downloadResponse.text();
-    //     throw new Error(`Network response was not ok for download: ${errorResponse}`);
-    // }
+    if (!downloadResponse.ok) {
+      const errorResponse = await downloadResponse.text();
+        throw new Error(`Network response was not ok for download: ${errorResponse}`);
+    }
 
-    // const downloadResult = await downloadResponse.json();
-    // console.log('download 서버 응답:', downloadResult);
+    const downloadResult = await downloadResponse.json();
+    console.log('download 서버 응답:', downloadResult);
 
 
 

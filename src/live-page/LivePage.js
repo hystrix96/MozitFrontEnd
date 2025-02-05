@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useRef, useState, useEffect } from "react";
-import Webcam from "react-webcam";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
@@ -455,7 +454,7 @@ export default function WebcamPage(props) {
         </Box>
       ) : (
         <Box sx={{ display: "flex", height: "100%" }}>
-        <Box sx={{ flex: 3, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Box sx={{ flex: 3, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%"  }}>
 
           <StyledBox>
             {imageSrc ? (

@@ -6,12 +6,14 @@ import Footer from '../components/Footer';
 import axiosInstance from '../api/axiosInstance';
 import {  TextField, Button, Box, Typography, Grid2, Switch, FormControlLabel, Collapse, FormGroup, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import { uploadImageToAzure } from '../utils/azureBlobService';
 
 export default function QuestionPage(props) {
   const [category, setCategory] = useState('SERVICE');
   const [selectedImage, setSelectedImage] = useState(null);
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   const navigate = useNavigate();
 
@@ -28,20 +30,27 @@ export default function QuestionPage(props) {
 
   const handleImageDelete = () => {
     setSelectedImage(null);
+    setImageUrl('');
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-
-    const requestBody = {
-      questionTitle: title,        
-      questionDetail: detail,      
-      questionType: category,      
-      questionImage: selectedImage || null,
-    };  
-
     try {
+      // 이미지가 있을 경우 Azure에 업로드하고 URL 가져오기
+      let uploadedImageUrl = '';
+      if (selectedImage) {
+        const file = document.getElementById('image-upload').files[0];
+        uploadedImageUrl = await uploadImageToAzure(file);
+      }
+
+      const requestBody = {
+        questionTitle: title,        
+        questionDetail: detail,      
+        questionType: category,      
+        questionImage: uploadedImageUrl || null,
+      }; 
+
       const response = await axiosInstance.post('/questions', requestBody, {
         headers: {
           'Content-Type': 'application/json',
@@ -192,9 +201,7 @@ export default function QuestionPage(props) {
                       )}
                     </Box>
                     <Grid2 item xs={12} display="flex" justifyContent="center">
-                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit} sx={{
-                                                        pointerEvents: isSubmitDisabled  ? 'none' : 'auto', // 비활성화 상태에서 클릭 방지      
-}}>
+                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit}>
                         제출
                         </Button>
                     </Grid2>
