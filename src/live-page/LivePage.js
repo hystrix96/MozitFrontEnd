@@ -45,7 +45,6 @@ const StyledBox = styled("div")(({ theme }) => ({
 }));
 
 export default function WebcamPage(props) {
-  const webcamRef = useRef(null);
   const socketRef = useRef(null);
   const [isCameraAllowed, setIsCameraAllowed] = useState(false);
   const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
@@ -71,40 +70,6 @@ export default function WebcamPage(props) {
   }, []);
 
   //웹소켓 연결 초기화
-  // useEffect(() => {
-  //   socketRef.current = new WebSocket("ws://localhost:8000/process-screen/");
-
-  //   socketRef.current.onopen = () => {
-  //     console.log("WebSocket 연결됨");
-  //     setIsWebSocketConnected(true);
-  //   };
-
-  //   socketRef.current.onmessage = (event) => {
-  //     if (typeof event.data === "string") {
-  //       console.log("수신한 메시지:", event.data);
-  //     } else {
-  //       const blob = new Blob([event.data], { type: "image/jpeg" });
-  //       const url = URL.createObjectURL(blob);
-  //       setImageSrc(url);
-  //     }
-  //   };
-    
-
-  //   socketRef.current.onclose = () => {
-  //     console.log("WebSocket 연결 종료");
-  //     setIsWebSocketConnected(false);
-  //   };
-
-  //   socketRef.current.onerror = (error) => {
-  //     console.error("WebSocket 에러:", error);
-  //     setIsWebSocketConnected(false);
-  //   };
-
-  //   return () => {
-  //     socketRef.current.close();
-  //   };
-  // }, []);
-
   useEffect(() => {
     let reconnectTimeout; // 재연결 타이머
     const connectWebSocket = () => {
@@ -114,15 +79,21 @@ export default function WebcamPage(props) {
         console.log("✅ WebSocket 연결됨");
         setIsWebSocketConnected(true);
       };
-  
+
       socketRef.current.onmessage = (event) => {
-        console.log("수신:", event);
-        if (typeof event.data === "string") {
-          console.log("수신한 메시지:", event.data);
-        } else {
+        console.log("수신:", performance.now());
+        
+        if (typeof event.data != "string") {
+          const currentTime = performance.now();
           const blob = new Blob([event.data], { type: "image/jpeg" });
           const url = URL.createObjectURL(blob);
-          setImageSrc(url);
+          requestAnimationFrame(() => {
+            setImageSrc(url);
+          });
+  
+          // 🔹 빠르게 URL 해제하여 메모리 누수 방지
+          setTimeout(() => URL.revokeObjectURL(url), 10);
+          console.log("Latency:", performance.now() - currentTime, "ms");
         }
       };
   
@@ -246,55 +217,6 @@ export default function WebcamPage(props) {
   useEffect(() => {
     settingsRef.current = settings;
   }, [settings]);
-
-  // useEffect(() => {
-  //   let interval;
-  
-  //   if (isStreaming) {
-  //     const currentSettings = settingsRef.current;
-
-  //     const sendSettings = () => {
-  //       const settingsToSend = JSON.stringify({
-  //         harmful: {
-  //           intensity: settings.harmful.intensity,
-  //           size: settings.harmful.size,
-  //           checklist: settings.harmful.checkedItems.join(","),
-  //         },
-  //         privacy: {
-  //           intensity: currentSettings.privacy.intensity,
-  //           size: currentSettings.privacy.size,
-  //           checklist: currentSettings.privacy.checkedItems.join(","),
-  //         },
-  //         person: {
-  //           intensity: currentSettings.person.intensity,
-  //           size: currentSettings.person.size,
-  //           checklist: currentSettings.person.mosaic ? "1" : "0",
-  //         },
-  //       });
-  //       console.log(settingsToSend);
-
-        
-  
-  //       // WebSocket으로 JSON 데이터 전송
-  //       if (socketRef.current.readyState === WebSocket.OPEN) {
-  //         socketRef.current.send(settingsToSend); // JSON 문자열을 그대로 전송
-  //       }
-  //     };
-  
-  //     // 설정 데이터 주기적으로 전송
-  //     interval = setInterval(() => {
-  //       if (isStreaming && socketRef.current.readyState === WebSocket.OPEN) {
-  //         sendSettings();
-  //       }
-  //     }, 100); // 100ms 간격으로 전송
-  //   } else {
-  //     // `isStreaming`이 `false`가 되면 인터벌 정리
-  //     clearInterval(interval);
-  //   }
-  
-  //   // 컴포넌트 언마운트 시 인터벌 정리
-  //   return () => clearInterval(interval);
-  // }, [isStreaming]); // `isStreaming`이 변경될 때마다 실행
   
   const itemMappings = {
     harmful: {
@@ -345,8 +267,6 @@ export default function WebcamPage(props) {
         },
       });
   
-      console.log(settingsToSend);
-  
       // WebSocket으로 설정 데이터 전송
       if (socketRef.current.readyState === WebSocket.OPEN) {
         socketRef.current.send(JSON.stringify({ text: settingsToSend }));
@@ -373,7 +293,7 @@ export default function WebcamPage(props) {
           if (blob && socketRef.current.readyState === WebSocket.OPEN) {
             socketRef.current.send(blob); // Blob 데이터를 WebSocket으로 전송
           }
-        }, "image/jpeg");
+        }, "image/jpeg", 0.7); // 압축률 70%
       }
     };
   
@@ -393,7 +313,7 @@ export default function WebcamPage(props) {
         if (isStreaming && socketRef.current.readyState === WebSocket.OPEN) {
           sendSettingsAndImage();
         }
-      }, 100); // 100ms 간격으로 전송
+      }, 33); // 30fps
     } else {
       // 스트리밍 중지 시 스트림 정리
       if (mediaStream) {
@@ -454,7 +374,7 @@ export default function WebcamPage(props) {
         </Box>
       ) : (
         <Box sx={{ display: "flex", height: "100%" }}>
-        <Box sx={{ flex: 3, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%"  }}>
+        <Box sx={{ flex: 3, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh"  }}>
 
           <StyledBox>
             {imageSrc ? (
@@ -479,7 +399,7 @@ export default function WebcamPage(props) {
                 </Typography>
               ) : (
                 <Typography variant="h6" color="error">
-                  카메라가 꺼져 있습니다. "카메라 켜기" 버튼을 눌러주세요.
+                  카메라가 꺼져 있습니다.
                 </Typography>
               )
             ) : (
@@ -488,26 +408,6 @@ export default function WebcamPage(props) {
               </Typography>
             )}
           </StyledBox>
-
-            {/* <StyledBox>
-              {imageSrc ? (
-                // Display the server-processed image
-                <img
-                  src={imageSrc}
-                  alt="Processed Screen"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              ) : (
-                <Typography variant="h6" color="textSecondary">
-                  Waiting for processed screen...
-                </Typography>
-              )}
-            </StyledBox> */}
-
 
             {/* 버튼 */}
           <Stack direction="row" spacing={2} justifyContent="center" sx={{ marginTop: 2 }}>
