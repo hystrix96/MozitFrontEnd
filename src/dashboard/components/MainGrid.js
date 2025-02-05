@@ -148,13 +148,14 @@ export default function MainGrid() {
         columns={12}
         sx={{ mb: (theme) => theme.spacing(2) }}
       >
-                    <ChartUserByCountry />
-                    <TotalDownload />
+        <ChartUserByCountry />
+        <TotalDownload />
         {data.map((card, index) => (
           <Grid key={index} size={{ xs: 12, sm: 6, lg: 4 }}>
             <StatCard {...card} />
           </Grid>
         ))}
+        </Grid>
         <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
           시스템 모니터링
         </Typography>
@@ -190,11 +191,11 @@ export default function MainGrid() {
             </Card>
           </Grid>
         </Grid>
-      {/* <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+        {/* <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
         실시간 모니터링
       </Typography> */}
-      <Grid container spacing={2} columns={12}>
-        {/* <Grid size={{ xs: 12, lg: 9 }}>
+        <Grid container spacing={2} columns={12}>
+          {/* <Grid size={{ xs: 12, lg: 9 }}>
         <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                       CPU 사용량
@@ -207,16 +208,16 @@ export default function MainGrid() {
                     />
                   </CardContent>
         </Grid> */}
-        {/* <Grid size={{ xs: 12, lg: 3 }}>
+          {/* <Grid size={{ xs: 12, lg: 3 }}>
           <Stack gap={2} direction={{ xs: 'column', sm: 'row', lg: 'column' }}>
             <CustomizedTreeView />
             <ChartUserByCountry />
           </Stack>
         </Grid> */}
-        {/* <ChartUserByCountry />
+          {/* <ChartUserByCountry />
         <TotalDownload /> */}
-      </Grid>
-      <Copyright sx={{ my: 4 }} />
+        </Grid>
+        <Copyright sx={{ my: 4 }} />
     </Box>
   );
 }
