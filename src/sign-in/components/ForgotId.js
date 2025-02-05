@@ -61,7 +61,7 @@ function ForgotPassword({ open, handleClose }) {
   //이메일 존재 확인
   const checkEmail = async (userEmail) => {  
     try {
-      const response = await axios.get('http://localhost:8080/users/check-email', {
+      const response = await axios.get('/users/check-email', {
         params: { userEmail },
         validateStatus: (status) => {
           return status === 201 || status === 409;
@@ -89,7 +89,7 @@ function ForgotPassword({ open, handleClose }) {
     const isEmailValid = await checkEmail(userEmail);
     if(isEmailValid){      
       try {
-        const response = await axios.post('http://localhost:8080/users/send-email', {
+        const response = await axios.post('/users/send-email', {
         mail: userEmail,
         });
       
@@ -116,7 +116,7 @@ function ForgotPassword({ open, handleClose }) {
   const handleVerifyCode = async () => {
     try {      
       // 코드 검증을 위한 백엔드 API 호출
-      const response = await axios.post('http://localhost:8080/users/verify-email', {
+      const response = await axios.post('/users/verify-email', {
         mail: userEmail,
         verifyCode: code,
       },
@@ -145,7 +145,7 @@ function ForgotPassword({ open, handleClose }) {
   const findId = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8080/users/find-id',
+        '/users/find-id',
         null, 
         {
             params: { email: userEmail }, 
