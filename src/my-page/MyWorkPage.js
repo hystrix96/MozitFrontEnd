@@ -6,6 +6,7 @@ import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Chip } from '@mui/material';
 import axiosInstance from '../api/axiosInstance';
+import dayjs from 'dayjs';
 
 export default function MyWorkPage(props) {
   const [myworks, setMyWorks] = useState([]);
@@ -70,7 +71,7 @@ export default function MyWorkPage(props) {
                         <TableCell align="left">번호</TableCell>
                         <TableCell align="left">썸네일</TableCell>
                         <TableCell align="left">제목</TableCell>
-                        <TableCell align="left">날짜</TableCell>
+                        <TableCell align="left">작업일자</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -81,7 +82,7 @@ export default function MyWorkPage(props) {
                             <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
                             <TableCell align="left"><img src={mywork.thumbnail} height='100px' weight='200px'/></TableCell>
                             <TableCell align="left">{mywork.editTitle}</TableCell>
-                            <TableCell align="left">{mywork.timestamp}</TableCell>
+                            <TableCell align="left">{dayjs(mywork.timestamp).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

@@ -129,7 +129,7 @@ export default function MyQuestionDetailPage(props) {
                   {getMessageByType(question.questionType)} | 문의일자: {new Date(question.timestamp).toLocaleDateString()}
                   
                   {imageUrl && (
-                    <Button variant="text" onClick={openModal} sx={{ marginTop: 1 }}>
+                    <Button variant="text" onClick={openModal} sx={{ marginTop: 1, color: 'primary.main' }}>
                       이미지 보기
                     </Button>
                   )}
@@ -214,36 +214,44 @@ export default function MyQuestionDetailPage(props) {
             backgroundColor: 'rgba(0, 0, 0, 0.5)', // 배경 어둡게
           },
           content: {
-            width: '400px', // 모달 너비
-            height: '400px', // 모달 높이
+            width: '450px', // 모달 너비
+            height: '450px', // 모달 높이
             margin: 'auto', // 화면 중앙 정렬
             borderRadius: '10px', // 둥근 모서리
-            padding: '20px', // 내부 여백
+            padding: '10px', // 내부 여백
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
             overflow: 'hidden',
           },
         }}
       >
-        <h3>이미지 상세</h3>
+        <h3
+          style={{
+            width: '100%',
+            textAlign: 'center',
+            whiteSpace: 'nowrap',
+            marginBottom: '10px',
+          }}
+        >
+          이미지 상세
+        </h3>
         {imageUrl ? (
           <img 
             src={imageUrl} 
             alt="Inquiry Image" 
             style={{ 
-              maxWidth: '100%', 
-              maxHeight: '100%', 
-              objectFit: 'contain', 
-              objectFit: 'cover',
+              width: '100%', // 너비를 부모 크기에 맞춤
+              maxHeight: '75%', // 높이를 제한하여 텍스트 공간 확보
+              objectFit: 'contain', // contain 대신 cover 유지
               borderRadius: '5px',
+              flexGrow: 1, // 이미지가 적절한 크기로 조정되도록 함
             }} 
           />
         ) : (
           <p>이미지를 로드할 수 없습니다.</p>
         )}
-        <Button onClick={closeModal} style={{ marginTop: '10px' }}>닫기</Button>
+        <Button onClick={closeModal} style={{ marginTop: '10px', marginBottom: '10px' }}>닫기</Button>
       </Modal>
     </AppTheme>
   );
