@@ -198,7 +198,9 @@ const handleSizeChange = (tab) => (event, newValue) => {
         updatedSettings.blur = true;
         updatedSettings.mosaic = false;
       }
-
+      console.log(value);
+      console.log(sliderValue);
+      console.log(videoDuration);
       return updatedSettings;
     });
   };
@@ -260,18 +262,33 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
   });
 };
 
-  const handleTabChange2 = (_, newValue) => setValue(newValue);
+const handleTabChange2 = (_, newValue) => {
+  setValue(newValue);
+};
 
-  const handleLoadedMetadata = () => {
-    const video = videoRef.current;
-    if (video) {
+const handleLoadedMetadata = () => {
+  const video = videoRef.current;
+  if (video) {
+    // readyState가 2 (HAVE_METADATA) 이상인지 확인
+    if (video.readyState >= 2) {
       setCanvasSize({
         width: video.videoWidth,
         height: video.videoHeight,
       });
       setVideoDuration(video.duration); // 비디오 길이 설정
+    } else {
+      console.warn("Metadata not ready, retrying...");
+      setTimeout(handleLoadedMetadata, 100); // 100ms 후 다시 시도
     }
-  };
+  }
+};
+
+useEffect(() => {
+  const video = videoRef.current;
+  if (video && video.readyState >= 2) {
+    handleLoadedMetadata();
+  }
+}, [videoUrl]); // videoUrl이 바뀌면 다시 실행
 
   const handlePlayPause = () => {
     const video = videoRef.current;
@@ -294,7 +311,8 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
 
   // 이게 재생바
   const handleSliderChange = (event, newValue) => {
-    setSliderValue(newValue); // 슬라이더 값 업데이트
+  
+    setSliderValue(newValue);
     const video = videoRef.current;
     if (video) {
     video.currentTime = (newValue / 100) * videoDuration; // 슬라이더 값에 비례하여 현재 재생 시간 조정
@@ -320,9 +338,12 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
   // 재생바
   useEffect(() => {
     const video = videoRef.current;
+    if(videoDuration===0) return;
+    
     if (video) {
       const updateSlider = () => {
         const currentSliderValue = (video.currentTime / videoDuration) * 100; // 비디오 현재 시간 비율
+        
         setSliderValue(currentSliderValue); // 슬라이더 값 업데이트
       };
 
@@ -351,117 +372,110 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
 
 
 
-  // 캔버스에 투명한 색을 그리는 함수
-  const drawTransparentOverlay = () => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
 
-    // 캔버스 사이즈 설정
-    canvas.width = canvasSize.width;
-    canvas.height = canvasSize.height;
-
-    // 투명한 색 사각형 그리기
-    context.fillStyle = 'rgba(255, 255, 255, 0)'; // 반투명 빨간색
-    context.fillRect(0, 0, canvas.width, canvas.height);
-  };
-
-  // ✅ 모자이크 & 블러를 적용하는 함수
 const drawMosaicOrBlur = () => {
   const video = videoRef.current;
   const canvas = canvasRef.current;
-  const ctx = canvas.getContext("2d");
 
-  if (!video || !ctx || canvasSize.width === 0 || canvasSize.height === 0) return;
+  if(!video){
+    console.log("왜이럴까요~");
+  }
+  if(!canvas){
+    console.log("왜이럴까요~2");
+  }
+  if (!video || !canvas || canvasSize.width === 0 || canvasSize.height === 0){
+    return;
+  } 
 
-  // 캔버스에 비디오 프레임을 그립니다.
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  const currentFrame = Math.floor(video.currentTime * fps); // 현재 프레임 계산
-  const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
-
-  currentDetections.forEach(({ x, y, width, height, objectId, className,confidence }) => {
-
-
-    //  // ✅ 빨간 글씨로 objectId와 className 출력
-    // ctx.fillStyle = "red"; 
-    // ctx.font = "bold 14px Arial"; 
-    // ctx.fillText(`ID: ${objectId}`, x+width+5, y+10 ); // 박스 오른쪽에 ID 표시
-    // ctx.fillText(`Class: ${className}`, x+width+5, y+30 ); // 박스 오른쪽에 className 표시
-    // ctx.fillText(`Confidence: ${confidence}`, x+width+5, y+50 ); // 박스 오른쪽에 confidence 표시
-    //  // 박스 색상 조건부 설정
-    //   ctx.strokeStyle = "red"
-
-    //   // 박스 그리기
-    //   ctx.lineWidth = 2; // 박스 두께
-    //   ctx.strokeRect(x, y, width, height); // 박스 그리기
-    // 모든 객체에 대해 박스를 그립니다.
- // 사람(face)인 경우
-    if (className === "face") {
-
-      
-      // 체크된 사람에 대해서만 모자이크 또는 블러 적용
-          const maskSize = settings.person.size;
-        const newWidth = width * (maskSize / 50);
-        const newHeight = height * (maskSize / 50);
-      if (settings.person.checkedPeople.includes(objectId)) {
-        if (settings.mosaic) {
-          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
-        } else if (settings.blur) {
-          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
-        }
+  // 🎯 requestAnimationFrame + setTimeout으로 실행 지연
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        console.warn("Canvas context is null! Canvas might not be rendered yet.");
+        return;
       }
 
-      // 빨간 글씨
-      ctx.fillStyle = "red"; 
-      // 박스 색상 조건부 설정
-      ctx.strokeStyle = "red"
-    }
-    // 개인정보인 경우
-    else if (["ID_card", "address_sign", "license_plate"].includes(className)) {
-          const maskSize = settings.privacy.size;
-    const newWidth = width * (maskSize / 50);
-    const newHeight = height * (maskSize / 50);
-      // 체크된 개인정보에 대해서만 모자이크 또는 블러 적용
-      if (settings.privacy.checkedItems.includes(className)) {
-        if (settings.mosaic) {
-          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
-        } else if (settings.blur) {
-          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
-        }
-      }
-      // 파란글씨
-      ctx.fillStyle = "blue"; 
-      // 박스 색상 조건부 설정
-      ctx.strokeStyle = "blue"
-    }
-    // 유해요소인 경우
-    else if (["blood", "gun", "knife", "cigarette", "alcohol"].includes(className)) {
-          const maskSize = settings.harmful.size;
-    const newWidth = width * (maskSize / 50);
-    const newHeight = height * (maskSize / 50);
-      // 체크된 유해요소에 대해서만 모자이크 또는 블러 적용
-      if (settings.harmful.checkedItems.includes(className)) {
-        if (settings.mosaic) {
-          applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
-        } else if (settings.blur) {
-          applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
-        }
-      }
-      // 초록 글씨
-      ctx.fillStyle = "green"; 
-      // 박스 색상 조건부 설정
-      ctx.strokeStyle = "green"
-    }
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    ctx.font = "bold 14px Arial"; 
-    ctx.fillText(`ID: ${objectId}`, x+width+5, y+10 ); // 박스 오른쪽에 ID 표시
-    ctx.fillText(`Class: ${className}`, x+width+5, y+30 ); // 박스 오른쪽에 className 표시
-    ctx.fillText(`Confidence: ${confidence}`, x+width+5, y+50 ); // 박스 오른쪽에 confidence 표시
-    ctx.lineWidth = 2; // 박스 두께
-    ctx.strokeRect(x, y, width, height); // 박스 그리기
+      const currentFrame = Math.floor(video.currentTime * fps);
+      const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
+
+      currentDetections.forEach(({ x, y, width, height, objectId, className, confidence }) => {
+        let maskSize, newWidth, newHeight;
+
+        if (className === "face") {
+          maskSize = settings.person.size;
+          newWidth = width * (maskSize / 50);
+          newHeight = height * (maskSize / 50);
+
+          if (settings.person.checkedPeople.includes(objectId)) {
+            if (settings.mosaic) {
+              applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
+            } else if (settings.blur) {
+              applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
+            }
+          }
+          ctx.fillStyle = "red";
+          ctx.strokeStyle = "red";
+        } else if (["ID_card", "address_sign", "license_plate"].includes(className)) {
+          maskSize = settings.privacy.size;
+          newWidth = width * (maskSize / 50);
+          newHeight = height * (maskSize / 50);
+
+          if (settings.privacy.checkedItems.includes(className)) {
+            if (settings.mosaic) {
+              applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
+            } else if (settings.blur) {
+              applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
+            }
+          }
+          ctx.fillStyle = "blue";
+          ctx.strokeStyle = "blue";
+        } else if (["blood", "gun", "knife", "cigarette", "alcohol"].includes(className)) {
+          maskSize = settings.harmful.size;
+          newWidth = width * (maskSize / 50);
+          newHeight = height * (maskSize / 50);
+
+          if (settings.harmful.checkedItems.includes(className)) {
+            if (settings.mosaic) {
+              applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
+            } else if (settings.blur) {
+              applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
+            }
+          }
+          ctx.fillStyle = "green";
+          ctx.strokeStyle = "green";
+        }
+
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(`ID: ${objectId}`, x + width + 5, y + 10);
+        ctx.fillText(`Class: ${className}`, x + width + 5, y + 30);
+        ctx.fillText(`Confidence: ${confidence}`, x + width + 5, y + 50);
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+      });
+    }, 0);
   });
-
 };
+
+  // 🔥 🎯 useEffect를 사용해 비디오가 로드된 후 실행되도록 설정
+useEffect(() => {
+  const video = videoRef.current;
+  if (!video) return;
+
+  // 비디오가 완전히 로드된 후 실행
+  const handleLoadedData = () => {
+    drawMosaicOrBlur();
+  };
+
+  video.addEventListener("loadeddata", handleLoadedData);
+
+  return () => {
+    video.removeEventListener("loadeddata", handleLoadedData);
+  };
+}, []);
+
 
   // ✅ 모자이크 처리 함수 추가
   const applyMosaic = (ctx, x, y, width, height, size, intensity) => {
@@ -599,9 +613,7 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
   fetchDetections();
 }, [fps]);
 
-  const handleTabChange = (event, newValue) => {
-    setValue(newValue);
-  };
+
 
   // ✅ Canva에서 특정 영역 캡처하는 함수
  const captureFrame = (video, frameTime) => {
@@ -690,15 +702,6 @@ const handleEditComplete = async () => {
 
 
 
-
-/////////비디오 화면에 마우스 올라가면 재생바 나타남//////////////
-const handleMouseEnter = () => {
-  setShowControls(true); // 마우스가 올라가면 컨트롤 표시
-};
-
-const handleMouseLeave = () => {
-  setShowControls(false); // 마우스가 나가면 컨트롤 숨김
-};
 ////////////////////////////////////////////////////////////
 
 
@@ -739,7 +742,7 @@ const handleMouseLeave = () => {
     
     <Box sx={{ width: '75%', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 4 , marginRight:40}}>
-      <Typography variant="h6" sx={{ color: 'text.primary' , marginRight:1, marginLeft:10}}>
+      <Typography variant="h6" sx={{ color: 'text.primary' , marginRight:1, marginLeft:10,marginBottom:'10px'}}>
         제목:
       </Typography> 
         <input
@@ -753,6 +756,7 @@ const handleMouseLeave = () => {
             borderRadius: '4px',
             border: '1px solid #ccc',
             marginRight: '16px', // 텍스트와의 간격
+            marginBottom:'10px'
           }}
         />
         <Typography
@@ -760,7 +764,8 @@ const handleMouseLeave = () => {
           sx={{
             // textAlign: 'right', // 왼쪽 정렬
             color: 'text.primary',
-            marginLeft :'30px'
+            marginLeft :'30px',
+            marginBottom:'10px'
           }}
         >
           모자이크 처리된 동영상
@@ -774,6 +779,7 @@ const handleMouseLeave = () => {
                   crossOrigin="anonymous"
                   // controls
                   onLoadedMetadata={handleLoadedMetadata}
+                  onCanPlay={handleLoadedMetadata} // canplay 이벤트도 사용
                   style={{
                     display: 'block',
                     width: '80%', // 비디오 너비를 80%로 설정
@@ -831,7 +837,7 @@ const handleMouseLeave = () => {
                     <Slider
                       id="video-slider"
                       sx={{ marginLeft: '10px', flexGrow: 1 }}
-                      value={sliderValue}
+                      value={sliderValue ?? 0 }
                       onChange={handleSliderChange}
                     />
 
@@ -852,7 +858,7 @@ const handleMouseLeave = () => {
         </Box>
 
 <Box sx={{ width: "25%", padding: 2, border: "1px solid #ccc", borderRadius: 2 }}>
-  <Tabs value={value} onChange={handleTabChange2} sx={{ marginBottom: 2 }}>
+  <Tabs value={value ?? 0 } onChange={handleTabChange2} sx={{ marginBottom: 2 }}>
     <Tab label="유해요소" sx={{ border: "1px solid #ddd", borderRadius: 1, marginRight: 1 }} />
     <Tab label="개인정보" sx={{ border: "1px solid #ddd", borderRadius: 1, marginRight: 1 }} />
     <Tab label="사람" sx={{ border: "1px solid #ddd", borderRadius: 1 }} />

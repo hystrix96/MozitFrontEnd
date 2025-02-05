@@ -18,7 +18,7 @@ export default function FAQ() {
     },
     {
       question: 'Q: 어떤 유형의 파일을 지원하나요?',
-      answer: 'A: 지원되는 파일 형식은 MP4, MOV, AVI, MKV 등입니다. 파일 크기와 해상도 제한은 여기에서 확인할 수 있습니다.',
+      answer: 'A: 지원되는 파일 형식은 MP4입니다. 파일 크기는 200MB로 제한됩니다.',
     },
     {
       question: 'Q: 모자이크 처리는 어떻게 이루어지나요?',
