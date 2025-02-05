@@ -17,7 +17,8 @@ export default function NoticeListPage(props) {
 
   const fetchNotices = async () => {
     const response = await axiosInstance.get('/notices'); // API 호출
-    setNotices(response.data); // 데이터를 상태에 저장
+    const sortedNotices = response.data.sort((a, b) => b.noticeNum - a.noticeNum); // 번호 큰 것부터 정렬
+    setNotices(sortedNotices);
   };
 
   useEffect(() => {
@@ -34,11 +35,6 @@ export default function NoticeListPage(props) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // Reset to the first page when rows per page changes
   };
-
-  // const handleRowClick = (id) => {
-  //   // 클릭한 행의 ID에 해당하는 상세 페이지로 이동
-  //   window.location.href = `/admin/notice/${id}`;
-  // };
 
   return (
     <AppTheme {...props}>
@@ -90,19 +86,9 @@ export default function NoticeListPage(props) {
                         {notices
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // Pagination
                             .map((notice, index) => (
-                            // <TableRow
-                            //     key={notice.noticeNum}
-                            //     hover
-                            //     sx={{ cursor: 'pointer' }} // 클릭 시 커서 변경
-                            //     onClick={() => handleRowClick(notice.noticeNum)} // 클릭 시 상세 페이지로 이동
-                            // >
-                            //     <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
-                            //     <TableCell align="left">{notice.noticeTitle}</TableCell>
-                            //     <TableCell align="left">{dayjs(notice.createdAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
-                            // </TableRow>
                             <TableRow key={notice.noticeNum} hover>
-                          <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
-                          <TableCell align="left">
+                            <TableCell align="left">{notices.length - (page * rowsPerPage + index)}</TableCell>
+                            <TableCell align="left">
                             <Link 
                               to={`/admin/notice/${notice.noticeNum}`} 
                               style={{ textDecoration: 'none', color: 'inherit' }}

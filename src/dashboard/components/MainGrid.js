@@ -139,7 +139,7 @@ export default function MainGrid() {
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
       {/* cards */}
-      <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+      <Typography component="h2" variant="h6" sx={{ mb: 2, mt: 2 }}>
         Overview
       </Typography>
       <Grid
@@ -153,12 +153,12 @@ export default function MainGrid() {
             <StatCard {...card} />
           </Grid>
         ))}
-        <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+        <Typography component="h2" variant="h6">
           시스템 모니터링
         </Typography>
-        <Grid container spacing={80}>
+        <Grid container spacing={78.5}>
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card sx={{ backgroundColor: '#ffffff', borderRadius: 1, height: '100%', width: '500px' }}>
+            <Card sx={{ backgroundColor: '#ffffff', borderRadius: 1, height: '100%', width: '600px' }}>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                   CPU 사용량
@@ -173,7 +173,7 @@ export default function MainGrid() {
             </Card>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Card sx={{ backgroundColor: '#ffffff', borderRadius: 1, height: '100%', width: '500px' }}>
+            <Card sx={{ backgroundColor: '#ffffff', borderRadius: 1, height: '100%', width: '600px' }}>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                   메모리 사용량

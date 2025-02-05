@@ -18,7 +18,8 @@ export default function QuestionListPage(props) {
   useEffect(() => {
     const fetchQuestions = async () => {
       const response = await axiosInstance.get('/questions'); // API 엔드포인트
-      setQuestions(response.data); // 응답 데이터를 상태로 설정
+      const sortedQuestions = response.data.sort((a, b) => b.questionNum - a.questionNum); // 번호 큰 것부터 정렬
+      setQuestions(sortedQuestions); // 응답 데이터를 상태로 설정
     }
     fetchQuestions();
   }, []);
@@ -101,7 +102,7 @@ export default function QuestionListPage(props) {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // Paginate the myquestions
                         .map((question, index) => (
                             <TableRow key={question.questionNum}>
-                            <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
+                            <TableCell align="left">{questions.length - (page * rowsPerPage + index)}</TableCell>
                             <TableCell align="left">{question.userNum.userId}</TableCell>
                             <TableCell align="left">{getMessageByType(question.questionType)}</TableCell>
                             <TableCell align="left">{question.questionTitle}</TableCell>

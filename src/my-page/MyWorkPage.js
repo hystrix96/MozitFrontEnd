@@ -17,7 +17,8 @@ export default function MyWorkPage(props) {
     try {
       const response = await axiosInstance.get('/edit'); // API 엔드포인트 호출
       const data = Array.isArray(response.data) ? response.data : [];
-      setMyWorks(data); // 응답 데이터를 상태에 저장
+      const sortedData = data.sort((a, b) => b.editNum - a.editNum); // 번호 큰 것부터 정렬
+      setMyWorks(sortedData);
     } catch (error) {
       console.error('작업 데이터를 가져오는 중 오류 발생:', error);
       setMyWorks([]);
@@ -79,7 +80,7 @@ export default function MyWorkPage(props) {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((mywork, index) => (
                             <TableRow key={mywork.editNum}>
-                            <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
+                            <TableCell align="left">{myworks.length - (page * rowsPerPage + index)}</TableCell>
                             <TableCell align="left"><img src={mywork.thumbnail} height='100px' weight='200px'/></TableCell>
                             <TableCell align="left">{mywork.editTitle}</TableCell>
                             <TableCell align="left">{dayjs(mywork.timestamp).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
