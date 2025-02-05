@@ -94,6 +94,9 @@ export default function Footer() {
           <Link color="text.secondary" variant="body2" href="/aboutus">
             About us
           </Link>
+          <Link color="text.secondary" variant="body2" href="/notice">
+            공지사항
+          </Link>
           <Link color="text.secondary" variant="body2" href="/faq">
             FAQ
           </Link>
