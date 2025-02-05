@@ -85,6 +85,15 @@ export default function AppAppBar() {
     }
   };
 
+  const handleLiveClick = () => {
+    if (isLoggedIn) {
+      navigate('/live'); // 로그인 상태라면 작업 페이지로 이동
+    } else {
+      alert('로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.');
+      navigate('/sign-in'); // 로그인되지 않으면 로그인 페이지로 이동
+    }
+  };
+
   // "문의" 버튼 클릭시 로그인 여부 확인 후 처리
   const handleQuestion = () => {
     if (isLoggedIn) {
@@ -144,7 +153,7 @@ export default function AppAppBar() {
                     <Button variant="text" color="info" size="small" onClick={handleWorkClick}>
                       동영상
                     </Button>
-                    <Button variant="text" color="info" size="small">
+                    <Button variant="text" color="info" size="small" onClick={handleLiveClick}>
                       라이브
                     </Button>
                   </Box>

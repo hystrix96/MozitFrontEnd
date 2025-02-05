@@ -55,7 +55,7 @@ export default function Privacy(props) {
         <Typography variant="body1" paragraph>
           회사는 서비스 이용을 위해 최소한의 개인정보를 수집합니다:
           <ul>
-            <li>필수 정보: 기업명, 담당자 이름, 이메일, 결제 정보</li>
+            <li>필수 정보: 기업명, 담당자 이름, 이메일</li>
             <li>서비스 이용 중 수집되는 정보: 업로드된 영상 (모자이크 처리 후 즉시 삭제됨)</li>
           </ul>
         </Typography>
