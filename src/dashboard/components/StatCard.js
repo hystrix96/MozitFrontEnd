@@ -68,7 +68,7 @@ function StatCard({ title, value, interval, trend, data }) {
 
   const color = labelColors[trend];
   const chartColor = trendColors[trend];
-  const trendValues = { up: '+25%', down: '-25%', neutral: '+5%' };
+  const trendValues = { up: <img src="/assets/icons/people1.png" width="64" height="64" />, down: <img src="/assets/icons/icon.png" width="64" height="64" />, neutral: <img src="/assets/icons/bar.png" width="64" height="64" /> };
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flexGrow: 1 }}>
@@ -88,7 +88,22 @@ function StatCard({ title, value, interval, trend, data }) {
               <Typography variant="h4" component="p">
                 {value}
               </Typography>
-              <Chip size="small" color={color} label={trendValues[trend]} />
+              <Chip sx={{
+                // Chip의 기본 배경을 제거
+                backgroundColor: 'transparent',
+                border: 'none', // 테두리 제거
+                borderRadius: 0, // 기본적으로 적용된 타원형 모서리 제거
+                '& .MuiChip-icon': {
+                  background: 'none', // 아이콘의 배경 제거
+                  borderRadius: 0, // 이미지에 원형 배경이 생기지 않도록
+                },
+                '& .MuiChip-label': {
+                  padding: 0, // 이미지와 텍스트의 간격을 없앰
+                }
+              }}
+                icon={trendValues[trend]}
+                label={typeof trendValues[trend] === 'string' ? trendValues[trend] : null}
+              />
             </Stack>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {interval}
@@ -99,8 +114,8 @@ function StatCard({ title, value, interval, trend, data }) {
               colors={[chartColor]}
               data={data}
               area
-              showHighlight
-              showTooltip
+              //showHighlight
+              //showTooltip
               xAxis={{
                 scaleType: 'band',
                 data: daysInWeek, // Use the correct property 'data' for xAxis
