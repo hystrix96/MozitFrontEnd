@@ -239,7 +239,7 @@ export default function AdminEdit(props) {
           })}
         >
           <Stack
-            spacing={2}
+            spacing={-8}
             sx={{
               alignItems: 'center',
               mx: 3,
@@ -298,6 +298,12 @@ export default function AdminEdit(props) {
                               fullWidth
                               value={inputPassword}
                               onChange={(e) => setInputPassword(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") { //엔터키
+                                  e.preventDefault(); // 기본 제출 방지
+                                  handlePasswordCheck(e); // event 객체를 넘김
+                                }
+                              }}
                               sx={{
                                 mb: 0,
                                 '& .MuiInput-underline:before': {
