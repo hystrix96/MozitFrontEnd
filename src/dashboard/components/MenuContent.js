@@ -34,22 +34,22 @@ const Drawer = styled(MuiDrawer)({
 
 const mainListItems = [
   { text: '대시보드 홈', icon: <HomeRoundedIcon />, link: '/admin/dashboard' },
-  {
-    text: '시스템 상태',
-    icon: <NotificationsRoundedIcon />,
-    link: '/admin/system-status',
-  },
+  // {
+  //   text: '시스템 상태',
+  //   icon: <NotificationsRoundedIcon />,
+  //   link: '/admin/system-status',
+  // },
   {
     text: '사이트 관리',
     icon: <GroupsRoundedIcon />,
     children: [
-      { text: '접속량 모니터링', link: '/admin/traffic' },
+      // { text: '접속량 모니터링', link: '/admin/traffic' },
       { text: '회원 정보', link: '/admin/users' },
       { text: '공지사항', link: '/admin/notice' },
       { text: 'Q&A', link: '/admin/qna' },
     ],
   },
-  { text: 'KPI 분석', icon: <QuestionAnswerRoundedIcon />, link: '/admin/kpi' },
+  // { text: 'KPI 분석', icon: <QuestionAnswerRoundedIcon />, link: '/admin/kpi' },
   { text: '관리자 계정 설정', icon: <GroupsRoundedIcon />, link: '/admin/admin' },
 ];
 

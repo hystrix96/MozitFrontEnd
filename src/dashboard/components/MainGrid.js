@@ -15,6 +15,9 @@ import StatCard from './StatCard';
 import axiosInstance from '../../api/axiosInstance';
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
+import SystemStatus from '../../admin-page/SystemStatus';
+import AzureMonitorChart from './AzureMonitorChart';
+import { Card, CardContent, CircularProgress, Button, TextField, Grid2 } from '@mui/material';
 // const data = [
 //   {
 //     title: 'Users',
@@ -87,7 +90,7 @@ export default function MainGrid() {
   }, []);
 
   // 30일 날짜 배열 생성 (현재 날짜 기준으로 지난 30일)
-  const daysIn30 = Array.from({ length: 30 }, (_, index) => 
+  const daysIn30 = Array.from({ length: 30 }, (_, index) =>
     dayjs().subtract(index, 'day').format('YYYY-MM-DD')
   ).reverse(); // 최신 날짜부터 순서대로
 
@@ -96,7 +99,7 @@ export default function MainGrid() {
     const entry = unansweredByDate.find(d => d.date === date);
     return entry ? entry.count : 0; // 해당 날짜에 미답변 개수가 있으면 가져오고, 없으면 0
   });
-  
+
   console.log("📌 unansweredByDate:", unansweredByDate);
   const data = [
     {
@@ -150,30 +153,65 @@ export default function MainGrid() {
             <StatCard {...card} />
           </Grid>
         ))}
-        {/* <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-          <HighlightedCard />
-        </Grid> */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          {/* <SessionsChart /> */}
-          <TotalDownload />
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <PageViewsBarChart />
+        <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+          시스템 모니터링
+        </Typography>
+        <Grid container spacing={80}>
+          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+            <Card sx={{ backgroundColor: '#ffffff', borderRadius: 1, height: '100%', width: '500px' }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  CPU 사용량
+                </Typography>
+                <AzureMonitorChart
+                  metric="cpu_percent"
+                  subscriptionId="0a938e62-00ba-4c73-a908-3b285014b302"
+                  resourceGroup="mozit"
+                  resourceName="mozit-db"
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Card sx={{ backgroundColor: '#ffffff', borderRadius: 1, height: '100%', width: '500px' }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  메모리 사용량
+                </Typography>
+                <AzureMonitorChart
+                  metric="memory_percent"
+                  subscriptionId="0a938e62-00ba-4c73-a908-3b285014b302"
+                  resourceGroup="mozit"
+                  resourceName="mozit-db"
+                />
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
-      <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-        Details
-      </Typography>
+      {/* <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+        실시간 모니터링
+      </Typography> */}
       <Grid container spacing={2} columns={12}>
-        <Grid size={{ xs: 12, lg: 9 }}>
-          <CustomizedDataGrid />
-        </Grid>
-        <Grid size={{ xs: 12, lg: 3 }}>
+        {/* <Grid size={{ xs: 12, lg: 9 }}>
+        <CardContent>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                      CPU 사용량
+                    </Typography>
+                    <AzureMonitorChart 
+                      metric="cpu_percent" 
+                      subscriptionId="0a938e62-00ba-4c73-a908-3b285014b302" 
+                      resourceGroup="mozit" 
+                      resourceName="mozit-db" 
+                    />
+                  </CardContent>
+        </Grid> */}
+        {/* <Grid size={{ xs: 12, lg: 3 }}>
           <Stack gap={2} direction={{ xs: 'column', sm: 'row', lg: 'column' }}>
             <CustomizedTreeView />
             <ChartUserByCountry />
           </Stack>
-        </Grid>
+        </Grid> */}
       </Grid>
       <Copyright sx={{ my: 4 }} />
     </Box>

@@ -27,24 +27,17 @@ export default function SystemStatus(props) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <Box sx={{ display: 'flex', height: '100vh' }}>
+      {/* <Box sx={{ display: 'flex', height: '100vh' }}> */}
         {/* Sidebar (MenuContent) */}
         {/* <MenuContent /> */}
-        <SideMenu />
+        {/* <SideMenu /> */}
 
         {/* 오른쪽 영역 */}
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           {/* Header */}
-          <Header
-            sx={{
-              width: '100%',
-              zIndex: 10,
-              position: 'sticky', // 스크롤 시 상단 고정
-              top: 0,
-            }}
-          />
+          
           {/* Main Content */}
-          <Box
+          {/* <Box
             component="main"
             sx={(theme) => ({
               flexGrow: 1,
@@ -53,15 +46,15 @@ export default function SystemStatus(props) {
                 : alpha(theme.palette.background.default, 1),
               overflow: 'auto',
             })}
-          >
+          > */}
             {/* 제목 섹션 */}
-            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, marginLeft: 2 }}>
+            {/* <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, marginLeft: 2 }}>
               시스템 모니터링
-            </Typography>
+            </Typography> */}
             
-            <Grid container spacing={3} justifyContent="center" alignItems="stretch" sx={{ width: '500px', margin: '0 auto' }}>
+            <Grid container spacing={12} direction="row" justifyContent="space-between" alignItems="stretch" sx={{ width: '100%' }}>
               {/* CPU 사용량 카드 */}
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6} md={5}>
                 <Card sx={{ backgroundColor: '#f0f4ff', boxShadow: 2, borderRadius: 3, height: '100%', width: '500px' }}>
                   <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -95,7 +88,7 @@ export default function SystemStatus(props) {
               </Grid>
               
               {/* 로그 쓰기 비율 카드 */}
-              <Grid item xs={12} sm={6} md={4}>
+              {/* <Grid item xs={12} sm={6} md={4}>
                 <Card sx={{ backgroundColor: '#e6f7f0', boxShadow: 2, borderRadius: 3, height: '100%', width: '500px' }}>
                   <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -109,11 +102,11 @@ export default function SystemStatus(props) {
                     />
                   </CardContent>
                 </Card>
-              </Grid>
+              </Grid> */}
             </Grid>
-          </Box>
-        </Box>
-      </Box>
+          {/* </Box> */}
+        {/* </Box> */}
+      {/* </Box> */}
     </AppTheme>
   );
 }
