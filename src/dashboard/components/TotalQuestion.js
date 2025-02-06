@@ -112,7 +112,7 @@ export default function TotalQuestion() {
                         width={260}
                         slotProps={{ legend: { hidden: true } }}
                     >
-                        <PieCenterLabel primaryText={`${((answeredCount / (answeredCount + unansweredCount)) * 100).toFixed(0)}%`} secondaryText="답변 완료 비율" />
+                        <PieCenterLabel primaryText={`${((answeredCount / (answeredCount + unansweredCount)) * 100).toFixed(0)}%`} secondaryText="Response Completion" />
                     </PieChart>
                 </Box>
 
@@ -138,7 +138,7 @@ export default function TotalQuestion() {
                 ))}
 
                 {/* ✅ 문의 유형 선택 */}
-                <FormControl fullWidth size="small" sx={{ mt: 2, mb: 1 }}>
+                <FormControl fullWidth >
                     <InputLabel>문의 유형</InputLabel>
                     <Select 
                     value={selectedCategory} 
