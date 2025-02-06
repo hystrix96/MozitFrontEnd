@@ -30,8 +30,8 @@ const AdminRoutes = () => {
     return (
         <Routes>
             <Route path="/dashboard" element={<DashBoard />} />
-            <Route path="/system-status" element={<SystemStatus />} />
-            <Route path="/traffic" element={<Traffic />} />
+            {/* <Route path="/system-status" element={<SystemStatus />} /> */}
+            {/* <Route path="/traffic" element={<Traffic />} /> */}
             <Route path="/users" element={<UserListPage />} />
             <Route path="/notice" element={<NoticeListPage />} />
             <Route path="/notice/:id" element={<NoticeUpdatePage />} />
@@ -39,7 +39,7 @@ const AdminRoutes = () => {
             <Route path="/notice/create" element={<NoticeCreatePage />} />
             <Route path="/qna" element={<QuestionListPage />} />
             <Route path="/qna/:id" element={<AnswerPage />} />
-            <Route path="/kpi" element={<KPI />} />
+            {/* <Route path="/kpi" element={<KPI />} /> */}
             <Route path="/admin" element={<AdminEdit />} />
         </Routes>
     );

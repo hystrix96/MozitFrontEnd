@@ -16,7 +16,8 @@ export default function MyQuestionPage(props) {
   const fetchQuestions = async () => {
     try {
       const response = await axiosInstance.get('/questions/my');
-      setQuestions(response.data); // 데이터 상태 설정
+      const sortedQuestions = response.data.sort((a, b) => b.questionNum - a.questionNum); // 번호 큰 것부터 정렬
+      setQuestions(sortedQuestions); // 데이터 상태 설정
     } catch (error) {
       console.error('Error fetching questions:', error);
     } finally {
@@ -95,7 +96,7 @@ export default function MyQuestionPage(props) {
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((question, index) => (
                         <TableRow key={question.questionNum}>
-                          <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
+                          <TableCell align="left">{questions.length - (page * rowsPerPage + index)}</TableCell>
                           <TableCell align="left">{getMessageByType(question.questionType)}</TableCell>
                           <TableCell align="left">{question.questionTitle || '제목 없음'}</TableCell>
                           <TableCell align="left">

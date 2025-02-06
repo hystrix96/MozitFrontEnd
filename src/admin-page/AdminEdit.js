@@ -148,7 +148,7 @@ export default function AdminEdit(props) {
     }
 
     try {
-      const response = await axiosInstance.patch('http://localhost:8080/my', updatedData, {
+      const response = await axiosInstance.patch('/my', updatedData, {
         headers: { 'Content-Type': 'application/json' },
       });
 

@@ -40,7 +40,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
   height: '100vh',
-  minHeight: '100%',
+  minHeight: '950px',
   padding: theme.spacing(2),
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(4),
@@ -132,7 +132,7 @@ export default function SignUp(props) {
 
   const checkEmail = async (userEmail) => {
     try {
-      const response = await axios.get('http://localhost:8080/users/check-email', {
+      const response = await axios.get('/users/check-email', {
         params: { userEmail },
         validateStatus: (status) => {
           return status === 201 || status === 409;
@@ -178,7 +178,7 @@ export default function SignUp(props) {
 
 
     try {
-      const response = await axios.post('http://localhost:8080/users/send-email', {
+      const response = await axios.post('/users/send-email', {
         mail: email,
       });
 
@@ -206,7 +206,7 @@ export default function SignUp(props) {
     const email = emailInput.value;
     try {
       // 서버에 인증 코드 검증 요청
-      const response = await axios.post('http://localhost:8080/users/verify-email', {
+      const response = await axios.post('/users/verify-email', {
         mail: email,
         verifyCode: authCode,
       });
@@ -246,7 +246,7 @@ export default function SignUp(props) {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8080/users/check-id`, {
+      const response = await axios.get(`/users/check-id`, {
         params: { userId },
       });
 
@@ -435,7 +435,7 @@ export default function SignUp(props) {
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/users/signup', {
+        '/users/signup', {
         userId: userId,
         userName: userName,
         userPwd: userPwd,

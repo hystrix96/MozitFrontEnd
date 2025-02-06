@@ -18,7 +18,8 @@ export default function NoticePage(props) {
   const fetchNotices = async () => {
     try {
       const response = await axiosInstance.get('/notices'); // API 호출
-      setNotices(response.data); // 데이터를 상태에 저장
+      const sortedNotices = response.data.sort((a, b) => b.noticeNum - a.noticeNum); // 번호 큰 것부터 정렬
+      setNotices(sortedNotices);
       setLoading(false); // 로딩 종료
     } catch (error) {
       console.error('공지사항 데이터를 가져오는 중 오류 발생:', error);
@@ -124,7 +125,7 @@ export default function NoticePage(props) {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // Paginate the notices
                         .map((notice, index) => (
                             <TableRow key={notice.noticeNum}>
-                            <TableCell align="left">{index + 1 + page * rowsPerPage}</TableCell>
+                            <TableCell align="left">{notices.length - (page * rowsPerPage + index)}</TableCell>
                             <TableCell align="left">{notice.noticeTitle}</TableCell>
                             <TableCell align="left">{dayjs(notice.createdAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
                             <TableCell align="center">

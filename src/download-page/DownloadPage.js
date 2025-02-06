@@ -75,7 +75,7 @@ export default function DownloadPage(props) {
   const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
   const { accessToken } = useAuth();
   const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
-  const videoUrl = savedFileName ? `http://localhost:8080/edit/videos/${savedFileName}` : null;
+  const videoUrl = savedFileName ? `/edit/videos/${savedFileName}` : null;
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoDuration, setVideoDuration] = useState(0); 
@@ -150,7 +150,7 @@ export default function DownloadPage(props) {
       video.removeEventListener("play", render);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [canvasSize, detectionData, settings]);
+  }, [canvasSize, detectionData, settings]);   
 ////////////////////////////////////////////////////////////
 
 
@@ -252,7 +252,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchDetections = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/edit/videos/${savedFileName}/info`);
+        const response = await fetch(`/edit/videos/${savedFileName}/info`);
         const data = await response.json();
         
         // 각 프레임의 detections을 포함한 객체를 유지하면서 평탄화
@@ -397,7 +397,7 @@ useEffect(() => {
 ///////////////////    재편집   ///////////////////////////
 const handleReEdit = async () => {
   try {
-    const response = await fetch('http://localhost:8080/edit/restart-editing', {
+    const response = await fetch('/edit/restart-editing', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json', // JSON 형식으로 설정
@@ -449,7 +449,7 @@ const handleReEdit = async () => {
 //   };
 
 //   try {
-//       const response = await fetch('http://localhost:8080/edit/download', {
+//       const response = await fetch('/edit/download', {
 //           method: 'POST',
 //           headers: {
 //               'Content-Type': 'application/json',
@@ -527,7 +527,7 @@ try {
   console.log('input_editor 서버 응답:', result);
 
     // 두 번째 요청: download로 downloadInfo 전송
-    const downloadResponse = await fetch('http://localhost:8080/edit/download', {
+    const downloadResponse = await fetch('/edit/download', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
