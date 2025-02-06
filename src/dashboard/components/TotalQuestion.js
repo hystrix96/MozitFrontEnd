@@ -49,7 +49,7 @@ export default function TotalQuestion() {
     const [questions, setQuestions] = useState([]);
     const [unansweredList, setUnansweredList] = useState([]);
     const [categoryList, setCategoryList] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('전체');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -112,7 +112,7 @@ export default function TotalQuestion() {
                         width={260}
                         slotProps={{ legend: { hidden: true } }}
                     >
-                        <PieCenterLabel primaryText={`${((answeredCount / (answeredCount + unansweredCount)) * 100).toFixed(0)}%`} secondaryText="답변 완료 비율" />
+                        <PieCenterLabel primaryText={`${((answeredCount / (answeredCount + unansweredCount)) * 100).toFixed(0)}%`} secondaryText="Response Completion" />
                     </PieChart>
                 </Box>
 
@@ -138,7 +138,7 @@ export default function TotalQuestion() {
                 ))}
 
                 {/* ✅ 문의 유형 선택 */}
-                <FormControl fullWidth size="small" sx={{ mt: 2, mb: 1 }}>
+                <FormControl fullWidth >
                     <InputLabel>문의 유형</InputLabel>
                     <Select 
                     value={selectedCategory} 
@@ -160,7 +160,7 @@ export default function TotalQuestion() {
                 </FormControl>
 
                 {/* ✅ 미답변 리스트 출력 (유형별 필터링 적용됨) */}
-                {filteredQuestions.length > 0 ? (
+                {unansweredList.length > 0 ? (
                     <>
                         <Typography variant="h6" sx={{ mt: 2 }}>
                             미답변 문의 목록
@@ -172,7 +172,6 @@ export default function TotalQuestion() {
                                         <TableCell align="left">번호</TableCell>
                                         <TableCell align="left">제목</TableCell>
                                         <TableCell align="left">문의자</TableCell>
-                                        <TableCell align="left">유형</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -183,15 +182,6 @@ export default function TotalQuestion() {
                                                 <Link to={`/admin/qna/${question.questionNum}`}>{question.questionTitle}</Link>
                                             </TableCell>
                                             <TableCell align="left">{question.userNum.userId}</TableCell>
-                                            <TableCell align="left">
-                                                {question.questionType === 'ACCOUNT'
-                                                    ? '계정 및 회원'
-                                                    : question.questionType === 'SERVICE'
-                                                        ? '제품 및 서비스'
-                                                        : question.questionType === 'GENERAL'
-                                                            ? '일반 문의'
-                                                            : question.questionType === 'SERVICE'}
-                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Box, Typography, Button, TextField } from '@mui/material';
+import { Box, Typography, Button, TextField, Modal } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
@@ -12,7 +12,6 @@ import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import axiosInstance from '../api/axiosInstance';
 import dayjs from 'dayjs';
-import Modal from 'react-modal';
 
 export default function AnswerPage(props) {
   const { id } = useParams();  // URL에서 id 파라미터 추출
@@ -235,51 +234,53 @@ export default function AnswerPage(props) {
       </Box>
 
       <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        style={{
-          overlay: {
-            backgroundColor: 'rgba(0, 0, 0, 0.5)', // 배경 어둡게
-          },
-          content: {
-            width: '600px', // 모달 너비
-            height: '600px', // 모달 높이
-            margin: 'auto', // 화면 중앙 정렬
-            borderRadius: '10px', // 둥근 모서리
-            padding: '10px', // 내부 여백
+        open={isModalOpen}
+        onClose={closeModal}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 450,
+            height: 450,
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 3,
+            borderRadius: 2,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            overflow: 'hidden',
-          },
-        }}
-      >
-        <h3
-          style={{
-            width: '100%',
-            textAlign: 'center',
-            whiteSpace: 'nowrap',
-            marginBottom: '10px',
           }}
         >
-          이미지 상세
-        </h3>
-        {imageUrl ? (
-          <img 
-            src={imageUrl} 
-            alt="Inquiry Image" 
-            style={{ 
-              width: '100%', // 너비를 부모 크기에 맞춤
-              maxHeight: '75%', // 높이를 제한하여 텍스트 공간 확보
-              objectFit: 'contain', // contain 대신 cover 유지
-              borderRadius: '5px',
-              flexGrow: 1, // 이미지가 적절한 크기로 조정되도록 함
-            }} 
-          />
-        ) : (
-          <p>이미지를 로드할 수 없습니다.</p>
-        )}
-        <Button onClick={closeModal} style={{ marginTop: '10px', marginBottom: '10px' }}>닫기</Button>
+          <h3
+            style={{
+              width: '100%',
+              textAlign: 'center',
+              whiteSpace: 'nowrap',
+              marginBottom: '10px',
+            }}
+          >
+            이미지 상세
+          </h3>
+          {imageUrl ? (
+            <img 
+              src={imageUrl} 
+              alt="Inquiry Image" 
+              style={{ 
+                width: '100%', // 너비를 부모 크기에 맞춤
+                maxHeight: '75%', // 높이를 제한하여 텍스트 공간 확보
+                objectFit: 'contain', // contain 대신 cover 유지
+                borderRadius: '5px',
+                flexGrow: 1, // 이미지가 적절한 크기로 조정되도록 함
+              }} 
+            />
+          ) : (
+            <p>이미지를 로드할 수 없습니다.</p>
+          )}
+          <Button onClick={closeModal} style={{ marginTop: '10px', marginBottom: '10px' }}>닫기</Button>
+          </Box>
       </Modal>
     </AppTheme>
   );
