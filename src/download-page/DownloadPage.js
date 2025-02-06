@@ -74,7 +74,9 @@ export default function DownloadPage(props) {
   const canvasRef = useRef(null); // 캔버스 참조 추가
   const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
   const { accessToken } = useAuth();
-  const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
+  const location = useLocation();
+  const { settings , editNum, fps, savedFileName } = location.state || {}; // 전달된 마스크 상태 가져오기
+  // const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
   const videoUrl = savedFileName ? `/edit/videos/${savedFileName}` : null;
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [isPlaying, setIsPlaying] = useState(false);
@@ -82,8 +84,8 @@ export default function DownloadPage(props) {
   const [sliderValue, setSliderValue] = useState(0); // 슬라이더 값을 상태로 관리
   const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
   const [detectionData, setDetectionData] = useState([]);
-  const location = useLocation();
-  const { settings , editNum, fps} = location.state || {}; // 전달된 마스크 상태 가져오기
+ 
+ 
 
 
 
@@ -503,14 +505,14 @@ const payload = {
       person_checklist: Array.isArray(checkedPeople) ? checkedPeople.join(", ") : "", // 문자열로 변환
   },
   path_request: {
-      video_path: "uploads/mozit.mp4",  // 실제 경로로 수정
-      output_path: "uploads/output22.mp4",     // 실제 경로로 수정
+      video_path: savedFileName,  // 실제 경로로 수정
+      output_path: "uploads/output22.mp4",     // 실제 경로로 수정 이거 바꿔야 함 배포 !!
   }
 };
 
 try {
   // 첫 번째 요청: input_editor로 payload 전송
-  const response = await fetch('http://localhost:8000/input_editor', {
+  const response = await fetch('http://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/input_editor', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
