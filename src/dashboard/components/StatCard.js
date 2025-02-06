@@ -114,8 +114,6 @@ function StatCard({ title, value, interval, trend, data }) {
               colors={[chartColor]}
               data={data}
               area
-              //showHighlight
-              //showTooltip
               xAxis={{
                 scaleType: 'band',
                 data: daysInWeek, // Use the correct property 'data' for xAxis

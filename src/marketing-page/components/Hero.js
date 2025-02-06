@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { styled, useTheme } from "@mui/material/styles";
-import { useAuth } from "../../Context/AuthContext";
 import SitemarkIcon from '../../components/SitemarkIcon';
 import "@img-comparison-slider/react";
 
@@ -137,38 +135,6 @@ const StyledBox = styled("div")(({ theme }) => ({
   boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)",
 }));
 
-const IconContainer = styled(Box)(({ theme }) => ({
-  transform: "translateX(-50%)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 2,
-  "& img": {
-    position: "absolute",
-    opacity: 0,
-    animation: "fadeInOut 8s infinite",
-  },
-  "& img:nth-of-type(1)": {
-    animationDelay: "0s",
-  },
-  "& img:nth-of-type(2)": {
-    animationDelay: "2s",
-  },
-  "& img:nth-of-type(3)": {
-    animationDelay: "4s",
-  },
-  "& img:nth-of-type(4)": {
-    animationDelay: "6s",
-  },
-  "@keyframes fadeInOut": {
-    "0%": { opacity: 0 },
-    "10%": { opacity: 1 },
-    "20%": { opacity: 1 },
-    "40%": { opacity: 0 },
-    "100%": { opacity: 0 },
-  },
-}));
-
 const icons = [
   { src: "/assets/icons/face1.png", top: "30%", left: "27%" },
   { src: "/assets/icons/face2.png", top: "60%", left: "93%" },
@@ -233,22 +199,6 @@ const CenteredText = styled(Box)(({ isVisible }) => ({
 
 export default function Hero({ onPricingButtonClick }) {
   const theme = useTheme();
-  // const [isTextVisible, setTextVisible] = useState(false);
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     ([entry]) => {
-  //       setTextVisible(entry.isIntersecting);
-  //     },
-  //     { threshold: 0.5 } // 글자가 화면의 50% 이상 보일 때 애니메이션 실행
-  //   );
-
-  //   const target = document.getElementById("centered-text");
-  //   if (target) {
-  //     observer.observe(target);
-  //   }
-
-  //   return () => observer.disconnect();
-  // }, []);
 
   const [isFirstTextVisible, setFirstTextVisible] = useState(false);
   const [isSecondTextVisible, setSecondTextVisible] = useState(false);
@@ -362,45 +312,6 @@ export default function Hero({ onPricingButtonClick }) {
           useFlexGap
           sx={{ alignItems: 'center', width: { xs: '100%', sm: '70%' } }}
         >
-          {/* <IconContainer>
-            <img
-              src={
-                theme.palette.mode === "dark"
-                  ? "/assets/icons/face-white.png"
-                  : "/assets/icons/face1.png"
-              }
-              alt="Privacy Icon"
-              style={{ width: "60px", height: "60px" }}
-            />
-            <img
-              src={
-                theme.palette.mode === "dark"
-                  ? "/assets/icons/cigarette_white.png"
-                  : "/assets/icons/cig1.png"
-              }
-              alt="Cigarette Icon"
-              style={{ width: "60px", height: "60px" }}
-            />
-            <img
-              src={
-                theme.palette.mode === "dark"
-                  ? "/assets/icons/knife_white.png"
-                  : "/assets/icons/knife1.png"
-              }
-              alt="Knife Icon"
-              style={{ width: "60px", height: "60px" }}
-            />
-            <img
-              src={
-                theme.palette.mode === "dark"
-                  ? "/assets/icons/identification-card_white.png"
-                  : "/assets/icons/id1.png"
-              }
-              alt="Knife Icon"
-              style={{ width: "60px", height: "60px" }}
-            />
-          </IconContainer> */}
-
           <Typography
             variant="h1"
             sx={(theme) => ({
@@ -412,7 +323,6 @@ export default function Hero({ onPricingButtonClick }) {
               textAlign: 'center', // 텍스트 중앙 정렬
               color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
               lineHeight: 1.2, // 줄 간격 조정
-              // marginTop: "-20px" //네비게이션바랑 Mosaic It! 간격 줄이기
             })}
           >
             Mosaic&nbsp;
@@ -432,31 +342,6 @@ export default function Hero({ onPricingButtonClick }) {
           <SitemarkIcon height={70} sx={{ marginTop: "10px", marginBottom: "10px" }}></SitemarkIcon>
         </Stack>
 
-        {/* 이미지 슬라이더 */}
-        {/* <StyledBox>
-          <img-comparison-slider ref={sliderRef} style={{ width: "100%", height: "100%" }}>
-            <img
-              slot="first"
-              src="/assets/img/brand/face1.jpg"
-              alt="Before"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover", // 컨테이너에 맞게 채우기
-              }}
-            />
-            <img
-              slot="second"
-              src="/assets/img/brand/face2.jpg"
-              alt="After"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover", // 컨테이너에 맞게 채우기
-              }}
-            />
-          </img-comparison-slider>
-        </StyledBox> */}
         <StyledBox style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
           <img-comparison-slider
             ref={sliderRef}
@@ -501,19 +386,6 @@ export default function Hero({ onPricingButtonClick }) {
             pt: { xs: 5, sm: 5 },
           }}
         >
-          {/* <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{ minWidth: "fit-content" }}
-            onClick={onPricingButtonClick}
-          >
-            요금제 알아보기
-          </Button>
-
-          <StyledButton onClick={onPricingButtonClick}>
-            요금제 알아보기
-          </StyledButton> */}
 
           <StyledLearnMoreButton onClick={onPricingButtonClick} className="learn-more">
             <span className="circle" aria-hidden="true">

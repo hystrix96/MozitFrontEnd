@@ -1,25 +1,13 @@
-// import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-// import { Box, Typography, Button, TextField } from '@mui/material';
-// import CssBaseline from '@mui/material/CssBaseline';
-// import AppTheme from '../shared-theme/AppTheme';
-// import AppAppBar from '../components/AppAppBar';
-// import Footer from '../components/Footer';
 import MenuContent from '../dashboard/components/MenuContent'
 import Header from '../dashboard/components/Header'
-// import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 
 import * as React from 'react';
 import { FormControl, FormLabel, TextField, Box, Typography, Button, CssBaseline, Stack, styled, Avatar } from '@mui/material';
 import MuiCard from '@mui/material/Card';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from '../components/AppAppBar';
-import Footer from '../components/Footer';
 import { useAuth } from '../Context/AuthContext';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, InputAdornment } from '@mui/material';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';  // 사진 아이콘 추가
 import axiosInstance from '../api/axiosInstance';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { useNavigate } from 'react-router-dom';

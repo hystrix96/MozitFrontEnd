@@ -193,7 +193,6 @@ export default function Pricing() {
         <Grid
           container
           spacing={4} // 카드들 사이 간격 조정
-          // wrap='nowrap'
           wrap='wrap' // wrap을 'wrap'으로 변경하여 화면 크기에 따라 자동 정렬
           sx={{
             justifyContent: 'center', // 카드들이 중앙에 정렬되도록 설정

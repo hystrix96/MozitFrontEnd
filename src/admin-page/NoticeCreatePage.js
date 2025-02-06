@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, TextField } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import Footer from '../components/Footer';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import MenuContent from '../dashboard/components/MenuContent'

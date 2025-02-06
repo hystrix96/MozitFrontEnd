@@ -1,15 +1,11 @@
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-import CustomDatePicker from './CustomDatePicker';
-import NavbarBreadcrumbs from './NavbarBreadcrumbs';
-import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
 import Button from '@mui/material/Button';
 import { useAuth } from '../../Context/AuthContext';
 import axios from 'axios';
 import Sitemark from './SitemarkIcon';
-import Search from './Search';
+
 
 
 export default function Header() {
@@ -47,11 +43,8 @@ export default function Header() {
       }}
       spacing={2}
     >
-      {/* <NavbarBreadcrumbs /> */}
       <Sitemark height={20} />
       <Stack direction="row" sx={{ gap: 1 }}>
-        {/* <Search /> */}
-        {/* <CustomDatePicker /> */}
         <Button variant="contained" color="primary" size="small" onClick={handleLogout}>
                         로그아웃
         </Button>
@@ -60,36 +53,3 @@ export default function Header() {
     </Stack>
   );
 }
-
-// import React from 'react';
-// import Stack from '@mui/material/Stack';
-// import Button from '@mui/material/Button';
-// import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-// import SitemarkIcon from './SitemarkIcon';
-// import Search from './Search';
-
-// export default function Header() {
-//   return (
-//     <Stack
-//       direction="row"
-//       sx={{
-//         width: '100%',
-//         alignItems: 'center',
-//         justifyContent: 'space-between',
-//         px: 2,
-//       }}
-//     >
-//       <SitemarkIcon height={40} />
-//       <Stack direction="row" spacing={2}>
-//         <Search />
-//         <Button
-//           variant="contained"
-//           startIcon={<NotificationsRoundedIcon />}
-//         >
-//           알림
-//         </Button>
-//         <Button variant="outlined">로그아웃</Button>
-//       </Stack>
-//     </Stack>
-//   );
-// }

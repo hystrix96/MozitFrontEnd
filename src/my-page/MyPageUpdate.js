@@ -6,7 +6,6 @@ import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import { useAuth } from '../Context/AuthContext';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, InputAdornment } from '@mui/material';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';  // 사진 아이콘 추가
 import axiosInstance from '../api/axiosInstance';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { useNavigate } from 'react-router-dom';

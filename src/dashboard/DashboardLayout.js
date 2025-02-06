@@ -46,25 +46,3 @@ const DashboardLayout = ({ onMenuSelect, currentMenu, children }) => {
 };
 
 export default DashboardLayout;
-
-// import React from 'react';
-// import Box from '@mui/material/Box';
-// import Stack from '@mui/material/Stack';
-
-// export default function DashboardLayout({ children }) {
-//   return (
-//     <Stack direction="row" sx={{ height: '100vh' }}>
-//       {/* 사이드바 */}
-//       <Box sx={{ width: 240, flexShrink: 0 }}>{children[1]}</Box>
-      
-//       {/* 메인 콘텐츠 */}
-//       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-//         {/* 헤더 */}
-//         <Box sx={{ height: 64 }}>{children[0]}</Box>
-        
-//         {/* 메인 화면 */}
-//         <Box sx={{ flexGrow: 1, p: 2 }}>{children[2]}</Box>
-//       </Box>
-//     </Stack>
-//   );
-// }

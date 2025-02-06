@@ -8,9 +8,6 @@ import NoticeUpdatePage from '../admin-page/NoticeUpdatePage';
 import NoticeEditPage from '../admin-page/NoticeEditPage';
 import NoticeCreatePage from '../admin-page/NoticeCreatePage';
 import UserListPage from '../admin-page/UserListPage';
-import SystemStatus from '../admin-page/SystemStatus';
-import Traffic from '../admin-page/Traffic';
-import KPI from '../admin-page/KPI';
 import AdminEdit from '../admin-page/AdminEdit'
 import DashBoard from '../dashboard/Dashboard'
 
@@ -30,8 +27,6 @@ const AdminRoutes = () => {
     return (
         <Routes>
             <Route path="/dashboard" element={<DashBoard />} />
-            {/* <Route path="/system-status" element={<SystemStatus />} /> */}
-            {/* <Route path="/traffic" element={<Traffic />} /> */}
             <Route path="/users" element={<UserListPage />} />
             <Route path="/notice" element={<NoticeListPage />} />
             <Route path="/notice/:id" element={<NoticeUpdatePage />} />
@@ -39,7 +34,6 @@ const AdminRoutes = () => {
             <Route path="/notice/create" element={<NoticeCreatePage />} />
             <Route path="/qna" element={<QuestionListPage />} />
             <Route path="/qna/:id" element={<AnswerPage />} />
-            {/* <Route path="/kpi" element={<KPI />} /> */}
             <Route path="/admin" element={<AdminEdit />} />
         </Routes>
     );

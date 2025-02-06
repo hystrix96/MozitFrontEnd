@@ -1,8 +1,6 @@
 import React, { useState, useEffect }from 'react';
-import { Link } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import Footer from '../components/Footer';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Chip } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import MenuContent from '../dashboard/components/MenuContent'
