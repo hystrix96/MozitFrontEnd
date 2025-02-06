@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export const getAzureToken = async () => {
   try {
-    const response = await axios.post("http://localhost:8080/api/azure/token");
+    const response = await axios.post("/api/azure/token");
     return response.data.access_token;
   } catch (error) {
     console.error("Error fetching token:", error);
