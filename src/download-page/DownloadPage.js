@@ -481,8 +481,6 @@ const handleDownload = async () => {
   const { intensity: privacyIntensity = 50, size: privacySize = 50, privacyElements= [] } = personalInfo || {};
   const faceMosaic = person?.checkedPeople?.length > 0; // 체크된 사람의 수에 따라 true/false 설정
 
- 
-
   //다운로드 요청 본문 구성
   const downloadInfo = {
     editNum: {
@@ -492,6 +490,11 @@ const handleDownload = async () => {
     hazardousList: Array.isArray(harmfulElements.checkedItems) ? harmfulElements.checkedItems.join(",") : '', // 유해 요소 목록
     personalList: Array.isArray(personalInfo.checkedItems) ? personalInfo.checkedItems.join(",") : '', // 개인정보 목록
 };
+
+// savedFileName에서 파일 이름만 추출
+const fileName = savedFileName.split('\\').pop(); // Windows 경로에서 파일 이름 추출
+const outputPath = `D:\\home\\downloads\\${fileName}`; // 최종 경로 설정
+
 const payload = {
   request: {
       harmful_intensity: harmfulIntensity,
@@ -506,7 +509,7 @@ const payload = {
   },
   path_request: {
       video_path: savedFileName,  // 실제 경로로 수정
-      output_path: "uploads/output22.mp4",     // 실제 경로로 수정 이거 바꿔야 함 배포 !!
+      output_path: outputPath,     // 실제 경로로 수정 이거 바꿔야 함 배포 !!
   }
 };
 
