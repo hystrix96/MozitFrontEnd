@@ -36,7 +36,7 @@ export default function ChartUserByCountry() {
   const [companyUserCounts, setCompanyUserCounts] = useState({});
   const [totalUsers, setTotalUsers] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 2; // 한 페이지에 표시할 항목 수
+  const itemsPerPage = 4; // 한 페이지에 표시할 항목 수
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -64,7 +64,8 @@ export default function ChartUserByCountry() {
   const chartData = Object.entries(companyUserCounts).map(([name, value]) => ({
     label: name,
     value,
-  }));
+  }))
+  .sort((a, b) => b.value - a.value);
 // 페이지네이션에 필요한 데이터 잘라내기
 const paginatedData = chartData.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
