@@ -77,7 +77,6 @@ export default function MainGrid() {
       interval: 'Q&A',
       trend: 'down',
       data: unansweredByDate.map(d => ({ x: d.date, y: d.count })), // 날짜별 미답변 개수 전달
-      //data: unansweredByDate.map(d => ({ x: d.date, y: d.count })), // ✅ 날짜 포함
     },
   ];
 
@@ -96,11 +95,6 @@ export default function MainGrid() {
         <ChartUserByCountry />
         <TotalDownload />
         <TotalQuestions />
-        {/* {data.map((card, index) => (
-          <Grid key={index} size={{ xs: 12, sm: 6, lg: 4 }}>
-            <StatCard {...card} />
-          </Grid>
-        ))} */}
         </Grid>
         
         <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
