@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const axiosInstance = axiosInstance.create({
+const axiosInstance = axios.create({
   baseURL: 'https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net',
   withCredentials: true,
 });
@@ -37,7 +37,7 @@ export const attachAuthInterceptors = (getAccessToken, setAccessToken, setUserNa
           }
 
           try {
-            const response = await axiosInstance.post('/auth/refresh', null, { withCredentials: true });
+            const response = await axios.post('/auth/refresh', null, { withCredentials: true });
             console.log('Refresh Token Response:', response.headers['authorization']); // 디버깅용
             console.log(response.data.username)
             setUserName(response.data.username);
