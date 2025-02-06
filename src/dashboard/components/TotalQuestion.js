@@ -172,7 +172,7 @@ export default function TotalQuestion() {
                                         <TableCell align="left">번호</TableCell>
                                         <TableCell align="left">제목</TableCell>
                                         <TableCell align="left">문의자</TableCell>
-                                        <TableCell align="left">유형</TableCell>
+                                        
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -182,16 +182,7 @@ export default function TotalQuestion() {
                                             <TableCell align="left">
                                                 <Link to={`/admin/qna/${question.questionNum}`}>{question.questionTitle}</Link>
                                             </TableCell>
-                                            <TableCell align="left">{question.userNum.userId}</TableCell>
-                                            <TableCell align="left">
-                                                {question.questionType === 'ACCOUNT'
-                                                    ? '계정 및 회원'
-                                                    : question.questionType === 'SERVICE'
-                                                        ? '제품 및 서비스'
-                                                        : question.questionType === 'GENERAL'
-                                                            ? '일반 문의'
-                                                            : question.questionType === 'SERVICE'}
-                                            </TableCell>
+                                            <TableCell align="left">{question.userNum.userId}</TableCell>                                            
                                         </TableRow>
                                     ))}
                                 </TableBody>
