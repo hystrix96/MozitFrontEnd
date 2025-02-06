@@ -8,6 +8,7 @@ import ChartUserByCountry from './ChartUserByCountry';
 import CustomizedTreeView from './CustomizedTreeView';
 import CustomizedDataGrid from './CustomizedDataGrid';
 import TotalDownload from './TotalDownload';
+import TotalQuestions from './TotalQuestion';
 import HighlightedCard from './HighlightedCard';
 import PageViewsBarChart from './PageViewsBarChart';
 import SessionsChart from './SessionsChart';
@@ -53,6 +54,7 @@ export default function MainGrid() {
   const [userCount, setUserCount] = useState(0);
   const [unansweredCount, setUnansweredCount] = useState(0); // 미답변 문의 개수
   const [unansweredByDate, setUnansweredByDate] = useState([]); // 날짜별 미답변 개수 저장
+  const [unansweredList, setUnansweredList] = useState([]); // 미답변 문의 리스트 저장
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -150,12 +152,14 @@ export default function MainGrid() {
       >
         <ChartUserByCountry />
         <TotalDownload />
-        {data.map((card, index) => (
+        <TotalQuestions />
+        {/* {data.map((card, index) => (
           <Grid key={index} size={{ xs: 12, sm: 6, lg: 4 }}>
             <StatCard {...card} />
           </Grid>
-        ))}
+        ))} */}
         </Grid>
+        
         <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
           시스템 모니터링
         </Typography>
