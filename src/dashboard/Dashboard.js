@@ -1,13 +1,10 @@
 import * as React from 'react';
-
 import { alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import AppNavbar from './components/AppNavbar';
 import Header from './components/Header';
 import MainGrid from './components/MainGrid';
-import MenuContent from './components/MenuContent';
 import AppTheme from '../shared-theme/AppTheme';
 import SideMenu from './components/SideMenu';
 
@@ -32,7 +29,6 @@ export default function Dashboard(props) {
       <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex', height: '100vh' }}>
         {/* Sidebar (MenuContent) */}
-        {/* <MenuContent /> */}
         <SideMenu />
 
         {/* 오른쪽 영역 */}
@@ -74,18 +70,3 @@ export default function Dashboard(props) {
     </AppTheme>
   );
 }
-// import React from 'react';
-// import DashboardLayout from './DashboardLayout';
-// import Header from './components/Header';
-// import SideMenu from './components/SideMenu';
-// import MainGrid from './components/MainGrid';
-
-// export default function Dashboard() {
-//   return (
-//     <DashboardLayout>
-//       <Header />
-//       <SideMenu />
-//       <MainGrid />
-//     </DashboardLayout>
-//   );
-// }

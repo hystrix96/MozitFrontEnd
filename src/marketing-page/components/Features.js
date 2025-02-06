@@ -232,17 +232,6 @@ export default function Features() {
               pointerEvents: 'none',
             }}
           >
-            {/* <Box
-              sx={(theme) => ({
-                m: 'auto',
-                width: '100%',
-                height: '100%',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundImage: items[selectedItemIndex].image, // 공통 이미지 사용
-              })}
-            /> */}
             {/* 좌우 분할 이미지 */}
             <Box
               sx={{

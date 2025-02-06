@@ -173,7 +173,7 @@ export default function EditPage(props) {
       });
   
       const { editNum, savedFileName } = uploadResponse.data;
-      const outputPath = "uploads/output.mp4";   //fastapi에서 저장할 경로
+      const outputPath = "uploads/output.json";   //fastapi에서 저장할 경로
   
       console.log("editNum:", editNum);
       console.log("savedFileName:", savedFileName);

@@ -36,8 +36,6 @@ function PieCenterLabel({ primaryText, secondaryText }) {
 }
 
 export default function TotalDownload() {
-  const [totalWorkCount, setTotalWorkCount] = useState(0);
-  const [totalDownloadCount, setTotalDownloadCount] = useState(0);
   const [selectedEnterprise, setSelectedEnterprise] = useState('전체');
   const [enterprises, setEnterprises] = useState([]);
   const [userData, setUserData] = useState([]);

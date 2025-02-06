@@ -206,49 +206,6 @@ const [isFirstTextVisible, setFirstTextVisible] = useState(false);
         </Typography>
       </Box>
 
-       {/* <Box id="hero" sx={{ position: "relative", width: "100%" }}>
-        <FloatingIcons>
-          {icons.map((icon, index) => (
-            <Icon
-              key={index}
-              src={icon.src}
-              alt={`icon-${index}`}
-              style={{
-                top: icon.top,
-                left: icon.left,
-              }}
-            />
-          ))}
-          
-          <CenteredText isVisible={isFirstTextVisible}>
-            <Typography
-              variant="h2"
-              sx={(theme) => ({
-                fontWeight: "bold",
-                fontSize: "clamp(2rem, 5vw, 4rem)",
-                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
-                textAlign: "center",
-                lineHeight: 1.5,
-                whiteSpace: "nowrap",
-                opacity: 1,
-                transform: "translateY(0)",
-                transition: "none",
-              })}
-            >
-              저희는{" "}
-              <span
-                style={{
-                  color: "#3870ff",
-                  textShadow: "0px 0px 15px rgba(56, 112, 255, 0.8)",
-                }}
-              >
-                별거아니조
-              </span>
-                입니다.
-            </Typography>
-          </CenteredText>
-        </FloatingIcons>
-      </Box> */}
 
       <Grid container spacing={4}>
         {items.map((item, index) => (

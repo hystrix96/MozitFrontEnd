@@ -14,7 +14,6 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown';
 import Sitemark from './SitemarkIcon';
 import { Link, useNavigate } from 'react-router-dom';
-import { isUserLoggedIn } from '../auth/checkjwt';
 import { useAuth } from '../Context/AuthContext';
 import axios from 'axios';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
@@ -258,12 +257,6 @@ export default function AppAppBar() {
                 },
               }}
             >
-              {/* <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <IconButton onClick={toggleDrawer(false)}>
-                    <CloseRoundedIcon />
-                  </IconButton>
-                </Box> */}
               <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
                 <Box
                   sx={{

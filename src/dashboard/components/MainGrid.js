@@ -16,38 +16,8 @@ import StatCard from './StatCard';
 import axiosInstance from '../../api/axiosInstance';
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import SystemStatus from '../../admin-page/SystemStatus';
 import AzureMonitorChart from './AzureMonitorChart';
 import { Card, CardContent, CircularProgress, Button, TextField, Grid2 } from '@mui/material';
-// const data = [
-//   {
-//     title: 'Users',
-//     value: '14k',
-//     interval: 'Last 30 days',
-//     trend: 'up',
-//     data: [
-//       200, 24, 220, 260, 240, 380, 100, 240, 280, 240, 300, 340, 320, 360, 340, 380,
-//       360, 400, 380, 420, 400, 640, 340, 460, 440, 480, 460, 600, 880, 920,
-//     ],
-//   },
-//   {
-//     title: '총 유저 수',
-//     value: `${userCount}명`,
-//     interval: 'Today',
-//     trend: 'neutral',
-//     data: new Array(30).fill(userCount), // 최근 30일간 유지 (단순 예시)
-//   },
-//   {
-//     title: 'Event count',
-//     value: '200k',
-//     interval: 'Last 30 days',
-//     trend: 'neutral',
-//     data: [
-//       500, 400, 510, 530, 520, 600, 530, 520, 510, 730, 520, 510, 530, 620, 510, 530,
-//       520, 410, 530, 520, 610, 530, 520, 610, 530, 420, 510, 430, 520, 510,
-//     ],
-//   },
-// ];
 
 export default function MainGrid() {
   const [users, setUsers] = useState([]);
@@ -65,9 +35,6 @@ export default function MainGrid() {
 
     const fetchQuestions = async () => {
       const response = await axiosInstance.get('/questions');
-      //   const unanswered = response.data.filter(q => !q.questionState).length; // 미답변 개수 계산
-      //   setUnansweredCount(unanswered);
-      // };
       const unanswered = response.data.filter(q => !q.questionState); // 미답변만 필터링
 
       // 날짜별로 그룹화하여 개수 계산
@@ -104,37 +71,12 @@ export default function MainGrid() {
 
   console.log("📌 unansweredByDate:", unansweredByDate);
   const data = [
-    // {
-    //   title: '사용자',
-    //   value: `${userCount}명`,
-    //   interval: '사용자수',
-    //   trend: 'up',
-    //   data: [], // 최근 30일간 유지 (단순 예시)
-    // },
-    // // {
-    // //   title: 'Users',
-    // //   value: '14k',
-    // //   interval: 'Last 30 days',
-    // //   trend: 'up',
-    // //   data: [
-    // //     200, 24, 220, 260, 240, 380, 100, 240, 280, 240, 300, 340, 320, 360, 340, 380,
-    // //     360, 400, 380, 420, 400, 640, 340, 460, 440, 480, 460, 600, 880, 920,
-    // //   ],
-    // // },
-    // {
-    //   title: '접속량',
-    //   value: '325',
-    //   interval: '일별/월별/연별',
-    //   trend: 'neutral',
-    //   data: [],
-    // },
     {
       title: '문의사항',
       value: `${unansweredCount}건`, // 미답변 개수 표시
       interval: 'Q&A',
       trend: 'down',
       data: unansweredByDate.map(d => ({ x: d.date, y: d.count })), // 날짜별 미답변 개수 전달
-      //data: unansweredByDate.map(d => ({ x: d.date, y: d.count })), // ✅ 날짜 포함
     },
   ];
 
@@ -153,11 +95,6 @@ export default function MainGrid() {
         <ChartUserByCountry />
         <TotalDownload />
         <TotalQuestions />
-        {/* {data.map((card, index) => (
-          <Grid key={index} size={{ xs: 12, sm: 6, lg: 4 }}>
-            <StatCard {...card} />
-          </Grid>
-        ))} */}
         </Grid>
         
         <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
@@ -195,82 +132,9 @@ export default function MainGrid() {
             </Card>
           </Grid>
         </Grid>
-        {/* <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-        실시간 모니터링
-      </Typography> */}
         <Grid container spacing={2} columns={12}>
-          {/* <Grid size={{ xs: 12, lg: 9 }}>
-        <CardContent>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                      CPU 사용량
-                    </Typography>
-                    <AzureMonitorChart 
-                      metric="cpu_percent" 
-                      subscriptionId="0a938e62-00ba-4c73-a908-3b285014b302" 
-                      resourceGroup="mozit" 
-                      resourceName="mozit-db" 
-                    />
-                  </CardContent>
-        </Grid> */}
-          {/* <Grid size={{ xs: 12, lg: 3 }}>
-          <Stack gap={2} direction={{ xs: 'column', sm: 'row', lg: 'column' }}>
-            <CustomizedTreeView />
-            <ChartUserByCountry />
-          </Stack>
-        </Grid> */}
-          {/* <ChartUserByCountry />
-        <TotalDownload /> */}
         </Grid>
         <Copyright sx={{ my: 4 }} />
     </Box>
   );
 }
-
-// import React from 'react';
-// import Grid from '@mui/material/Grid';
-// import StatCard from './StatCard';
-// import PageViewsBarChart from './PageViewsBarChart';
-// import SessionsChart from './SessionsChart';
-
-// export default function MainGrid() {
-//   return (
-//     <Grid container spacing={2}>
-//       {/* KPI 카드 */}
-//       <Grid item xs={12} md={4}>
-//         <StatCard
-//           title="다운로드 완료율"
-//           value="85%"
-//           interval="지난 30일간"
-//           trend="up"
-//           data={[75, 80, 82, 85, 85, 87, 90]}
-//         />
-//       </Grid>
-//       <Grid item xs={12} md={4}>
-//         <StatCard
-//           title="평균 작업 횟수"
-//           value="12회"
-//           interval="지난 30일간"
-//           trend="neutral"
-//           data={[10, 11, 12, 13, 12, 12, 12]}
-//         />
-//       </Grid>
-//       <Grid item xs={12} md={4}>
-//         <StatCard
-//           title="이탈률"
-//           value="15%"
-//           interval="지난 30일간"
-//           trend="down"
-//           data={[20, 18, 17, 16, 15, 15, 14]}
-//         />
-//       </Grid>
-
-//       {/* 차트 */}
-//       <Grid item xs={12} md={6}>
-//         <PageViewsBarChart />
-//       </Grid>
-//       <Grid item xs={12} md={6}>
-//         <SessionsChart />
-//       </Grid>
-//     </Grid>
-//   );
-// }

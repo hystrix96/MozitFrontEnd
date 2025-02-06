@@ -5,12 +5,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import AutoFixHighRoundedIcon from '@mui/icons-material/AutoFixHighRounded';
-import ConstructionRoundedIcon from '@mui/icons-material/ConstructionRounded';
-import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
-import SettingsSuggestRoundedIcon from '@mui/icons-material/SettingsSuggestRounded';
-import SupportAgentRoundedIcon from '@mui/icons-material/SupportAgentRounded';
-import ThumbUpAltRoundedIcon from '@mui/icons-material/ThumbUpAltRounded';
+
 
 const items = [
   {
@@ -71,7 +66,6 @@ export default function Highlights() {
         pt: { xs: 4, sm: 25 },
         pb: { xs: 8, sm: 16 },
         color: 'white',
-        // bgcolor: 'grey.900',
       }}
     >
       <Container
@@ -109,7 +103,6 @@ export default function Highlights() {
                   p: 3,
                   height: '100%',
                   borderColor: 'hsla(220, 25%, 25%, 0.3)',
-                  // backgroundColor: 'grey.800',
                 }}
               >
                 <Box sx={{ opacity: '50%' }}>

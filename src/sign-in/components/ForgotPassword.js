@@ -204,7 +204,7 @@ function ForgotPassword({ open, handleClose }) {
           },
         });
 
-        if (response.status == 200) {
+        if (response.status === 200) {
           alert('비밀번호가 변경이 완료되었습니다.');
           handleClose();
         } else {

@@ -1,11 +1,7 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { Box, Typography, Button, TextField } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
-import AppAppBar from '../components/AppAppBar';
-import Footer from '../components/Footer';
 import MenuContent from '../dashboard/components/MenuContent'
 import Header from '../dashboard/components/Header'
 import Stack from '@mui/material/Stack';

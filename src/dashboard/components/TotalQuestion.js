@@ -49,7 +49,7 @@ export default function TotalQuestion() {
     const [questions, setQuestions] = useState([]);
     const [unansweredList, setUnansweredList] = useState([]);
     const [categoryList, setCategoryList] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('전체');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -160,7 +160,7 @@ export default function TotalQuestion() {
                 </FormControl>
 
                 {/* ✅ 미답변 리스트 출력 (유형별 필터링 적용됨) */}
-                {filteredQuestions.length > 0 ? (
+                {unansweredList.length > 0 ? (
                     <>
                         <Typography variant="h6" sx={{ mt: 2 }}>
                             미답변 문의 목록
@@ -172,7 +172,6 @@ export default function TotalQuestion() {
                                         <TableCell align="left">번호</TableCell>
                                         <TableCell align="left">제목</TableCell>
                                         <TableCell align="left">문의자</TableCell>
-                                        
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -182,7 +181,7 @@ export default function TotalQuestion() {
                                             <TableCell align="left">
                                                 <Link to={`/admin/qna/${question.questionNum}`}>{question.questionTitle}</Link>
                                             </TableCell>
-                                            <TableCell align="left">{question.userNum.userId}</TableCell>                                            
+                                            <TableCell align="left">{question.userNum.userId}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

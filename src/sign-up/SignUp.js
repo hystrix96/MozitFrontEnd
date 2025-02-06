@@ -1,17 +1,7 @@
 import * as React from 'react';
 import { FormControl, FormLabel, TextField, Box, Typography } from '@mui/material';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
-// import Box from '@mui/material/Box';
-// import FormLabel from '@mui/material/FormLabel';
-// import FormControl from '@mui/material/FormControl';
-// import TextField from '@mui/material/TextField';
-// import Typography from '@mui/material/Typography';
 import { Button, CssBaseline, Divider, Stack, styled, InputAdornment } from '@mui/material';
-// import Button from '@mui/material/Button';
-// import CssBaseline from '@mui/material/CssBaseline';
-// import Divider from '@mui/material/Divider';
-// import Stack from '@mui/material/Stack';
-// import { styled } from '@mui/material/styles';
 import MuiCard from '@mui/material/Card';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';

@@ -18,7 +18,7 @@ export default function FAQ() {
     },
     {
       question: 'Q: 어떤 유형의 파일을 지원하나요?',
-      answer: 'A: 지원되는 파일 형식은 MP4입니다. 파일 크기는 200MB로 제한됩니다.',
+      answer: 'A: 지원되는 파일 형식은 MP4입니다. 파일 크기는 구독 플랜별로 다르게 제한됩니다.',
     },
     {
       question: 'Q: 모자이크 처리는 어떻게 이루어지나요?',

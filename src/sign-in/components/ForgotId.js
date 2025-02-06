@@ -194,7 +194,6 @@ function ForgotPassword({ open, handleClose }) {
           event.preventDefault();
           if (step === 1) handleSendCode();
           else if (step === 2) handleVerifyCode();
-          // else if (step === 3)
         },
       }}
     >

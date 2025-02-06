@@ -36,8 +36,8 @@ const ControlBox = styled(Box)(({ showControls }) => ({
 
 export default function MozaicPage() {
   const location = useLocation();
-  const { editNum } = location.state || {}; // 상태를 받음
-  const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
+  const { editNum, savedFileName  } = location.state || {}; // 상태를 받음
+  // const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
   const videoUrl = savedFileName ? `/edit/videos/${savedFileName}` : null;
 
   // 캔버스와 비디오 참조
@@ -63,7 +63,7 @@ useEffect(() => {
         if (!savedFileName) return;  // 파일명이 없으면 실행하지 않음
 
         try {
-            const response = await fetch(`http://localhost:8000/fps-video/?filename=${savedFileName}`, {
+            const response = await fetch(`http://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/fps-video/?filename=${savedFileName}`, {
                 method: "GET"
             });
 
