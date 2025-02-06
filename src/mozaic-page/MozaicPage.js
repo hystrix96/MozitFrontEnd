@@ -18,7 +18,7 @@ import PauseIcon from '@mui/icons-material/Pause';
 import { imageDataRGB } from 'stackblur-canvas';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
 const ControlBox = styled(Box)(({ showControls }) => ({
   position: 'absolute',

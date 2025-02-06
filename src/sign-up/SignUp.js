@@ -7,7 +7,7 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
 import { DaumPostcodeEmbed } from 'react-daum-postcode';
-import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',

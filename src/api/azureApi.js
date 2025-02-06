@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 import { useEffect, useState } from "react";
 
 export const getAzureToken = async () => {

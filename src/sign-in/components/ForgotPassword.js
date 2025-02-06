@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosInstance';
 import InputAdornment from '@mui/material/InputAdornment';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import TextField from '@mui/material/TextField'; 

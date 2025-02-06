@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
 import Button from '@mui/material/Button';
 import { useAuth } from '../../Context/AuthContext';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosInstance';
 import Sitemark from './SitemarkIcon';
 
 

@@ -8,7 +8,7 @@ import ForgotId from './components/ForgotId';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
-import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
 
 const Card = styled(MuiCard)(({ theme }) => ({
