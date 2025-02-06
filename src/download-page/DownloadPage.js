@@ -515,7 +515,7 @@ const payload = {
 
 try {
   // 첫 번째 요청: input_editor로 payload 전송
-  const response = await fetch('http://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/input_editor', {
+  const response = await fetch('https://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/input_editor', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',

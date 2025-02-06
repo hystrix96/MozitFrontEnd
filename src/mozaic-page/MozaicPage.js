@@ -63,7 +63,7 @@ useEffect(() => {
         if (!savedFileName) return;  // 파일명이 없으면 실행하지 않음
 
         try {
-            const response = await fetch(`http://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/fps-video/?filename=${savedFileName}`, {
+            const response = await fetch(`https://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/fps-video/?filename=${savedFileName}`, {
                 method: "GET"
             });
 
