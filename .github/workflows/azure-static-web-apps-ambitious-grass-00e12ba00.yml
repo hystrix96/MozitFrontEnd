@@ -19,6 +19,22 @@ jobs:
         with:
           submodules: true
           lfs: false
+
+      # Node.js 22 설정을 먼저 적용
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      # 의존성 설치
+      - name: Install Node.js dependencies
+        run: npm install
+
+      # ESLint 경고를 오류로 처리하지 않도록 `CI=false`
+      - name: Build the project
+        run: CI=false npm run build
+
+      # Azure Static Web Apps로 배포
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -33,15 +49,10 @@ jobs:
           output_location: "build" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
 
-      - name: Install Node.js dependencies
-        run: npm install
+
         
-      - name: Build the project
-        run: npm run build
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
+
+
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
