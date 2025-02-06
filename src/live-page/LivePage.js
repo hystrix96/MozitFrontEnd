@@ -87,12 +87,14 @@ export default function WebcamPage(props) {
           const currentTime = performance.now();
           const blob = new Blob([event.data], { type: "image/jpeg" });
           const url = URL.createObjectURL(blob);
+          console.log(blob);
+
           requestAnimationFrame(() => {
             setImageSrc(url);
           });
   
           // 🔹 빠르게 URL 해제하여 메모리 누수 방지
-          setTimeout(() => URL.revokeObjectURL(url), 10);
+          setTimeout(() => URL.revokeObjectURL(url), 20);
           console.log("Latency:", performance.now() - currentTime, "ms");
         }
       };
