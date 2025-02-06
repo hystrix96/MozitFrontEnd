@@ -14,6 +14,8 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import axiosInstance from '../api/axiosInstance'
+import { useNavigate } from 'react-router-dom';
 
 const StyledBox = styled("div")(({ theme }) => ({
   alignSelf: "center",
@@ -59,7 +61,32 @@ export default function WebcamPage(props) {
   const [imageSrc, setImageSrc] = useState("");
   const settingsRef = useRef(settings);
   const [mediaStream, setMediaStream] = useState(null);
-  const videoRef = useRef(null);
+  const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
+
+  useEffect(() => {
+    const fetchSub = async () => {
+      try{
+          const response = await axiosInstance.get('/my');
+          console.log(response.data.userSub)
+          if(!response.data.userSub){
+            alert("구독자 전용 서비스입니다.");
+            navigate("/mysubpage");
+            return;
+          }
+          else if(response.data.userSub == 'Basic'){
+            alert("Pro, Premium 구독자 전용 서비스입니다.");
+            navigate("/mysubpage");
+            return;
+          }
+      }catch(error){
+          console.error('구독 정보 가져오는 중 오류 발생:', error);
+          alert("구독 정보 가져오는 중 오류가 발생했습니다.");
+          navigate("/mysubpage");
+      }
+    };
+
+    fetchSub();
+  }, [navigate]);
 
   // 카메라 허용 상태 저장
   useEffect(() => {
@@ -87,8 +114,6 @@ export default function WebcamPage(props) {
           const currentTime = performance.now();
           const blob = new Blob([event.data], { type: "image/jpeg" });
           const url = URL.createObjectURL(blob);
-          console.log(blob);
-
           requestAnimationFrame(() => {
             setImageSrc(url);
           });
