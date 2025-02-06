@@ -14,7 +14,7 @@ export const getAzureToken = async () => {
 // Azure Storage에서 Metric 데이터를 가져오기
 export const fetchAzureMetrics = async () => {
     const storageUrl = "https://mozitstorage.blob.core.windows.net/insights-metrics-pt1m/resourceId=/SUBSCRIPTIONS/0A938E62-00BA-4C73-A908-3B285014B302/RESOURCEGROUPS/MOZIT/PROVIDERS/MICROSOFT.DBFORMYSQL/FLEXIBLESERVERS/MOZIT-DB/y=2025/m=02/d=05/h=06/m=00/PT1H.json";
-    const sasToken = "sp=r&st=2025-02-05T06:23:43Z&se=2025-02-20T14:23:43Z&spr=https&sv=2022-11-02&sr=c&sig=zDCK%2BRpL8vDlrU07A1lKlwkTLUQ%2FEgAsR0EADA4xHeY%3D"; // Storage에서 생성한 SAS Token
+    const sasToken = process.env.REACT_APP_API_SAS_TOKEN;
   
     try {
       const response = await axios.get(`${storageUrl}?${sasToken}`);
