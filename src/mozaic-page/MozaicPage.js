@@ -681,7 +681,7 @@ const handleEditComplete = async () => {
 
   // 제목을 Spring API에 전송
   try {
-    axios.put(`/edit/${editNum}`, {
+    axiosInstance.put(`/edit/${editNum}`, {
       editTitle: title
   }, {
       headers: {

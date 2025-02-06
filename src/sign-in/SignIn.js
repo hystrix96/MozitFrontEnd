@@ -90,7 +90,7 @@ export default function SignIn(props) {
     formData.append('password', password);
 
     // Axios 요청
-    const response = await axios.post('/users/login', formData, {
+    const response = await axiosInstance.post('/users/login', formData, {
         headers: {
             'Content-Type': 'multipart/form-data', // form-data 형식 지정
         },

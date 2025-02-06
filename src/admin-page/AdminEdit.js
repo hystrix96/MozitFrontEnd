@@ -166,7 +166,7 @@ export default function AdminEdit(props) {
 
     const handleLogout = async () => {
   try {
-    const response = await axios.post('/users/logout', {}, {
+    const response = await axiosInstance.post('/users/logout', {}, {
       headers: {
         Authorization: accessToken, // 액세스 토큰을 헤더에 포함
       },

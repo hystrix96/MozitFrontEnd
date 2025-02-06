@@ -13,13 +13,13 @@
 //   useEffect(() => {
 //     const fetchAccessToken = async () => {
 //       try {
-//         const response = await axios.post('/auth/refresh', null, { withCredentials: true });
+//         const response = await axiosInstance.post('/auth/refresh', null, { withCredentials: true });
 //         const newAccessToken = response.headers['authorization'];
 //         if (newAccessToken) {
 //           setAccessToken(newAccessToken);
 //           setUsername(response.data.username);
 
-//           const userInfoResponse = await axios.get('/my', {
+//           const userInfoResponse = await axiosInstance.get('/my', {
 //             headers: {
 //               Authorization: `Bearer ${newAccessToken}`,
 //             },
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   // ✅ 토큰 갱신 함수
   const fetchAccessToken = async () => {
     try {
-      const response = await axios.post('/auth/refresh', null, { withCredentials: true });
+      const response = await axiosInstance.post('/auth/refresh', null, { withCredentials: true });
       const newAccessToken = response.headers['authorization'];
 
       if (newAccessToken) {
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.setItem('accessToken', newAccessToken); // ✅ 세션 스토리지에 저장
 
         // 유저 정보 가져오기
-        const userInfoResponse = await axios.get('/my', {
+        const userInfoResponse = await axiosInstance.get('/my', {
           headers: {
             Authorization: `Bearer ${newAccessToken}`,
           },

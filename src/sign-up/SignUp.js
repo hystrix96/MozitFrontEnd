@@ -122,7 +122,7 @@ export default function SignUp(props) {
 
   const checkEmail = async (userEmail) => {
     try {
-      const response = await axios.get('/users/check-email', {
+      const response = await axiosInstance.get('/users/check-email', {
         params: { userEmail },
         validateStatus: (status) => {
           return status === 201 || status === 409;
@@ -168,7 +168,7 @@ export default function SignUp(props) {
 
 
     try {
-      const response = await axios.post('/users/send-email', {
+      const response = await axiosInstance.post('/users/send-email', {
         mail: email,
       });
 
@@ -196,7 +196,7 @@ export default function SignUp(props) {
     const email = emailInput.value;
     try {
       // 서버에 인증 코드 검증 요청
-      const response = await axios.post('/users/verify-email', {
+      const response = await axiosInstance.post('/users/verify-email', {
         mail: email,
         verifyCode: authCode,
       });
@@ -236,7 +236,7 @@ export default function SignUp(props) {
     }
 
     try {
-      const response = await axios.get(`/users/check-id`, {
+      const response = await axiosInstance.get(`/users/check-id`, {
         params: { userId },
       });
 
@@ -314,7 +314,7 @@ export default function SignUp(props) {
     }
 
     try {
-      const response = await axios.get('https://bizno.net/api/fapi', {
+      const response = await axiosInstance.get('https://bizno.net/api/fapi', {
         params: {
           key: apiKey,
           status: 'Y',
@@ -424,7 +424,7 @@ export default function SignUp(props) {
     const enterpriseName = document.getElementById('co-name').value;
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         '/users/signup', {
         userId: userId,
         userName: userName,

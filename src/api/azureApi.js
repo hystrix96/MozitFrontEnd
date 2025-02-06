@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export const getAzureToken = async () => {
   try {
-    const response = await axios.post("/api/azure/token");
+    const response = await axiosInstance.post("/api/azure/token");
     return response.data.access_token;
   } catch (error) {
     console.error("Error fetching token:", error);
@@ -17,7 +17,7 @@ export const fetchAzureMetrics = async () => {
     const sasToken = process.env.REACT_APP_API_SAS_TOKEN;
   
     try {
-      const response = await axios.get(`${storageUrl}?${sasToken}`);
+      const response = await axiosInstance.get(`${storageUrl}?${sasToken}`);
       console.log("Raw API Response:", response.data);
 
         // 데이터를 JSON 배열로 변환

@@ -165,7 +165,7 @@ export default function EditPage(props) {
   
     try {
       // Step 1: 동영상 파일 업로드 + T썸네일 추출 + DB 저장
-      const uploadResponse = await axios.post("/edit/start-editing", formData, {
+      const uploadResponse = await axiosInstance.post("/edit/start-editing", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: accessToken,
@@ -182,7 +182,7 @@ export default function EditPage(props) {
       console.log("videoPath:", savedFileName);
       console.log("outputPath:", outputPath);
       // Step 2: 동영상 경로 FastAPI에 전송
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         "/edit/send-video-path",
         { video_path: savedFileName, output_path: outputPath },
         {
