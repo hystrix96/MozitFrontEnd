@@ -84,18 +84,6 @@ export default function SignIn(props) {
     // 입력값 검증
     if (!validateInputs()) return;
     try {
-
-      // 먼저, 서버에 이미 로그인 중인지 확인
-      const checkLoginResponse = await axiosInstance.get('/users/check-login', {
-        params: { userId }, // 현재 로그인 시도한 userId를 서버에 전달
-        withCredentials: true,
-      });
-
-      if (checkLoginResponse.status === 200 && checkLoginResponse.data.isLoggedIn) {
-        alert('이미 로그인된 아이디입니다.');
-        return; // 로그인 절차 중지
-      }
-      
       // FormData 생성
       const formData = new FormData();
       formData.append('username', userId); // 백엔드의 username 키에 맞게 수정
