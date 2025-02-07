@@ -440,7 +440,7 @@ export default function AdminEdit(props) {
 
                       <Box sx={{ width: '100%', borderBottom: '1px solid #ccc', mb: 2 }} />
                       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                        <Button variant="contained" type="submit">
+                        <Button variant="contained" type="submit" disabled={!isConfirmPwdValid}>
                           저장
                         </Button>
                       </Box>
