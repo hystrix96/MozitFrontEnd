@@ -119,6 +119,7 @@ export default function SignIn(props) {
 
    catch (error) {
       // 실패 처리
+      event.preventDefault();
       setUserIdError(true);
       setUserIdErrorMessage('The id or password is incorrect.');
       console.error(error);
