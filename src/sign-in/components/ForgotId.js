@@ -6,10 +6,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import axiosInstance from '../../api/axiosInstance';
 import Typography from "@mui/material/Typography";
 import TextField from '@mui/material/TextField'; 
+import axios from 'axios'
 
 function ForgotPassword({ open, handleClose }) {
   const [step, setStep] = useState(1); // Step: 1 - Email, 2 - Verify Code, 3 - Reset Password
@@ -61,7 +60,7 @@ function ForgotPassword({ open, handleClose }) {
   //이메일 존재 확인
   const checkEmail = async (userEmail) => {  
     try {
-      const response = await axiosInstance.get('/users/check-email', {
+      const response = await axios.get('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/check-email', {
         params: { userEmail },
         validateStatus: (status) => {
           return status === 201 || status === 409;
@@ -89,7 +88,7 @@ function ForgotPassword({ open, handleClose }) {
     const isEmailValid = await checkEmail(userEmail);
     if(isEmailValid){      
       try {
-        const response = await axiosInstance.post('/users/send-email', {
+        const response = await axios.post('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/send-email', {
         mail: userEmail,
         });
       
@@ -116,7 +115,7 @@ function ForgotPassword({ open, handleClose }) {
   const handleVerifyCode = async () => {
     try {      
       // 코드 검증을 위한 백엔드 API 호출
-      const response = await axiosInstance.post('/users/verify-email', {
+      const response = await axios.post('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/verify-email', {
         mail: userEmail,
         verifyCode: code,
       },
@@ -144,8 +143,8 @@ function ForgotPassword({ open, handleClose }) {
   //아이디찾기기
   const findId = async () => {
     try {
-      const response = await axiosInstance.post(
-        '/users/find-id',
+      const response = await axios.post(
+        'https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/find-id',
         null, 
         {
             params: { email: userEmail }, 

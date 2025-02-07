@@ -6,8 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import axiosInstance from '../../api/axiosInstance';
+import axios from 'axios'
 import InputAdornment from '@mui/material/InputAdornment';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import TextField from '@mui/material/TextField'; 
@@ -110,7 +109,7 @@ function ForgotPassword({ open, handleClose }) {
   //이메일 존재 확인
   const checkEmail = async (userEmail) => {  
     try {
-      const response = await axiosInstance.get('/users/check-email', {
+      const response = await axios.get('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/check-email', {
         params: { userEmail },
         validateStatus: (status) => {
           return status === 201 || status === 409;
@@ -138,7 +137,7 @@ function ForgotPassword({ open, handleClose }) {
     const isEmailValid = await checkEmail(userEmail);
     if(isEmailValid){      
       try {
-        const response = await axiosInstance.post('/users/send-email', {
+        const response = await axios.post('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/send-email', {
         mail: userEmail,
         });
       
@@ -165,7 +164,7 @@ function ForgotPassword({ open, handleClose }) {
   const handleVerifyCode = async () => {
     try {      
       // 코드 검증을 위한 백엔드 API 호출
-      const response = await axiosInstance.post('/users/verify-email', {
+      const response = await axios.post('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/verify-email', {
         mail: userEmail,
         verifyCode: code,
       },
@@ -195,7 +194,7 @@ function ForgotPassword({ open, handleClose }) {
       try {
         // 비밀번호 리셋을 위한 백엔드 API 호출
         console.log("보내는 토큰: ", temporaryToken);
-        const response = await axiosInstance.post('/users/reset-password', {
+        const response = await axios.post('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/reset-password', {
           "new-pwd": password,
         },
         {
