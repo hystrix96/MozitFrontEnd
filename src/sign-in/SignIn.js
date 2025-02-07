@@ -235,7 +235,7 @@ export default function SignIn(props) {
               type="submit"
               fullWidth
               variant="contained"
-              //onClick={validateInputs}
+              onClick={validateInputs}
             >
               Sign in
             </Button>
