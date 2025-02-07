@@ -8,6 +8,7 @@ import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
 import { DaumPostcodeEmbed } from 'react-daum-postcode';
 import axiosInstance from '../api/axiosInstance';
+import axios from 'axios';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -314,7 +315,7 @@ export default function SignUp(props) {
     }
 
     try {
-      const response = await axiosInstance.get('https://bizno.net/api/fapi', {
+      const response = await axios.get('https://bizno.net/api/fapi', {
         params: {
           key: apiKey,
           status: 'Y',
