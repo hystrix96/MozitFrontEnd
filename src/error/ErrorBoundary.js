@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import { Container, Typography, Button, Paper, Box } from '@mui/material';
-import { Link } from "react-router-dom";
+import { useNavigate  } from "react-router-dom";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 class ErrorBoundary extends Component {
@@ -20,6 +20,7 @@ class ErrorBoundary extends Component {
   }
 
   render() {
+     const navigate = useNavigate(); // useNavigate 훅 사용
     if (this.state.hasError) {
       return (
         <AppTheme>
@@ -48,7 +49,7 @@ class ErrorBoundary extends Component {
                 <Typography variant="body1" sx={{ mb: 3, color: "gray" }}>
                   문제가 계속 발생하면 관리자에게 문의해주세요.
                 </Typography>
-                <Button variant="contained" color="primary" component={Link} to="/">
+                <Button variant="contained" color="primary" onClick={() => navigate('/')}>
                   홈으로 가기
                 </Button>
               </Box>
