@@ -97,12 +97,11 @@ export default function SignIn(props) {
         withCredentials: true,
     });
 
-    console.log(response);
+    console.log(response.headers.get('Authorization'));
     // 응답 처리
     if (response.status === 200) {
+      setAccessToken(response.headers.get('Authorization'));
       alert('로그인성공')
-      const accessToken = response.headers.get('Temporary-Token');
-      setAccessToken(accessToken);
         if (rememberMe) {
           localStorage.setItem('rememberedUserId', userId);
           setUserid(userId);
