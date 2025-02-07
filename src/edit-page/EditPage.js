@@ -183,8 +183,8 @@ export default function EditPage(props) {
       console.log("outputPath:", outputPath);
       // Step 2: 동영상 경로 FastAPI에 전송
       const response = await axiosInstance.post(
-        `/edit/send-video-path?video_path=${encodeURIComponent(savedFileName)}&output_path=${encodeURIComponent(outputPath)}`,
-        null, // Body는 비워 두고, 쿼리 파라미터만 전달
+        "/edit/send-video-path",
+        { video_path: savedFileName, output_path: outputPath },
         {
           headers: {
             "Content-Type": "application/json",
@@ -200,7 +200,7 @@ export default function EditPage(props) {
     } catch (error) {
       if (error.response) {
         console.error("응답 오류:", error.response.data);
-        setError("서버 오류: " + error.response.data);
+        setError("서버 오류: " + error.response.data.detail || error.response.data);  // 응답 오류가 있을 경우 세부 정보 표시
       } else {
         console.error("에러 발생:", error.message);
         setError("요청 처리 중 문제가 발생했습니다.");
