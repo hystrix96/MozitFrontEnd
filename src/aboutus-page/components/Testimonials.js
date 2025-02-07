@@ -12,7 +12,7 @@ import EmailIcon from '@mui/icons-material/Email'
 
 const items = [
   {
-    icon: '/assets/img/brand/yunho.png',
+    icon: '/assets/img/brand/yunho.jpg',
     title: '서윤호',
     description: 'Infra/Frontend',
     links: {

@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 
 const items = [
   {
-    icon: '/assets/img/brand/yunho.png',
+    icon: '/assets/img/brand/yunho.jpg',
     title: '서윤호',
     description:
       '조장',
@@ -21,7 +21,7 @@ const items = [
       '에이스',
   },
   {
-    icon: '/assets/img/brand/yunho.png',
+    icon: '/assets/img/brand/yunho.jpg',
     title: 'Great user experience',
     description:
       'Integrate our product into your routine with an intuitive and easy-to-use interface.',
@@ -33,7 +33,7 @@ const items = [
       'Stay ahead with features that set new standards, addressing your evolving needs better than the rest.',
   },
   {
-    icon: '/assets/img/brand/yunho.png',
+    icon: '/assets/img/brand/yunho.jpg',
     title: 'Reliable support',
     description:
       'Count on our responsive customer support, offering assistance that goes beyond the purchase.',
@@ -45,7 +45,7 @@ const items = [
       'Enjoy a meticulously crafted product where small touches make a significant impact on your overall experience.',
   },
   {
-    icon: '/assets/img/brand/yunho.png',
+    icon: '/assets/img/brand/yunho.jpg',
     title: 'Precision in every detail',
     description:
       'Enjoy a meticulously crafted product where small touches make a significant impact on your overall experience.',
