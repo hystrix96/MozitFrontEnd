@@ -207,7 +207,11 @@ export default function QuestionPage(props) {
                     color="primary"
                     size="medium"
                     onClick={handleSubmit}
-                    disabled={isSubmitDisabled}
+                    disabled={isSubmitDisabled} // 제목이나 내용이 비어 있으면 비활성화
+                    sx={{
+                      opacity: isSubmitDisabled ? 0.5 : 1, // 비활성화 시 버튼을 반투명으로 만듬
+                      pointerEvents: isSubmitDisabled ? 'none' : 'auto', // 클릭을 막음
+                    }}
                   >
                     제출
                   </Button>
