@@ -304,8 +304,6 @@ export default function SignUp(props) {
   //사업자번호 확인
   const handleVerifybusinessNumber = async () => {
     const businessNumberInput = document.getElementById('co-num').value;
-    const apiKey = process.env.REACT_APP_BUSINESS_API_KEY;
-    console.log(apiKey)
 
     if (!/^\d{10}$/.test(businessNumberInput)) {
       setBusinessNumberError(true);
@@ -314,13 +312,8 @@ export default function SignUp(props) {
     }
 
     try {
-      const response = await axiosInstance.get('https://bizno.net/api/fapi', {
-        params: {
-          key: apiKey,
-          status: 'Y',
-          q: businessNumberInput, // 검색할 값 (예: 사업자번호 또는 회사명)
-          type: 'json', // 응답 타입
-        },
+      const response = await axiosInstance.get('/api/business/verify', {
+        params: { businessNumber: businessNumberInput },
       });
 
       if (response.status === 200) {
