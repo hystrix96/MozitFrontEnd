@@ -84,14 +84,40 @@ export default function AppAppBar() {
     }
   };
 
-  const handleLiveClick = () => {
-    if (isLoggedIn) {
-      navigate('/live'); // 로그인 상태라면 작업 페이지로 이동
-    } else {
-      alert('로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.');
-      navigate('/sign-in'); // 로그인되지 않으면 로그인 페이지로 이동
+const handleLiveClick = async () => {
+  if (isLoggedIn) {
+    // 로그인된 상태일 때 구독 정보를 확인
+    await fetchSub(); // 구독 정보 확인 후 리다이렉션 처리
+    navigate('/live'); // 구독 정보가 유효하면 라이브 페이지로 이동
+  } else {
+    alert('로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.');
+    navigate('/sign-in'); // 로그인되지 않으면 로그인 페이지로 이동
+  }
+};
+
+  //구독정보 확인
+  const fetchSub = async () => {
+  try {
+    // 구독 정보 가져오기
+    const response = await axiosInstance.get('/my');
+    console.log(response.data.userSub);
+
+    // 구독자 정보 확인
+    if (!response.data.userSub) {
+      alert("구독자 전용 서비스입니다.");
+      navigate("/mysubpage"); // 구독자 전용 서비스인 경우 구독 페이지로 이동
+      return;
+    } else if (response.data.userSub === 'Basic') {
+      alert("Pro, Premium 구독자 전용 서비스입니다.");
+      navigate("/mysubpage"); // Basic 구독자일 경우 Pro, Premium 전용 페이지로 이동
+      return;
     }
-  };
+  } catch (error) {
+    console.error('구독 정보 가져오는 중 오류 발생:', error);
+    alert("구독 정보 가져오는 중 오류가 발생했습니다.");
+    navigate("/mysubpage"); // 오류 발생 시 구독 페이지로 이동
+  }
+};
 
   // "문의" 버튼 클릭시 로그인 여부 확인 후 처리
   const handleQuestion = () => {
