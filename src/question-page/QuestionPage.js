@@ -1,10 +1,10 @@
-import React , { useState } from 'react';
+import React, { useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import axiosInstance from '../api/axiosInstance';
-import {  TextField, Button, Box, Typography, Grid2, Switch, FormControlLabel, Collapse, FormGroup, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Button, Box, Typography, Grid2, Switch, FormControlLabel, Collapse, FormGroup, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { uploadImageToAzure } from '../utils/azureBlobService';
 
@@ -45,11 +45,11 @@ export default function QuestionPage(props) {
       }
 
       const requestBody = {
-        questionTitle: title,        
-        questionDetail: detail,      
-        questionType: category,      
+        questionTitle: title,
+        questionDetail: detail,
+        questionType: category,
         questionImage: uploadedImageUrl || null,
-      }; 
+      };
 
       const response = await axiosInstance.post('/questions', requestBody, {
         headers: {
@@ -73,7 +73,7 @@ export default function QuestionPage(props) {
       <CssBaseline enableColorScheme />
       <AppAppBar />
       <div>
-        <Box 
+        <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',  // 수직 방향으로 배치
@@ -91,22 +91,22 @@ export default function QuestionPage(props) {
             }}
           >
             <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
-            문의하기
+              문의하기
             </Typography>
 
             <Box
-            sx={{
-              maxWidth: 1000,
-              width: '100%',
-              padding: 1,
-              paddingLeft: 3,
-              boxShadow: 3,
-              borderRadius: 2,
-              bgcolor: 'background.paper',
-              marginBottom: 2,
-            }}
+              sx={{
+                maxWidth: 1000,
+                width: '100%',
+                padding: 1,
+                paddingLeft: 3,
+                boxShadow: 3,
+                borderRadius: 2,
+                bgcolor: 'background.paper',
+                marginBottom: 2,
+              }}
             >
-                <Grid2 container alignItems="center">
+              <Grid2 container alignItems="center">
                 <Grid2 item xs={9}>
                   <Typography variant="body1" sx={{ marginRight: 2 }}>문의 분류</Typography>
                 </Grid2>
@@ -115,7 +115,7 @@ export default function QuestionPage(props) {
                     <Select
                       value={category}
                       onChange={handleCategoryChange}
-                      sx = {{ width: 300}}
+                      sx={{ width: 300 }}
                     >
                       <MenuItem value="SERVICE">제품 및 서비스</MenuItem>
                       <MenuItem value="ACCOUNT">계정 및 회원</MenuItem>
@@ -127,85 +127,92 @@ export default function QuestionPage(props) {
             </Box>
 
             <Box
-            sx={{
-              maxWidth: 1000,
-              width: '100%',
-              padding: 3,
-              boxShadow: 3,
-              borderRadius: 2,
-              bgcolor: 'background.paper',
-            }}
+              sx={{
+                maxWidth: 1000,
+                width: '100%',
+                padding: 3,
+                boxShadow: 3,
+                borderRadius: 2,
+                bgcolor: 'background.paper',
+              }}
             >
-                <Grid2>
-                    {/* 입력 폼 */}
-                    <TextField 
-                      label="문의 제목" 
-                      variant="outlined" 
-                      fullWidth 
-                      required
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      sx={{marginBottom: 2}}
-                    />
-                    <TextField 
-                      label="문의 내용" 
-                      variant="outlined" 
-                      fullWidth 
-                      required 
-                      multiline 
-                      rows={10}
-                      value={detail}
-                      onChange={(e) => setDetail(e.target.value)}
-                      sx={{'& .MuiInputBase-root': {height: '300px', }, marginBottom: 2}}/>
+              <Grid2>
+                {/* 입력 폼 */}
+                <TextField
+                  label="문의 제목"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  sx={{ marginBottom: 2 }}
+                />
+                <TextField
+                  label="문의 내용"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  multiline
+                  rows={10}
+                  value={detail}
+                  onChange={(e) => setDetail(e.target.value)}
+                  sx={{ '& .MuiInputBase-root': { height: '300px', }, marginBottom: 2 }} />
 
-                    <Box>
-                      {/* Hidden file input */}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        id="image-upload"
-                        style={{ display: 'none' }}
-                        onChange={handleImageChange}
-                      />
-                      {/* Button to trigger file input */}
-                      <Button 
-                        variant="contained" 
-                        color="primary" 
-                        component="label" 
-                        htmlFor="image-upload"
-                        size="medium"
-                      >
-                        이미지 첨부
-                      </Button>
-                      
-                      {/* Image preview */}
-                      {selectedImage && (
-                        <Box mt={2}>
-                          <img src={selectedImage} alt="Selected" width="200" height="auto" />
-                        </Box>
-                      )}
+                <Box>
+                  {/* Hidden file input */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="image-upload"
+                    style={{ display: 'none' }}
+                    onChange={handleImageChange}
+                  />
+                  {/* Button to trigger file input */}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    component="label"
+                    htmlFor="image-upload"
+                    size="medium"
+                  >
+                    이미지 첨부
+                  </Button>
 
-                      {/* Delete button */}
-                      {selectedImage && (
-                        <Box mt={2}>
-                          <Button 
-                            variant="outlined" 
-                            color="secondary" 
-                            onClick={handleImageDelete}
-                            size="medium"
-                             
-                          >
-                            이미지 삭제
-                          </Button>
-                        </Box>
-                      )}
+                  {/* Image preview */}
+                  {selectedImage && (
+                    <Box mt={2}>
+                      <img src={selectedImage} alt="Selected" width="200" height="auto" />
                     </Box>
-                    <Grid2 item xs={12} display="flex" justifyContent="center">
-                        <Button type="submit" variant="contained" color="primary" size="medium" onClick={handleSubmit}>
-                        제출
-                        </Button>
-                    </Grid2>
+                  )}
+
+                  {/* Delete button */}
+                  {selectedImage && (
+                    <Box mt={2}>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleImageDelete}
+                        size="medium"
+
+                      >
+                        이미지 삭제
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+                <Grid2 item xs={12} display="flex" justifyContent="center">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    size="medium"
+                    onClick={handleSubmit}
+                    disabled={isSubmitDisabled}
+                  >
+                    제출
+                  </Button>
                 </Grid2>
+              </Grid2>
             </Box>
           </Box>
         </Box>
