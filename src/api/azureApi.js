@@ -14,26 +14,23 @@ export const getAzureToken = async () => {
 
 // Azure Storage에서 Metric 데이터를 가져오기
 export const fetchAzureMetrics = async () => {
-    const storageUrl = "https://mozitstorage.blob.core.windows.net/insights-metrics-pt1m/resourceId=/SUBSCRIPTIONS/0A938E62-00BA-4C73-A908-3B285014B302/RESOURCEGROUPS/MOZIT/PROVIDERS/MICROSOFT.DBFORMYSQL/FLEXIBLESERVERS/MOZIT-DB/y=2025/m=02/d=05/h=06/m=00/PT1H.json";
-    const sasToken = process.env.REACT_APP_API_SAS_TOKEN;
-  
-    try {
-      const response = await axios.get(`${storageUrl}?${sasToken}`);
-      console.log("Raw API Response:", response.data);
+  try {
+    const response = await axiosInstance.get("/api/azure/metrics");
+    console.log("Raw API Response:", response.data);
 
-        // 데이터를 JSON 배열로 변환
-      const jsonData = response.data
-        .trim() // 앞뒤 공백 제거
-        .split("\n") // 개행 문자 기준으로 분할
-        .map((line) => JSON.parse(line)); // 각 줄을 JSON 객체로 변환
+      // 데이터를 JSON 배열로 변환
+    const jsonData = response.data
+      .trim() // 앞뒤 공백 제거
+      .split("\n") // 개행 문자 기준으로 분할
+      .map((line) => JSON.parse(line)); // 각 줄을 JSON 객체로 변환
 
-      console.log("Parsed Data:", jsonData);
+    console.log("Parsed Data:", jsonData);
 
-      return jsonData;
-    } catch (error) {
-      console.error("Error fetching Azure metrics:", error);
-      return null;
-    }
+    return jsonData;
+  } catch (error) {
+    console.error("Error fetching Azure metrics:", error);
+    return null;
+  }
 };
 
 const MetricsComponent = () => {
