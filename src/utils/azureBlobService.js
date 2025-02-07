@@ -7,7 +7,7 @@ export const uploadImageToAzure = async (file) => {
     formData.append('file', file);
 
     // 백엔드 API로 파일 업로드
-    const response = await axiosInstance.post('/api/upload', formData, {
+    const response = await axiosInstance.put('/api/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
