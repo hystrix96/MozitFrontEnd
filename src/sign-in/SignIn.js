@@ -120,7 +120,9 @@ export default function SignIn(props) {
    catch (error) {
       // 실패 처리
       setUserIdError(true);
-      setUserIdErrorMessage('The id or password is incorrect.');
+      setUserIdErrorMessage('The ID is incorrect.');
+      setPasswordError(true);
+      setPasswordErrorMessage('Incorrect password. Please try again.');
       return;
     }
   };
@@ -131,9 +133,28 @@ export default function SignIn(props) {
 
   let isValid = true;
 
+  // if (!userId.value) {
+  //   setUserIdError(true);
+  //   setUserIdErrorMessage('Please enter a valid userId address.');
+  //   isValid = false;
+  // } else {
+  //   setUserIdError(false);
+  //   setUserIdErrorMessage('');
+  // }
+
+  // if (!password.value) {
+  //   setPasswordError(true);
+  //   setPasswordErrorMessage('Please enter a valid password address.');
+  //   isValid = false;
+  // } else {
+  //   setPasswordError(false);
+  //   setPasswordErrorMessage('');
+  // }
+
+  // return isValid;
   if (!userId.value) {
     setUserIdError(true);
-    setUserIdErrorMessage('Please enter a valid userId address.');
+    setUserIdErrorMessage('Please enter a valid user ID.');
     isValid = false;
   } else {
     setUserIdError(false);
@@ -142,7 +163,7 @@ export default function SignIn(props) {
 
   if (!password.value) {
     setPasswordError(true);
-    setPasswordErrorMessage('Please enter a valid password address.');
+    setPasswordErrorMessage('Please enter your password.');
     isValid = false;
   } else {
     setPasswordError(false);
