@@ -116,36 +116,11 @@ export default function SignIn(props) {
         throw new Error('로그인 실패');
       }
     } 
-    // catch (error) {
-    //   // 실패 처리
-    //   setUserIdError(true);
-    //   setUserIdErrorMessage('유효하지 않은 계정입니다.');
-    //   console.error(error);
-    // }
     catch (error) {
-      // ✅ 백엔드에서 오는 응답을 기반으로 에러 메시지 설정
-      if (error.response && error.response.data) {
-        const errorMessage = error.response.data.message; // 백엔드가 반환하는 오류 메시지
-        console.error('로그인 오류:', errorMessage);
-    
-        if (errorMessage.includes('User not found')) {
-          // ❌ 존재하지 않는 계정
-          setUserIdError(true);
-          setUserIdErrorMessage('유효하지 않은 계정입니다.');
-        } else if (errorMessage.includes('Invalid password')) {
-          // ❌ 비밀번호가 틀림
-          setPasswordError(true);
-          setPasswordErrorMessage('비밀번호가 다릅니다.');
-        } else {
-          // ❌ 기타 오류
-          setUserIdError(true);
-          setUserIdErrorMessage('로그인에 실패했습니다.');
-        }
-      } else {
-        // ❌ 서버 오류 또는 응답 없음
-        setUserIdError(true);
-        setUserIdErrorMessage('서버와의 연결에 실패했습니다.');
-      }
+      // 실패 처리
+      setUserIdError(true);
+      setUserIdErrorMessage('유효하지 않은 계정입니다.');
+      console.error(error);
     }
   };
 
@@ -260,7 +235,7 @@ export default function SignIn(props) {
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
+              //onClick={validateInputs}
             >
               Sign in
             </Button>
