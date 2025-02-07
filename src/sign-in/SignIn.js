@@ -8,7 +8,7 @@ import ForgotId from './components/ForgotId';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
-import axiosInstance from '../api/axiosInstance';
+import axios from 'axios';
 
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -90,7 +90,7 @@ export default function SignIn(props) {
       formData.append('password', password);
 
       // Axios 요청
-      const response = await axiosInstance.post('/users/login', formData, {
+      const response = await axios.post('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/login', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // form-data 형식 지정
         },
@@ -119,10 +119,9 @@ export default function SignIn(props) {
 
    catch (error) {
       // 실패 처리
-      event.preventDefault();
       setUserIdError(true);
       setUserIdErrorMessage('The id or password is incorrect.');
-      console.error(error);
+      return;
     }
   };
 
