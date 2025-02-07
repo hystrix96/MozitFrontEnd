@@ -84,19 +84,22 @@ export default function AppAppBar() {
     }
   };
 
+  // "라이브" 버튼 클릭시 로그인 , 구독 정보 여부 확인 후 처리 
 const handleLiveClick = async () => {
   if (isLoggedIn) {
     // 로그인된 상태일 때 구독 정보를 확인
-    await fetchSub(); // 구독 정보 확인 후 리다이렉션 처리
-    navigate('/live'); // 구독 정보가 유효하면 라이브 페이지로 이동
+    const canNavigate = await fetchSub(); // 구독 정보 확인 후 리다이렉션 처리
+    if (canNavigate) {
+      navigate('/live'); // 구독 정보가 유효하면 라이브 페이지로 이동
+    }
   } else {
     alert('로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.');
     navigate('/sign-in'); // 로그인되지 않으면 로그인 페이지로 이동
   }
 };
 
-  //구독정보 확인
-  const fetchSub = async () => {
+  // 구독정보 확인
+const fetchSub = async () => {
   try {
     // 구독 정보 가져오기
     const response = await axiosInstance.get('/my');
@@ -106,16 +109,19 @@ const handleLiveClick = async () => {
     if (!response.data.userSub) {
       alert("구독자 전용 서비스입니다.");
       navigate("/mysubpage"); // 구독자 전용 서비스인 경우 구독 페이지로 이동
-      return;
+      return false; // navigate 후 실행되지 않도록 false 반환
     } else if (response.data.userSub === 'Basic') {
       alert("Pro, Premium 구독자 전용 서비스입니다.");
       navigate("/mysubpage"); // Basic 구독자일 경우 Pro, Premium 전용 페이지로 이동
-      return;
+      return false; // navigate 후 실행되지 않도록 false 반환
     }
+
+    return true; // 구독 정보가 유효하면 true 반환
   } catch (error) {
     console.error('구독 정보 가져오는 중 오류 발생:', error);
     alert("구독 정보 가져오는 중 오류가 발생했습니다.");
     navigate("/mysubpage"); // 오류 발생 시 구독 페이지로 이동
+    return false; // 오류가 발생한 경우 navigate 후 실행되지 않도록 false 반환
   }
 };
 
