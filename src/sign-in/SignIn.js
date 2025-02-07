@@ -118,16 +118,11 @@ export default function SignIn(props) {
     } 
 
    catch (error) {
-    console.log("Error response:", error.response); // 서버 응답 확인
-    setUserIdError(true);
-    setUserIdErrorMessage('The ID or password is incorrect.');
-    setPasswordError(true);
-    setPasswordErrorMessage('Incorrect password. Please try again.');
-
-      // // 실패 처리
-      // setUserIdError(true);
-      // setUserIdErrorMessage('The id or password is incorrect.');
-      // return;
+    
+      // 실패 처리
+      setUserIdError(true);
+      setUserIdErrorMessage('The id or password is incorrect.');
+      return;
     }
   };
 
