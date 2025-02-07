@@ -116,18 +116,10 @@ export default function SignIn(props) {
         throw new Error('로그인 실패');
       }
     } catch (error) {
-       // 실패 처리
-       if (error.response) {
-        if (error.response.status === 401) {
-          setPasswordError(true);
-          setPasswordErrorMessage('비밀번호가 틀렸습니다.');
-        } else if (error.response.status === 404) {
-          setUserIdError(true);
-          setUserIdErrorMessage('유효하지 않은 계정입니다.');
-        } else {
-          console.error(error);
-        }
-      }
+      // 실패 처리
+      setUserIdError(true);
+      setUserIdErrorMessage('유효하지 않은 계정입니다.');
+      console.error(error);
     }
   };
 
