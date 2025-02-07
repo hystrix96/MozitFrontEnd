@@ -183,8 +183,8 @@ export default function EditPage(props) {
       console.log("outputPath:", outputPath);
       // Step 2: 동영상 경로 FastAPI에 전송
       const response = await axiosInstance.post(
-        "/edit/send-video-path",
-        { video_path: savedFileName, output_path: outputPath },
+        `/edit/send-video-path?video_path=${encodeURIComponent(savedFileName)}&output_path=${encodeURIComponent(outputPath)}`,
+        null, // Body는 비워 두고, 쿼리 파라미터만 전달
         {
           headers: {
             "Content-Type": "application/json",
