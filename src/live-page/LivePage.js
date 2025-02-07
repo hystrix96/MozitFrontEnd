@@ -100,7 +100,7 @@ export default function WebcamPage(props) {
   useEffect(() => {
     let reconnectTimeout; // 재연결 타이머
     const connectWebSocket = () => {
-      socketRef.current = new WebSocket("ws://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/process-screen/");
+      socketRef.current = new WebSocket("wss://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/process-screen/");
   
       socketRef.current.onopen = () => {
         console.log("✅ WebSocket 연결됨");
