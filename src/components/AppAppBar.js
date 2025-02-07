@@ -128,7 +128,7 @@ export default function AppAppBar() {
                 sx={{ position: 'relative' }} // 상대 위치로 서브 메뉴 배치
               >
                 <Button variant="text" color="info" size="small">
-                  작업1
+                  작업
                 </Button>
                 {openWorkSubMenu && (
                   <Box
