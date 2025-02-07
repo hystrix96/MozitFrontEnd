@@ -74,53 +74,65 @@ export default function SignIn(props) {
   const handleCloseId = () => setOpenId(false);
 
   const handleSubmit = async (event) => {
-  event.preventDefault(); // 기본 폼 제출 동작을 방지.
+    event.preventDefault(); // 기본 폼 제출 동작을 방지.
 
-  // 입력값 가져오기
-  const data = new FormData(event.currentTarget);
-  const userId = data.get('userId');
-  const password = data.get('password');
+    // 입력값 가져오기
+    const data = new FormData(event.currentTarget);
+    const userId = data.get('userId');
+    const password = data.get('password');
 
-  // 입력값 검증
-  if (!validateInputs()) return;
-  try {
-    // FormData 생성
-    const formData = new FormData();
-    formData.append('username', userId); // 백엔드의 username 키에 맞게 수정
-    formData.append('password', password);
+    // 입력값 검증
+    if (!validateInputs()) return;
+    try {
 
-    // Axios 요청
-    const response = await axiosInstance.post('/users/login', formData, {
+      // 먼저, 서버에 이미 로그인 중인지 확인
+      const checkLoginResponse = await axiosInstance.get('/users/check-login', {
+        params: { userId }, // 현재 로그인 시도한 userId를 서버에 전달
+        withCredentials: true,
+      });
+
+      if (checkLoginResponse.status === 200 && checkLoginResponse.data.isLoggedIn) {
+        alert('이미 로그인된 아이디입니다.');
+        return; // 로그인 절차 중지
+      }
+      
+      // FormData 생성
+      const formData = new FormData();
+      formData.append('username', userId); // 백엔드의 username 키에 맞게 수정
+      formData.append('password', password);
+
+      // Axios 요청
+      const response = await axiosInstance.post('/users/login', formData, {
         headers: {
-            'Content-Type': 'multipart/form-data', // form-data 형식 지정
+          'Content-Type': 'multipart/form-data', // form-data 형식 지정
         },
         withCredentials: true,
-    });
+      });
 
-    console.log(response.headers.get('Authorization'));
-    // 응답 처리
-    if (response.status === 200) {
-      setAccessToken(response.headers.get('Authorization'));
-      alert('로그인성공')
+      console.log(response.headers.get('Authorization'));
+      // 응답 처리
+      if (response.status === 200) {
+        setAccessToken(response.headers.get('Authorization'));
+        alert('로그인성공')
         if (rememberMe) {
           localStorage.setItem('rememberedUserId', userId);
           setUserid(userId);
         } else {
           localStorage.removeItem('rememberedUserId');
         }
-        if(userId==='admin')
-          window.location.href='/admin/dashboard';
+        if (userId === 'admin')
+          window.location.href = '/admin/dashboard';
         else
           window.location.href = '/'; // 성공 시 페이지 이동
-    } else {
+      } else {
         throw new Error('로그인 실패');
-    }
-  } catch (error) {
+      }
+    } catch (error) {
       // 실패 처리
       setUserIdError(true);
       setUserIdErrorMessage('유효하지 않은 계정입니다.');
       console.error(error);
-  }
+    }
   };
 
   const validateInputs = () => {
@@ -156,16 +168,16 @@ export default function SignIn(props) {
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            mb: 2, 
-          }}
-        >
-          <SitemarkIcon height={20} />
-        </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mb: 2,
+            }}
+          >
+            <SitemarkIcon height={20} />
+          </Box>
           <Typography
             component="h1"
             variant="h4"
@@ -229,7 +241,7 @@ export default function SignIn(props) {
                 />
               }
               label="Remember me"
-            />            
+            />
             <Button
               type="submit"
               fullWidth
@@ -244,7 +256,7 @@ export default function SignIn(props) {
               sx={{
                 display: 'flex',
                 justifyContent: 'center',
-                gap: 1,         
+                gap: 1,
               }}
             >
               <Link

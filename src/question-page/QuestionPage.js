@@ -36,6 +36,12 @@ export default function QuestionPage(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // 제목과 내용이 비어 있는지 체크
+    if (!title || !detail) {
+      alert('제목과 내용은 필수 입력 항목입니다.');
+      return; // 폼 제출을 중지
+    }
+
     try {
       // 이미지가 있을 경우 Azure에 업로드하고 URL 가져오기
       let uploadedImageUrl = '';
@@ -207,11 +213,6 @@ export default function QuestionPage(props) {
                     color="primary"
                     size="medium"
                     onClick={handleSubmit}
-                    disabled={isSubmitDisabled} // 제목이나 내용이 비어 있으면 비활성화
-                    sx={{
-                      opacity: isSubmitDisabled ? 0.5 : 1, // 비활성화 시 버튼을 반투명으로 만듬
-                      pointerEvents: isSubmitDisabled ? 'none' : 'auto', // 클릭을 막음
-                    }}
                   >
                     제출
                   </Button>
