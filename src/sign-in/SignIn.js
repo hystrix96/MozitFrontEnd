@@ -54,7 +54,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn(props) {
-  const { setUserid } = useAuth();
+  const { setUserid, setAccessToken } = useAuth();
   const [rememberMe, setRememberMe] = React.useState(() => {
     return localStorage.getItem('rememberedUserId') ? true : false;
   });
@@ -100,6 +100,9 @@ export default function SignIn(props) {
     console.log(response);
     // 응답 처리
     if (response.status === 200) {
+      alert('로그인성공')
+      const accessToken = response.headers.get('Temporary-Token');
+      setAccessToken(accessToken);
         if (rememberMe) {
           localStorage.setItem('rememberedUserId', userId);
           setUserid(userId);
