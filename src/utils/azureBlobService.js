@@ -5,9 +5,8 @@ const AZURE_CONTAINER_NAME = 'mozit-container';
 const SAS_TOKEN = process.env.REACT_APP_UTILS_SAS_TOKEN;
 
 // Create a pipeline using AnonymousCredential (or SAS token)
-const pipeline = newPipeline(new AnonymousCredential());
 const blobServiceClient = new BlobServiceClient(
-  `https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net?${SAS_TOKEN}`, pipeline
+  `https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net?${SAS_TOKEN}`
 );
 
 export const uploadImageToAzure = async (file) => {
