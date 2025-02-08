@@ -2,7 +2,7 @@ import { BlobServiceClient, newPipeline, AnonymousCredential } from '@azure/stor
 
 const AZURE_STORAGE_ACCOUNT_NAME = 'mozitstorage';
 const AZURE_CONTAINER_NAME = 'mozit-container';
-const SAS_TOKEN = process.env.REACT_APP_UTILS_SAS_TOKEN;
+const SAS_TOKEN = encodeURIComponent(process.env.REACT_APP_UTILS_SAS_TOKEN);
 
 // Create a pipeline using AnonymousCredential (or SAS token)
 const blobServiceClient = new BlobServiceClient(
