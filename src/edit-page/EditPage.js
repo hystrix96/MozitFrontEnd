@@ -170,7 +170,7 @@ export default function EditPage(props) {
     try {
       // Step 1: 동영상 파일 업로드 + T썸네일 추출 + DB 저장
       const uploadResponse = await axiosInstance.post("/edit/start-editing", {
-      videoUrl: "uploadedVideoUrl"
+      videoUrl: uploadedVideoUrl
       }, {
       headers: {
           "Content-Type": "application/json",
