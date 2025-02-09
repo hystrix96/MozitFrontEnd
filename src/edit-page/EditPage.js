@@ -182,10 +182,6 @@ export default function EditPage(props) {
       const outputPath = "uploads/output.json";   //fastapi에서 저장할 경로
   
       console.log("editNum:", editNum);
-      console.log("savedFileName:", savedFileName);
-  
-
-      console.log("videoPath:", savedFileName);
       console.log("outputPath:", outputPath);
 
       // Step 2: 동영상 경로 FastAPI에 전송
@@ -202,7 +198,7 @@ export default function EditPage(props) {
   
       console.log("FastAPI 응답:", response.data);
       //mozaic페이지로 넘어감. 
-      navigate("/mozaic", { state: { editNum, savedFileName } });
+      navigate("/mozaic", { state: { editNum } });
   
     } catch (error) {
       if (error.response) {
