@@ -38,6 +38,7 @@ export const uploadVideoToAzure = async (file) => {
     console.log(`Upload block blob ${blobName} successfully`, uploadBlobResponse);
 
     // 업로드된 비디오의 URL 반환
+    console.log('비디오 url:',blockBlobClient.url);
     return blockBlobClient.url;
   } catch (error) {
     console.error("Error uploading video to Azure", error);

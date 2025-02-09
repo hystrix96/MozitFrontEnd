@@ -11,9 +11,9 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; 
 import { useAuth } from '../Context/AuthContext';
-import axiosInstance from '../api/axiosInstance'
+import axiosInstance from '../api/axiosInstance';
+import { uploadVideoToAzure } from '../utils/azureBlobService';
 
 const StyledBox = styled('div')(({ theme }) => ({
   alignSelf: 'center',
@@ -152,7 +152,6 @@ export default function EditPage(props) {
 
   const handleEditStart = async () => {
     if (!videoFile) {
-      //setAnchorEl(editButtonRef.current);
       setError("동영상을 업로드해주세요.");
       return;
     }
@@ -163,7 +162,7 @@ export default function EditPage(props) {
     // 비디오가 있을 경우 Azure에 업로드하고 URL 가져오기
     let uploadedVideoUrl = '';
     if (videoFile) {
-      uploadedVideoUrl = await uploadImageToAzure(videoFile);
+      uploadedVideoUrl = await uploadVideoToAzure(videoFile);
     }
 
     const formData = new FormData();
