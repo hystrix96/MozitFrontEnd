@@ -76,8 +76,7 @@ export default function DownloadPage(props) {
   const { accessToken } = useAuth();
   const location = useLocation();
   const { settings , editNum, fps, savedFileName } = location.state || {}; // 전달된 마스크 상태 가져오기
-  // const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
-  const videoUrl = savedFileName ? `/edit/videos/${savedFileName}` : null;
+  const videoUrl = savedFileName;
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoDuration, setVideoDuration] = useState(0); 
@@ -492,8 +491,8 @@ const handleDownload = async () => {
 };
 
 // savedFileName에서 파일 이름만 추출
-const fileName = savedFileName.split('\\').pop(); // Windows 경로에서 파일 이름 추출
-const outputPath = `D:\\home\\downloads\\${fileName}`; // 최종 경로 설정
+const fileName = savedFileName.split('/').pop().split('?')[0]; // Windows 경로에서 파일 이름 추출
+const outputPath = fileName; // 최종 경로 설정
 
 const payload = {
   request: {

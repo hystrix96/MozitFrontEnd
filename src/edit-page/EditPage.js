@@ -165,17 +165,17 @@ export default function EditPage(props) {
       uploadedVideoUrl = await uploadVideoToAzure(videoFile);
     }
 
-    const formData = new FormData();
-
-    formData.append("videoFile_url", uploadedVideoUrl);
+   
     
     try {
       // Step 1: 동영상 파일 업로드 + T썸네일 추출 + DB 저장
-      const uploadResponse = await axiosInstance.post("/edit/start-editing", formData, {
-        headers: {
+      const uploadResponse = await axiosInstance.post("/edit/start-editing", {
+      videoUrl: "uploadedVideoUrl"
+      }, {
+      headers: {
           "Content-Type": "application/json",
           Authorization: accessToken,
-        },
+      },
       });
   
       const { editNum } = uploadResponse.data;
@@ -198,7 +198,7 @@ export default function EditPage(props) {
   
       console.log("FastAPI 응답:", response.data);
       //mozaic페이지로 넘어감. 
-      navigate("/mozaic", { state: { editNum } });
+      navigate("/mozaic", { state: { editNum,uploadedVideoUrl } });
   
     } catch (error) {
       if (error.response) {

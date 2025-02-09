@@ -17,29 +17,15 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import { imageDataRGB } from 'stackblur-canvas';
 import { useNavigate } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
-import axiosInstance from '../api/axiosInstance';
+import axios from 'axios';
 
-const ControlBox = styled(Box)(({ showControls }) => ({
-  position: 'absolute',
-  bottom: '5px',
-  left: '20px',
-  right: '20px',
-  display: 'flex',
-  alignItems: 'center',
-  zIndex: 3,
-  backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
-  borderRadius: '5px',
-  opacity: showControls ? 1 : 0, // 마우스 오버 시만 보이게 설정
-  transition: 'opacity 0.3s ease', // 부드러운 전환
-}));
 
 export default function MozaicPage() {
   const location = useLocation();
-  const { editNum, savedFileName  } = location.state || {}; // 상태를 받음
-  // const savedFileName = 'mozit.mp4'; // 전달된 savedFileName 받기
-  const videoUrl = savedFileName ? `/edit/videos/${savedFileName}` : null;
-
+  const { editNum, uploadedVideoUrl } = location.state || {}; // 상태를 받음
+  const savedFileName = uploadedVideoUrl; // 전달된 savedFileName 받기
+  const videoUrl = uploadedVideoUrl;
+  
   // 캔버스와 비디오 참조
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -52,12 +38,12 @@ export default function MozaicPage() {
   const [faceIds, setFaceIds] = useState([]);
   const navigate = useNavigate();
   const [faceImages, setFaceImages] = useState({}); // 각 faceId에 해당하는 이미지를 저장할 상태
-  const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
   const [title, setTitle] = useState('');
- 
+  const [isReady, setIsReady] = useState(false); 
+
   const [fps,setFps]=useState();
- 
-//fps 설정
+
+ //fps 설정
 useEffect(() => {
     const fetchFPS = async () => {
         if (!savedFileName) return;  // 파일명이 없으면 실행하지 않음
@@ -82,8 +68,6 @@ useEffect(() => {
 
 }, []);  // ✅ 의존성 배열이 빈 배열이면 처음 한 번만 실행됨
  
-
-
   // ✅ Face ID
   const getUniqueFaceIds = (detections) => {
     const faceIds = detections
@@ -188,6 +172,7 @@ const handleSizeChange = (tab) => (event, newValue) => {
   
   // ✅ 모자이크 또는 블러 중 하나만 선택 가능하게 함
   const handleCheckboxChange = (effectType, event) => {
+
     setSettings(prevSettings => {
       const updatedSettings = { ...prevSettings };
 
@@ -198,23 +183,14 @@ const handleSizeChange = (tab) => (event, newValue) => {
         updatedSettings.blur = true;
         updatedSettings.mosaic = false;
       }
-      console.log(value);
-      console.log(sliderValue);
       console.log(videoDuration);
       return updatedSettings;
     });
   };
 
-  // // 슬라이더 핸들러=> 이게 모자이크
-  // const handleSliderChange2 = (tab, key) => (event, newValue) => {
-  //   setSettings((prev) => ({
-  //     ...prev,
-  //     [tab]: { ...prev[tab], [key]: newValue },
-  //   }));
-  // };
-
   // 사람 체크박스 핸들러 (사람 탭 전용)
   const handlePersonCheck = (personId) => (event) => {
+
     setSettings((prev) => ({
       ...prev,
       person: {
@@ -246,6 +222,7 @@ const handleSizeChange = (tab) => (event, newValue) => {
 
   //유해요소 체크박스 핸들러(유해요소 탭 전용)
 const handleHarmfulCheck = (itemClass, isChecked) => {
+  
   setSettings((prev) => {
     const checkedItems = prev.harmful?.checkedItems || [];
     const updatedItems = isChecked
@@ -262,10 +239,9 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
   });
 };
 
-const handleTabChange2 = (_, newValue) => {
-  setValue(newValue);
-};
+  const handleTabChange2 = (_, newValue) =>  setValue(newValue);
 
+  //메타데이터 들어오지 않았으면 메타데이터 먼저 들어오도록
 const handleLoadedMetadata = () => {
   const video = videoRef.current;
   if (video) {
@@ -283,12 +259,13 @@ const handleLoadedMetadata = () => {
   }
 };
 
+//메타데이터 들어오지 않았으면 메타데이터 먼저 들어오도록
 useEffect(() => {
   const video = videoRef.current;
-  if (video && video.readyState >= 2) {
+  if (video && video.readyState != 2) {
     handleLoadedMetadata();
   }
-}, [videoUrl]); // videoUrl이 바뀌면 다시 실행
+}, []); 
 
   const handlePlayPause = () => {
     const video = videoRef.current;
@@ -309,7 +286,7 @@ useEffect(() => {
   }
   };
 
-  // 이게 재생바
+    // 재생바
   const handleSliderChange = (event, newValue) => {
   
     setSliderValue(newValue);
@@ -324,7 +301,9 @@ useEffect(() => {
   }
   };
 
+  //재생버튼,일시정지 버튼튼
   const handleCanvasClick = () => {
+
     const video = videoRef.current;
     if (video) {
       if (video.paused) {
@@ -335,15 +314,14 @@ useEffect(() => {
     }
   };
 
-  // 재생바
+  // 재생바 처리
   useEffect(() => {
+
     const video = videoRef.current;
     if(videoDuration===0) return;
-    
     if (video) {
       const updateSlider = () => {
         const currentSliderValue = (video.currentTime / videoDuration) * 100; // 비디오 현재 시간 비율
-        
         setSliderValue(currentSliderValue); // 슬라이더 값 업데이트
       };
 
@@ -352,10 +330,11 @@ useEffect(() => {
         video.removeEventListener('timeupdate', updateSlider);
       };
     }
-  }, [videoDuration,fps]);
+  }, [videoDuration]);
 
-  //비디오 끝까지 재생되면 일시정지 
+    //비디오 끝까지 재생되면 일시정지 
   useEffect(() => {
+
   const video = videoRef.current;
   if (video) {
     const handleVideoEnd = () => {
@@ -370,27 +349,32 @@ useEffect(() => {
   }
 }, []);
 
+//비디오랑 캔버스가 준비되어있는지 확인
+useEffect(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    // video와 canvas가 준비되지 않으면 리턴
+    if (video === null || canvas === null || canvasSize.width === 0 || canvasSize.height === 0) {
+      setIsReady(false);  // video나 canvas가 준비되지 않으면 isReady를 false로 설정
+      console.log("준비안됨");
+      return;
+    }
+
+    // video와 canvas가 준비되면 실행
+    setIsReady(true);  // video와 canvas가 준비되면 isReady를 true로 설정
+  }, [canvasSize, videoRef.current, canvasRef.current]);  // 상태가 변경될 때마다 다시 확인
 
 
-
+//모자이크 처리
 const drawMosaicOrBlur = () => {
   const video = videoRef.current;
   const canvas = canvasRef.current;
 
-  if(!video){
-    console.log("왜이럴까요~");
-  }
-  if(!canvas){
-    console.log("왜이럴까요~2");
-  }
-  if (!video || !canvas || canvasSize.width === 0 || canvasSize.height === 0){
-    return;
-  } 
-
-  // 🎯 requestAnimationFrame + setTimeout으로 실행 지연
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      const ctx = canvas.getContext("2d");
+ if (!isReady) {
+      return;  // 준비되지 않으면 실행하지 않음
+    }
+    const ctx = canvas.getContext("2d");
       if (!ctx) {
         console.warn("Canvas context is null! Canvas might not be rendered yet.");
         return;
@@ -455,30 +439,12 @@ const drawMosaicOrBlur = () => {
         ctx.lineWidth = 2;
         ctx.strokeRect(x, y, width, height);
       });
-    }, 0);
-  });
 };
-
-  // 🔥 🎯 useEffect를 사용해 비디오가 로드된 후 실행되도록 설정
-useEffect(() => {
-  const video = videoRef.current;
-  if (!video) return;
-
-  // 비디오가 완전히 로드된 후 실행
-  const handleLoadedData = () => {
-    drawMosaicOrBlur();
-  };
-
-  video.addEventListener("loadeddata", handleLoadedData);
-
-  return () => {
-    video.removeEventListener("loadeddata", handleLoadedData);
-  };
-}, []);
 
 
   // ✅ 모자이크 처리 함수 추가
   const applyMosaic = (ctx, x, y, width, height, size, intensity) => {
+
     const blockSize = Math.max(size / 4, 4) * (intensity / 100); // 모자이크 블록 크기 조정
 
     // ✅ 중심 좌표에서 크기 조정
@@ -529,6 +495,7 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
 
   // 평균 색상을 구하는 함수
   const getAverageColor = useCallback((pixelData) => {
+
     let r = 0, g = 0, b = 0;
     const pixelCount = pixelData.length / 4;
 
@@ -545,10 +512,13 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
     };
   }, []);
 
+
+
+  //비디오 실행
   useEffect(() => {
   const video = videoRef.current;
   let animationFrameId;
-
+  
   const render = () => {
     if (video.paused || video.ended) return;
     drawMosaicOrBlur(); // 비디오 프레임을 그리는 함수 호출
@@ -563,57 +533,58 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
   };
 }, [canvasSize, detectionData, settings,fps]);
 
-  
+
+//탐지 데이터 가져오기
   useEffect(() => {
+  const video = videoRef.current;
+  if (!video) return; // 비디오가 없으면 실행하지 않음
+
   const fetchDetections = async () => {
     try {
       const response = await fetch(`/edit/videos/${savedFileName}/info`);
       const data = await response.json();
 
-      // 각 프레임의 detections을 포함한 객체를 유지하면서 평탄화
       const flattenedDetections = data.detections.map(item => ({
         frame: item.frame,
-        detections: item.detections // 원래 detections 배열 유지
+        detections: item.detections,
       }));
 
       setDetectionData(flattenedDetections);
 
-      // 비디오가 로딩된 후에 이미지 캡쳐를 시작
-      const video = videoRef.current;
-      if (video) {
-        const handleVideoReady = async () => {
-          const faceImagesMap = {};
-          for (const { detections } of flattenedDetections) {
-            for (const { objectId, className, x, y, width, height } of detections) {
-              if (className === "face" && !faceImagesMap[objectId]) {
-                // 특정 프레임의 이미지 캡쳐
-                const frameTime = (video.duration / flattenedDetections.length) * flattenedDetections.findIndex(d => d.detections === detections);
-                const canvas = await captureFrame(video, frameTime);
-                const imageUrl = captureImageFromFrame(canvas, x, y, width, height);
-                faceImagesMap[objectId] = imageUrl;
-                console.log(`Saved image for faceId: ${objectId}`, imageUrl); // 로그 추가
-              }
-            }
+      // 얼굴 이미지 저장 로직
+      const faceImagesMap = {};
+      for (const { detections } of flattenedDetections) {
+        for (const { objectId, className, x, y, width, height } of detections) {
+          if (className === "face" && !faceImagesMap[objectId]) {
+            const frameTime =
+              (video.duration / flattenedDetections.length) *
+              flattenedDetections.findIndex((d) => d.detections === detections);
+            const canvas = await captureFrame(video, frameTime);
+            const imageUrl = captureImageFromFrame(canvas, x, y, width, height);
+            faceImagesMap[objectId] = imageUrl;
+            console.log(`Saved image for faceId: ${objectId}`);
           }
-
-          setFaceImages(faceImagesMap); // faceImages 상태 업데이트
-          console.log("Face Images Map:", faceImagesMap); // 로그 추가
-        };
-
-        video.addEventListener('loadedmetadata', handleVideoReady);
-        return () => {
-          video.removeEventListener('loadedmetadata', handleVideoReady);
-        };
+        }
       }
+
+      setFaceImages(faceImagesMap);
+      console.log("Face Images Map:", faceImagesMap);
     } catch (error) {
       console.error("Error fetching detection data:", error);
     }
   };
 
-  fetchDetections();
+  if (video.readyState >= 1) {
+    // 비디오가 이미 로드된 경우 즉시 실행
+    fetchDetections();
+  } else {
+    // 비디오가 아직 로드되지 않았다면 loadedmetadata 이벤트 후 실행
+    video.addEventListener("loadedmetadata", fetchDetections);
+    return () => {
+      video.removeEventListener("loadedmetadata", fetchDetections);
+    };
+  }
 }, [fps]);
-
-
 
   // ✅ Canva에서 특정 영역 캡처하는 함수
  const captureFrame = (video, frameTime) => {
@@ -621,6 +592,9 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
     video.currentTime = frameTime; // 특정 프레임으로 이동
     video.onseeked = () => {
       const canvas = document.createElement('canvas');
+      if (!canvas) {
+      return;
+      }
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       const context = canvas.getContext('2d');
@@ -633,13 +607,18 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
 
   // ✅ 탐지된 얼굴 영역 캡처 및 이미지 표시
 const getFaceImage = (id) => {
+  
   return faceImages[id] || null; // faceImages에서 이미지를 가져옴
 };
 
   const captureImageFromFrame = (canvas, x, y, width, height) => {
+
   const tempCanvas = document.createElement('canvas');
   tempCanvas.width = width;
   tempCanvas.height = height;
+  if (!tempCanvas) {
+      return;
+      }
   const tempContext = tempCanvas.getContext('2d');
   tempContext.drawImage(
     canvas,
@@ -681,7 +660,7 @@ const handleEditComplete = async () => {
 
   // 제목을 Spring API에 전송
   try {
-    axiosInstance.put(`/edit/${editNum}`, {
+    axios.put(`/edit/${editNum}`, {
       editTitle: title
   }, {
       headers: {
@@ -698,13 +677,6 @@ const handleEditComplete = async () => {
   navigate('/download', { state: { settings: settingsToSend, savedFileName, editNum,fps } });
 };
 
-
-
-
-
-////////////////////////////////////////////////////////////
-
-
     // settings가 변경될 때마다 재생바 초기화
   useEffect(() => {
     
@@ -713,7 +685,6 @@ const handleEditComplete = async () => {
        video.pause();
         setIsPlaying(false);
       videoRef.current.currentTime = 0; // 재생 위치를 0으로 초기화
-      //videoRef.current.play(); // 필요에 따라 자동 재생
     }
   }, [settings]); // settings가 변경될 때마다 실행
 
@@ -723,54 +694,17 @@ const handleEditComplete = async () => {
       <CssBaseline />
       <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
       <Box sx={{ display: 'flex', height: '100%', padding: 2 }}>
-    {/* <Box sx={{ width: '25%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 2 }}>
-      <Typography variant="h6" sx={{ marginBottom: 1, color: 'text.primary' }}>
-        제목:
-      </Typography>
-      <input
-        type="text"
-        placeholder="제목을 입력하세요"
-        style={{
-          width: '100%', // 너비를 100%로 설정
-          padding: '10px',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          marginBottom: '20px',
-        }}
-      />
-    </Box> */}
-    
-    <Box sx={{ width: '75%', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 4 , marginRight:40}}>
-      <Typography variant="h6" sx={{ color: 'text.primary' , marginRight:1, marginLeft:10,marginBottom:'10px'}}>
-        제목:
-      </Typography> 
-        <input
-          type="text"
-          placeholder="제목을 입력하세요"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{
-            width: '300px', // 원하는 너비로 설정
-            padding: '10px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            marginRight: '16px', // 텍스트와의 간격
-            marginBottom:'10px'
-          }}
-        />
-        <Typography
-          variant="h4"
-          sx={{
-            // textAlign: 'right', // 왼쪽 정렬
-            color: 'text.primary',
-            marginLeft :'30px',
-            marginBottom:'10px'
-          }}
-        >
-          모자이크 처리된 동영상
-        </Typography>
-        </Box>
+        <Box sx={{ width: '75%', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+          <Typography
+            variant="h4"
+            sx={{
+              textAlign: 'center',
+              marginTop: 4,
+              color: 'text.primary',
+            }}
+          >
+            모자이크 처리된 동영상
+          </Typography>
             {videoUrl ? (
               <>
                 <video
@@ -779,7 +713,7 @@ const handleEditComplete = async () => {
                   crossOrigin="anonymous"
                   // controls
                   onLoadedMetadata={handleLoadedMetadata}
-                  onCanPlay={handleLoadedMetadata} // canplay 이벤트도 사용
+                  
                   style={{
                     display: 'block',
                     width: '80%', // 비디오 너비를 80%로 설정
@@ -791,8 +725,6 @@ const handleEditComplete = async () => {
                   }}
                 />
                 <div
-                //  onMouseEnter={handleMouseEnter} // 비디오에 마우스 진입 시
-                //  onMouseLeave={handleMouseLeave} // 비디오에서 마우스 이탈 시
                   style={{
                     position: 'absolute', // 절대 위치로 설정
                     top: '68px', // div의 상단을 부모 div의 상단에 맞춤
@@ -837,7 +769,7 @@ const handleEditComplete = async () => {
                     <Slider
                       id="video-slider"
                       sx={{ marginLeft: '10px', flexGrow: 1 }}
-                      value={sliderValue ?? 0 }
+                      value={sliderValue}
                       onChange={handleSliderChange}
                     />
 
@@ -857,8 +789,27 @@ const handleEditComplete = async () => {
             )}
         </Box>
 
-<Box sx={{ width: "25%", padding: 2, border: "1px solid #ccc", borderRadius: 2 }}>
-  <Tabs value={value ?? 0 } onChange={handleTabChange2} sx={{ marginBottom: 2 }}>
+<Box sx={{ width: "40%", padding: 2, border: "1px solid #ccc", borderRadius: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center',marginLeft:1}}>
+    <Typography variant="h6" sx={{ color: 'text.primary', marginRight: 1, marginBottom: '10px' }}>
+      제목:
+    </Typography>
+    <input
+      type="text"
+      placeholder="제목을 입력하세요"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+      style={{
+        width: '80%', // 원하는 너비로 설정
+        padding: '10px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+        marginRight: '16px', // 텍스트와의 간격
+        marginBottom: '10px',
+      }}
+    />
+  </Box>
+  <Tabs value={value} onChange={handleTabChange2} sx={{ marginBottom: 2 }}>
     <Tab label="유해요소" sx={{ border: "1px solid #ddd", borderRadius: 1, marginRight: 1 }} />
     <Tab label="개인정보" sx={{ border: "1px solid #ddd", borderRadius: 1, marginRight: 1 }} />
     <Tab label="사람" sx={{ border: "1px solid #ddd", borderRadius: 1 }} />
@@ -936,7 +887,7 @@ const handleEditComplete = async () => {
                   sx={{
                   "&.MuiButtonBase-root": {
                     border: "4px solid green !important", // 테두리 강제 적용
-                    borderRadius: "4px", // 둥글게 만들고 싶다면 추가
+                    borderRadius: "4px", // 둥글게 
                   },
                   }}
                 />
@@ -967,7 +918,7 @@ const handleEditComplete = async () => {
                   sx={{
                     "&.MuiButtonBase-root": {
                       border: "4px solid blue !important", // 테두리 강제 적용
-                      borderRadius: "4px", // 둥글게 만들고 싶다면 추가
+                      borderRadius: "4px", // 둥글게 
                     },
                   }}
                 />
@@ -996,7 +947,7 @@ const handleEditComplete = async () => {
                     sx={{
                   "&.MuiButtonBase-root": {
                     border: "4px solid red !important", // 테두리 강제 적용
-                    borderRadius: "4px", // 둥글게 만들고 싶다면 추가
+                    borderRadius: "4px", // 둥글게 
                   },
                   
                   }}
@@ -1024,14 +975,23 @@ const handleEditComplete = async () => {
 </Box>
       </Box>
 
-      <Stack direction="row" spacing={2} sx={{ marginTop: 2, justifyContent: 'center' }}>
-        <Button variant="contained" color="primary" component={Link} to="/edit">
-          돌아가기
-        </Button>
-        <Button variant="outlined" color="secondary"  onClick={handleEditComplete} >
-          편집완료
-        </Button>
-      </Stack>
+     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+  {/* 왼쪽과 오른쪽 여백을 추가하여 버튼들을 가운데 배치 */}
+  <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+    <Stack direction="row" spacing={2}>
+      <Button variant="contained" color="primary" component={Link} to="/edit">
+        돌아가기
+      </Button>
+      <Button variant="outlined" color="secondary" onClick={handleEditComplete}>
+        편집완료
+      </Button>
+    </Stack>
+  </Box>
+
+  {/* 오른쪽 제목 입력 박스 */}
+  
+</Box>
+
     </AppTheme>
   );
 }
