@@ -160,19 +160,26 @@ export default function EditPage(props) {
     setLoading(true);
     setError("");
   
+    // 비디오가 있을 경우 Azure에 업로드하고 URL 가져오기
+    let uploadedVideoUrl = '';
+    if (videoFile) {
+      uploadedVideoUrl = await uploadImageToAzure(videoFile);
+    }
+
     const formData = new FormData();
-    formData.append("videoFile", videoFile);
-  
+
+    formData.append("videoFile_url", uploadedVideoUrl);
+    
     try {
       // Step 1: 동영상 파일 업로드 + T썸네일 추출 + DB 저장
       const uploadResponse = await axiosInstance.post("/edit/start-editing", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
           Authorization: accessToken,
         },
       });
   
-      const { editNum, savedFileName } = uploadResponse.data;
+      const { editNum } = uploadResponse.data;
       const outputPath = "uploads/output.json";   //fastapi에서 저장할 경로
   
       console.log("editNum:", editNum);
@@ -181,10 +188,11 @@ export default function EditPage(props) {
 
       console.log("videoPath:", savedFileName);
       console.log("outputPath:", outputPath);
+
       // Step 2: 동영상 경로 FastAPI에 전송
       const response = await axiosInstance.post(
         "/edit/send-video-path",
-        { video_path: savedFileName, output_path: outputPath },
+        { video_path: uploadedVideoUrl, output_path: outputPath },
         {
           headers: {
             "Content-Type": "application/json",
