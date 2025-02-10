@@ -396,7 +396,7 @@ useEffect(() => {
 ///////////////////    재편집   ///////////////////////////
 const handleReEdit = async () => {
   try {
-    const response = await fetch('/edit/restart-editing', {
+    const response = await fetch('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/edit/restart-editing', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json', // JSON 형식으로 설정
@@ -528,8 +528,19 @@ try {
   const result = await response.json();
   console.log('input_editor 서버 응답:', result);
 
+      // 비디오 경로를 받아서 다운로드 트리거
+      const videoPath = result; // 서버에서 비디오 경로 가져오기
+      if (videoPath) {
+      const a = document.createElement('a'); // 링크 요소 생성
+      a.href = videoPath; // 비디오 경로 설정
+      a.download = videoPath.split('/').pop(); // 다운로드할 파일 이름 설정
+      document.body.appendChild(a); // DOM에 추가
+      a.click(); // 클릭 이벤트 트리거
+      document.body.removeChild(a); // 다운로드 후 링크 요소 제거
+    }
+    
     // 두 번째 요청: download로 downloadInfo 전송
-    const downloadResponse = await fetch('/edit/download', {
+    const downloadResponse = await fetch('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/edit/download', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -546,16 +557,7 @@ try {
     console.log('download 서버 응답:', downloadResult);
 
 
-    // 비디오 경로를 받아서 다운로드 트리거
-  const videoPath = result; // 서버에서 비디오 경로 가져오기
-    if (videoPath) {
-    const a = document.createElement('a'); // 링크 요소 생성
-    a.href = videoPath; // 비디오 경로 설정
-    a.download = videoPath.split('/').pop(); // 다운로드할 파일 이름 설정
-    document.body.appendChild(a); // DOM에 추가
-    a.click(); // 클릭 이벤트 트리거
-    document.body.removeChild(a); // 다운로드 후 링크 요소 제거
-  }
+
 
   } catch (error) {
     console.error('오류 발생:', error);
