@@ -9,6 +9,11 @@ on:
     branches:
       - master
 
+env:
+  REACT_APP_AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.REACT_APP_AZURE_STORAGE_ACCOUNT_NAME }}
+  REACT_APP_AZURE_CONTAINER_NAME: ${{ secrets.REACT_APP_AZURE_CONTAINER_NAME }}
+  REACT_APP_SAS_TOKEN: ${{ secrets.REACT_APP_SAS_TOKEN }}
+
 jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
@@ -33,6 +38,10 @@ jobs:
       # ESLint 경고를 오류로 처리하지 않도록 `CI=false`
       - name: Build the project
         run: CI=false npm run build
+        env:
+          REACT_APP_AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.REACT_APP_AZURE_STORAGE_ACCOUNT_NAME }}
+          REACT_APP_AZURE_CONTAINER_NAME: ${{ secrets.REACT_APP_AZURE_CONTAINER_NAME }}
+          REACT_APP_SAS_TOKEN: ${{ secrets.REACT_APP_SAS_TOKEN }}
 
       # Azure Static Web Apps로 배포
       - name: Build And Deploy
