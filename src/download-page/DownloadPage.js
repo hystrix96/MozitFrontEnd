@@ -553,12 +553,6 @@ try {
         throw new Error(`Network response was not ok for download: ${errorResponse}`);
     }
 
-    const downloadResult = await downloadResponse.json();
-    console.log('download 서버 응답:', downloadResult);
-
-
-
-
   } catch (error) {
     console.error('오류 발생:', error);
   }
