@@ -22,7 +22,7 @@ import axios from 'axios';
 
 export default function MozaicPage() {
   const location = useLocation();
-  const { editNum, uploadedVideoUrl } = location.state || {}; // 상태를 받음
+  const { editNum, uploadedVideoUrl,detection_data } = location.state || {}; // 상태를 받음
   const savedFileName = uploadedVideoUrl; // 전달된 savedFileName 받기
   const videoUrl = uploadedVideoUrl;
   
@@ -49,7 +49,7 @@ useEffect(() => {
         if (!savedFileName) return;  // 파일명이 없으면 실행하지 않음
 
         try {
-            const response = await fetch(`https://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/fps-video/?filename=${savedFileName}`, {
+            const response = await fetch(`https://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/fps-video/?filename=${encodeURIComponent(savedFileName)}`, {
                 method: "GET"
             });
 
@@ -541,10 +541,9 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
 
   const fetchDetections = async () => {
     try {
-      const response = await fetch(`/edit/videos/${savedFileName}/info`);
-      const data = await response.json();
-
-      const flattenedDetections = data.detections.map(item => ({
+      // const response = await fetch(`/edit/videos/${savedFileName}/info`);
+      console.log("detection._data:",detection_data);
+      const flattenedDetections = detection_data.detections.map(item => ({
         frame: item.frame,
         detections: item.detections,
       }));
