@@ -75,8 +75,9 @@ export default function DownloadPage(props) {
   const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
   const { accessToken } = useAuth();
   const location = useLocation();
-  const { settings , editNum, fps, savedFileName } = location.state || {}; // 전달된 마스크 상태 가져오기
-  const videoUrl = savedFileName;
+  const { settings , editNum, fps, uploadedVideoUrl,detection_data } = location.state || {}; // 전달된 마스크 상태 가져오기
+  const savedFileName=uploadedVideoUrl;
+  const videoUrl = uploadedVideoUrl;
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoDuration, setVideoDuration] = useState(0); 
@@ -253,14 +254,11 @@ useEffect(() => {
   useEffect(() => {
     const fetchDetections = async () => {
       try {
-        const response = await fetch(`/edit/videos/${savedFileName}/info`);
-        const data = await response.json();
-        
-        // 각 프레임의 detections을 포함한 객체를 유지하면서 평탄화
-        const flattenedDetections = data.detections.map(item => ({
-          frame: item.frame,
-          detections: item.detections // 원래 detections 배열 유지
-        }));
+       console.log("detection._data:",detection_data);
+      const flattenedDetections = detection_data.frames.map(frame => ({
+        frame: frame.frame,
+        detections: frame.detections, // 각 프레임의 탐지된 객체 목록
+      }));
   
         setDetectionData(flattenedDetections);
         console.log('탐지 데이터:', flattenedDetections);
@@ -417,7 +415,7 @@ const handleReEdit = async () => {
     console.log('Edit Number:', editNum);
 
     // MosaicPage로 이동
-    navigate('/mozaic', { state: { editNum, savedFileName } });
+    navigate('/mozaic', { state: { editNum, uploadedVideoUrl,detection_data } });
   } catch (error) {
     console.error('Error during re-editing:', error);
   }

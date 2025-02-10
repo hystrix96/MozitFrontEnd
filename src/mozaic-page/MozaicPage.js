@@ -679,7 +679,7 @@ const handleEditComplete = async () => {
   }
 
   // 설정을 다운로드 페이지로 전송
-  navigate('/download', { state: { settings: settingsToSend, savedFileName, editNum,fps } });
+  navigate('/download', { state: { settings: settingsToSend, uploadedVideoUrl, editNum,fps,detection_data } });
 };
 
     // settings가 변경될 때마다 재생바 초기화
