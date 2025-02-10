@@ -18,6 +18,7 @@ import PauseIcon from '@mui/icons-material/Pause';
 import { imageDataRGB } from 'stackblur-canvas';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
 
 export default function MozaicPage() {
@@ -665,7 +666,7 @@ const handleEditComplete = async () => {
 
   // 제목을 Spring API에 전송
   try {
-    axios.put(`/edit/${editNum}`, {
+    axiosInstance.put(`/edit/${editNum}`, {
       editTitle: title
   }, {
       headers: {

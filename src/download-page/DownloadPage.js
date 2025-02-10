@@ -547,7 +547,7 @@ try {
 
 
     // 비디오 경로를 받아서 다운로드 트리거
-  const videoPath = result?.videoPath; // 서버에서 비디오 경로 가져오기
+  const videoPath = result; // 서버에서 비디오 경로 가져오기
     if (videoPath) {
     const a = document.createElement('a'); // 링크 요소 생성
     a.href = videoPath; // 비디오 경로 설정
