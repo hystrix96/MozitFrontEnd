@@ -492,6 +492,7 @@ const handleDownload = async () => {
 const fileName = savedFileName.split('/').pop().split('?')[0]; // Windows 경로에서 파일 이름 추출
 const outputPath = fileName; // 최종 경로 설정
 
+
 const payload = {
   request: {
       harmful_intensity: harmfulIntensity,
@@ -509,7 +510,7 @@ const payload = {
       output_path: outputPath,     // 실제 경로로 수정 이거 바꿔야 함 배포 !!
   }
 };
-
+console.log("payload:",payload);
 try {
   // 첫 번째 요청: input_editor로 payload 전송
   const response = await fetch('https://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/input_editor', {
