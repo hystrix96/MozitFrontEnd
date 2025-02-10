@@ -66,7 +66,7 @@ export default function Privacy(props) {
           제3조 (개인정보의 보유 및 이용 기간)
         </Typography>
         <Typography variant="body1" paragraph>
-          회사는 개인정보의 수집 목적이 달성되면 지체 없이 해당 정보를 파기합니다. 업로드된 영상은 모자이크 처리 완료 후 즉시 삭제됩니다.
+          회사는 개인정보의 수집 목적이 달성되면 지체 없이 해당 정보를 파기합니다. 업로드된 영상은 업로드 후 1일(24시간) 뒤에 삭제됩니다.
         </Typography>
       </Box>
 
