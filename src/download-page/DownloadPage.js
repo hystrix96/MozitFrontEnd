@@ -546,12 +546,17 @@ try {
     console.log('download 서버 응답:', downloadResult);
 
 
+    // 비디오 경로를 받아서 다운로드 트리거
+  const videoPath = result?.videoPath; // 서버에서 비디오 경로 가져오기
+    if (videoPath) {
+    const a = document.createElement('a'); // 링크 요소 생성
+    a.href = videoPath; // 비디오 경로 설정
+    a.download = videoPath.split('/').pop(); // 다운로드할 파일 이름 설정
+    document.body.appendChild(a); // DOM에 추가
+    a.click(); // 클릭 이벤트 트리거
+    document.body.removeChild(a); // 다운로드 후 링크 요소 제거
+  }
 
-
-
-
-    
-    
   } catch (error) {
     console.error('오류 발생:', error);
   }
