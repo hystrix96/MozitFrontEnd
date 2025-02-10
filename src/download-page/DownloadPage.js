@@ -472,10 +472,9 @@ const handleDownload = async () => {
   const { person } = settings || {};
   const { intensity: personIntensity = 50, size: personSize = 50, checkedPeople = [] } = person || {};
   const { harmfulElements } = settings || {};
-  const { intensity: harmfulIntensity = 50, size: harmfulSize = 50 } = harmfulElements || {};
-  const { checkedItems = [] } = harmfulElements || {};
+  const { intensity: harmfulIntensity = 50, size: harmfulSize = 50 ,checkedItems:harmfulCheckedItems=[]} = harmfulElements || {};
   const { personalInfo } = settings || {}; // 개인정보 설정 추가
-  const { intensity: privacyIntensity = 50, size: privacySize = 50, privacyElements= [] } = personalInfo || {};
+  const { intensity: privacyIntensity = 50, size: privacySize = 50, checkedItems:personalCheckedItems=[] } = personalInfo || {};
   const faceMosaic = person?.checkedPeople?.length > 0; // 체크된 사람의 수에 따라 true/false 설정
 
   //다운로드 요청 본문 구성
@@ -484,8 +483,8 @@ const handleDownload = async () => {
         editNum: Number(editNum) // Edits 객체 내에 있는 editNum
     },
     faceMosaic: faceMosaic, // 얼굴 모자이크 여부
-    hazardousList: Array.isArray(harmfulElements.checkedItems) ? harmfulElements.checkedItems.join(",") : '', // 유해 요소 목록
-    personalList: Array.isArray(personalInfo.checkedItems) ? personalInfo.checkedItems.join(",") : '', // 개인정보 목록
+    hazardousList: Array.isArray(harmfulCheckedItems) ? harmfulCheckedItems.join(",") : '', // 유해 요소 목록
+    personalList: Array.isArray(personalCheckedItems) ? personalCheckedItems.join(",") : '', // 개인정보 목록
 };
 
 // savedFileName에서 파일 이름만 추출
@@ -497,10 +496,10 @@ const payload = {
   request: {
       harmful_intensity: harmfulIntensity,
       harmful_size: harmfulSize,
-      harmful_checklist: Array.isArray(harmfulElements) ? harmfulElements.join(", ") : "", // 문자열로 변환
+      harmful_checklist: Array.isArray(harmfulCheckedItems) ? harmfulCheckedItems.join(", ") : "", // 문자열로 변환
       privacy_intensity: privacyIntensity,
       privacy_size: privacySize,
-      privacy_checklist: Array.isArray(privacyElements) ? privacyElements.join(", ") : "", // 문자열로 변환
+      privacy_checklist: Array.isArray(personalCheckedItems) ? personalCheckedItems.join(", ") : "", // 문자열로 변환
       person_intensity: personIntensity,
       person_size: personSize,
       person_checklist: Array.isArray(checkedPeople) ? checkedPeople.join(", ") : "", // 문자열로 변환
