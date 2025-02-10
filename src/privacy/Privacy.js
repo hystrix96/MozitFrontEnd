@@ -14,7 +14,7 @@ export default function Privacy(props) {
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
-      <SitemarkIcon sx={{ position: 'fixed', top: '2rem', left: '2rem' }}/>
+      <SitemarkIcon sx={{ position: 'absolute', top: '2rem', left: '2rem' }}/>
       <Container maxWidth="md" sx={{ py: 4, mt: 12 }}>
         <Box sx={{ mb: 4 }}>
       <Typography variant="h4" gutterBottom align="center">
