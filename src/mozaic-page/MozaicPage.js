@@ -49,7 +49,7 @@ useEffect(() => {
         if (!savedFileName) return;  // 파일명이 없으면 실행하지 않음
 
         try {
-             const response = await fetch("https://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/fps-video", {
+             const response = await fetch("https://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/fps-video/", {
                 method: "POST",  // POST 메서드 사용
                 headers: {
                   "Content-Type": "application/json",  // JSON 형식의 데이터를 전송한다고 명시
