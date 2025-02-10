@@ -47,7 +47,7 @@ export default function TermOfServicePage(props) {
           </Typography>
           <Typography variant="body1" paragraph>
             회사는 이용자가 제공한 영상을 분석하여 지정된 영역에 모자이크 처리를 제공합니다.
-            업로드된 모든 영상은 처리 완료 후 즉시 삭제되며, 회사는 영상을 저장하거나 보관하지 않습니다.
+            업로드된 모든 영상은 업로드 후 1일(24시간) 뒤에 삭제되며, 회사는 영상을 저장하거나 보관하지 않습니다.
             서비스는 기업 고객 전용으로 제공되며, 개인 고객은 이용할 수 없습니다.
           </Typography>
         </Box>
@@ -75,7 +75,7 @@ export default function TermOfServicePage(props) {
             제6조 (개인정보 및 콘텐츠 보호)
           </Typography>
           <Typography variant="body1" paragraph>
-            회사는 이용자가 업로드한 영상을 처리 목적으로만 사용하며, 처리 완료 즉시 삭제합니다.
+            회사는 이용자가 업로드한 영상을 처리 목적으로만 사용하며, 업로드 후 1일(24시간) 뒤에 삭제합니다.
             회사는 이용자의 영상 데이터를 제3자에게 제공하거나 내부 테스트에 사용하지 않습니다.
             개인정보 보호와 관련된 세부 사항은 회사의 개인정보처리방침에 따릅니다.
           </Typography>
