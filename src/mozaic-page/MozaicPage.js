@@ -549,9 +549,9 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
     try {
       // const response = await fetch(`/edit/videos/${savedFileName}/info`);
       console.log("detection._data:",detection_data);
-      const flattenedDetections = detection_data.detections.map(item => ({
-        frame: item.frame,
-        detections: item.detections,
+      const flattenedDetections = detection_data.frames.map(frame => ({
+        frame: frame.frame,
+        detections: frame.detections, // 각 프레임의 탐지된 객체 목록
       }));
 
       setDetectionData(flattenedDetections);
