@@ -84,7 +84,7 @@ export default function UserListPage(props) {
                       const downloadRatio =
                         user.workCount > 0
                           ? ((user.downloadCount / user.workCount) * 100).toFixed(2)
-                          : 0;
+                          : '0.00';
 
                       return (
                         <TableRow key={user.id}>
