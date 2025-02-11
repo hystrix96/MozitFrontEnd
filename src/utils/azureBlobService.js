@@ -1,4 +1,4 @@
-import { BlobServiceClient, newPipeline, AnonymousCredential } from '@azure/storage-blob';
+import { BlobServiceClient } from '@azure/storage-blob';
 
 const AZURE_STORAGE_ACCOUNT_NAME = process.env.REACT_APP_AZURE_STORAGE_ACCOUNT_NAME || window._env_.REACT_APP_AZURE_STORAGE_ACCOUNT_NAME;
 const AZURE_CONTAINER_NAME = process.env.REACT_APP_AZURE_CONTAINER_NAME || window._env_.REACT_APP_AZURE_CONTAINER_NAME;
@@ -21,7 +21,6 @@ export const uploadImageToAzure = async (file) => {
 
     // Upload the image file to Azure Blob Storage
     const uploadBlobResponse = await blockBlobClient.uploadBrowserData(file);
-    console.log(`Upload block blob ${blobName} successfully`, uploadBlobResponse);
 
     // Return the image URL
     return blockBlobClient.url;
@@ -39,10 +38,8 @@ export const uploadVideoToAzure = async (file) => {
 
     // Upload the video file to Azure Blob Storage
     const uploadBlobResponse = await blockBlobClient.uploadBrowserData(file);
-    console.log(`Upload block blob ${blobName} successfully`, uploadBlobResponse);
 
     // 업로드된 비디오의 URL 반환
-    console.log('비디오 url:',blockBlobClient.url);
     return blockBlobClient.url;
   } catch (error) {
     console.error("Error uploading video to Azure", error);

@@ -39,7 +39,7 @@ export default function AppAppBar() {
   const [open, setOpen] = useState(false);
   const [openWorkSubMenu, setOpenWorkSubMenu] = useState(false);  // 작업 메뉴 서브 메뉴
   const [openUserSubMenu, setOpenUserSubMenu] = useState(false);  // 사용자 메뉴 서브 메뉴
-  // const isLoggedIn = isUserLoggedIn();
+
   const { accessToken, username, isTokenFetched } = useAuth();
 
   const isLoggedIn = accessToken != null && accessToken !== '';  // accessToken이 존재하면 로그인 상태로 간주
@@ -103,7 +103,6 @@ const fetchSub = async () => {
   try {
     // 구독 정보 가져오기
     const response = await axiosInstance.get('/my');
-    console.log(response.data.userSub);
 
     // 구독자 정보 확인
     if (!response.data.userSub) {

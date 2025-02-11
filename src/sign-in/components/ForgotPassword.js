@@ -171,13 +171,11 @@ function ForgotPassword({ open, handleClose }) {
       {
         withCredentials: true, 
       });
-      console.log(response);
       if (response.status === 200) {
         setTimer(0);
         alert('이메일 인증이 완료되었습니다.');
         const temporaryToken = response.headers.get('Temporary-Token');
         settemporaryToken(temporaryToken);
-        console.log("응답확인:",temporaryToken);
         handleNext();
       } else {
         settemporaryToken('')
@@ -193,7 +191,6 @@ function ForgotPassword({ open, handleClose }) {
     if(passwordVerified && confirmpasswordVerified){
       try {
         // 비밀번호 리셋을 위한 백엔드 API 호출
-        console.log("보내는 토큰: ", temporaryToken);
         const response = await axios.post('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/users/reset-password', {
           "new-pwd": password,
         },

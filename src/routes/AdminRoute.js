@@ -16,7 +16,6 @@ const AdminRoutes = () => {
     const { userId } = useAuth();
 
     if (userId !== 'admin') {
-        console.log(userId);
         if(userId){
             alert("관리자만 접근 가능합니다.")
             return <Navigate to="/" replace />;

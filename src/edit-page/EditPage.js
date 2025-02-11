@@ -101,7 +101,6 @@ export default function EditPage(props) {
     }
   
     const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
-    console.log((file.size / (1024 * 1024)).toFixed(2));
   
     if (file.size > maxFileSizeBytes) {
       setError(`파일 크기가 너무 큽니다! (${maxFileSizeMB}MB 이하만 업로드 가능)`);
@@ -181,8 +180,6 @@ export default function EditPage(props) {
       const { editNum } = uploadResponse.data;
       const outputPath = "uploads/output.json";   //fastapi에서 저장할 경로
   
-      console.log("editNum:", editNum);
-      console.log("outputPath:", outputPath);
 
       // Step 2: 동영상 경로 FastAPI에 전송
       const response = await axiosInstance.post(
@@ -196,7 +193,6 @@ export default function EditPage(props) {
       );
       
       const detection_data=response.data
-      console.log("FastAPI 응답:", response.data);
       //mozaic페이지로 넘어감. 
       navigate("/mozaic", { state: { editNum,uploadedVideoUrl,detection_data } });
   

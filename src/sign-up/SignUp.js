@@ -6,9 +6,7 @@ import MuiCard from '@mui/material/Card';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
-import { DaumPostcodeEmbed } from 'react-daum-postcode';
 import axiosInstance from '../api/axiosInstance';
-import axios from 'axios';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -131,7 +129,6 @@ export default function SignUp(props) {
       });
 
       if (response.status === 201) {
-        console.log('사용가능한 이메일입니다');
         return true;
       } else if (response.status === 409) {
         console.error('이미 사용 중인 이메일입니다.');

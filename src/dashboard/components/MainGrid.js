@@ -1,23 +1,16 @@
 import * as React from 'react';
 import Grid from '@mui/material/Grid2';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Copyright from '../internals/components/Copyright';
 import ChartUserByCountry from './ChartUserByCountry';
-import CustomizedTreeView from './CustomizedTreeView';
-import CustomizedDataGrid from './CustomizedDataGrid';
 import TotalDownload from './TotalDownload';
 import TotalQuestions from './TotalQuestion';
-import HighlightedCard from './HighlightedCard';
-import PageViewsBarChart from './PageViewsBarChart';
-import SessionsChart from './SessionsChart';
-import StatCard from './StatCard';
 import axiosInstance from '../../api/axiosInstance';
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import AzureMonitorChart from './AzureMonitorChart';
-import { Card, CardContent, CircularProgress, Button, TextField, Grid2 } from '@mui/material';
+import { Card, CardContent } from '@mui/material';
 
 export default function MainGrid() {
   const [users, setUsers] = useState([]);
@@ -69,7 +62,6 @@ export default function MainGrid() {
     return entry ? entry.count : 0; // 해당 날짜에 미답변 개수가 있으면 가져오고, 없으면 0
   });
 
-  console.log("📌 unansweredByDate:", unansweredByDate);
   const data = [
     {
       title: '문의사항',

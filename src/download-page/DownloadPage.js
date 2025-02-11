@@ -11,7 +11,6 @@ import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
-import { Link } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import Slider from '@mui/material/Slider';
@@ -254,14 +253,12 @@ useEffect(() => {
   useEffect(() => {
     const fetchDetections = async () => {
       try {
-       console.log("detection._data:",detection_data);
       const flattenedDetections = detection_data.frames.map(frame => ({
         frame: frame.frame,
         detections: frame.detections, // 각 프레임의 탐지된 객체 목록
       }));
   
         setDetectionData(flattenedDetections);
-        console.log('탐지 데이터:', flattenedDetections);
       } catch (error) {
         console.error("Error fetching detection data:", error);
       }
@@ -373,12 +370,6 @@ useEffect(() => {
         };
       }, []);
 
-
-      useEffect(() => {
-        console.log('다운로드 설정:', settings);
-        console.log('저장된 파일 이름:', savedFileName);
-        console.log('편집 번호:', editNum);
-      }, [settings, savedFileName, editNum]);
 ///////////////////////////////////////////////////////////////////
 
 
@@ -412,7 +403,6 @@ const handleReEdit = async () => {
     }
 
     const editNum = await response.json(); // EDIT_NUM 반환
-    console.log('Edit Number:', editNum);
 
     // MosaicPage로 이동
     navigate('/mozaic', { state: { editNum, uploadedVideoUrl,detection_data } });
@@ -422,51 +412,6 @@ const handleReEdit = async () => {
 };
 ///////////////////////////////////////////////////////////////////
 
-
-///////////////////  다운로드 클릭시   ////////////////////////
-// handleDownload 함수 정의
-// const handleDownload = async () => {
-//   const { settings, editNum } = location.state || {};
-  
-//   const { harmfulElements, person, personalInfo } = settings || {};
-  
-//   // 유해 요소 체크된 항목
-//   const hazardousList = harmfulElements?.checkedItems ? harmfulElements.checkedItems.join(", ") : "";
-  
-//   // 개인정보 체크된 항목
-//   const personalList = personalInfo?.checkedItems ? personalInfo.checkedItems.join(", ") : "";
-
-//   // 모자이크 여부 설정
-//   const faceMosaic = person?.checkedPeople?.length > 0; // 체크된 사람의 수에 따라 true/false 설정
-
-//   // 다운로드 요청 본문 구성
-//   const downloadInfo = {
-//       editNum: editNum, // 편집 번호
-//       faceMosaic: faceMosaic, // 얼굴 모자이크 여부
-//       hazardousList: hazardousList, // 유해 요소 목록
-//       personalList: personalList // 개인정보 목록
-//   };
-
-//   try {
-//       const response = await fetch('/edit/download', {
-//           method: 'POST',
-//           headers: {
-//               'Content-Type': 'application/json',
-//               'Authorization': accessToken,
-//           },
-//           body: JSON.stringify(downloadInfo),
-//       });
-
-//       if (!response.ok) {
-//           throw new Error('Network response was not ok');
-//       }
-
-//       const result = await response.json();
-//       console.log('다운로드 성공:', result);
-//   } catch (error) {
-//       console.error('다운로드 중 오류 발생:', error);
-//   }
-// };
 
 const handleDownload = async () => {
   const { person } = settings || {};
@@ -509,7 +454,6 @@ const payload = {
       output_path: outputPath,     // 실제 경로로 수정 이거 바꿔야 함 배포 !!
   }
 };
-console.log("payload:",payload);
 try {
   // 첫 번째 요청: input_editor로 payload 전송
   const response = await fetch('https://mozit-fastapi-leo8071004-due6hwdzguebceh7.koreacentral-01.azurewebsites.net/input_editor', {
@@ -526,7 +470,6 @@ try {
   }
 
   const result = await response.json();
-  console.log('input_editor 서버 응답:', result);
 
       // 비디오 경로를 받아서 다운로드 트리거
       const videoPath = result; // 서버에서 비디오 경로 가져오기

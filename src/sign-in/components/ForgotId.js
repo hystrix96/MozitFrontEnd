@@ -153,10 +153,8 @@ function ForgotPassword({ open, handleClose }) {
             },
         }
     );
-      console.log(response)
     
       if (response.status === 200) {
-        console.log(response.data);
         setId(response.data);
         return true;
       }

@@ -4,8 +4,8 @@ import AppTheme from '../shared-theme/AppTheme';
 import AppAppBar from '../components/AppAppBar';
 import Footer from '../components/Footer';
 import axiosInstance from '../api/axiosInstance';
-import { TextField, Button, Box, Typography, Grid2, Switch, FormControlLabel, Collapse, FormGroup, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { TextField, Button, Box, Typography, Grid2,FormControl, Select, MenuItem } from '@mui/material';
+import {useNavigate } from 'react-router-dom';
 import { uploadImageToAzure } from '../utils/azureBlobService';
 
 export default function QuestionPage(props) {
@@ -65,7 +65,6 @@ export default function QuestionPage(props) {
 
       if (response.status === 201) {
         alert('문의가 성공적으로 전송되었습니다!');
-        console.log('Response:', response.data);
         navigate('/myquestion')
       }
     } catch (error) {

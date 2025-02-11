@@ -17,7 +17,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import { imageDataRGB } from 'stackblur-canvas';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import axiosInstance from '../api/axiosInstance';
 
 
@@ -63,7 +62,6 @@ useEffect(() => {
             if (!response.ok) throw new Error("Error fetching FPS");
 
             const data = await response.json();
-            console.log("FPS:", data.fps);
             setFps(data.fps);
 
         } catch (error) {
@@ -82,7 +80,6 @@ useEffect(() => {
       .filter(detection => detection.className === "face")
       .map(detection => detection.objectId);
 
-    console.log("Filtered Face IDs:", faceIds); // 로그 추가
     return [...new Set(faceIds)]; // 중복 제거
   };
 
@@ -103,10 +100,8 @@ useEffect(() => {
 }, [faceImages]);
 
   useEffect(() => {
-    console.log("Detection Data:", detectionData);
     if (detectionData.length > 0) {
       const uniqueFaceIds = getUniqueFaceIds(detectionData);
-      console.log("Unique Face IDs:", uniqueFaceIds);
       setFaceIds(uniqueFaceIds);
     }
   }, [detectionData]);
@@ -190,7 +185,6 @@ const handleSizeChange = (tab) => (event, newValue) => {
         updatedSettings.blur = true;
         updatedSettings.mosaic = false;
       }
-      console.log(videoDuration);
       return updatedSettings;
     });
   };
@@ -364,7 +358,6 @@ useEffect(() => {
     // video와 canvas가 준비되지 않으면 리턴
     if (video === null || canvas === null || canvasSize.width === 0 || canvasSize.height === 0) {
       setIsReady(false);  // video나 canvas가 준비되지 않으면 isReady를 false로 설정
-      console.log("준비안됨");
       return;
     }
 
@@ -549,7 +542,6 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
   const fetchDetections = async () => {
     try {
       // const response = await fetch(`/edit/videos/${savedFileName}/info`);
-      console.log("detection._data:",detection_data);
       const flattenedDetections = detection_data.frames.map(frame => ({
         frame: frame.frame,
         detections: frame.detections, // 각 프레임의 탐지된 객체 목록
@@ -568,13 +560,11 @@ const applyBlur = (ctx, x, y, width, height, blurSize, intensity) => {
             const canvas = await captureFrame(video, frameTime);
             const imageUrl = captureImageFromFrame(canvas, x, y, width, height);
             faceImagesMap[objectId] = imageUrl;
-            console.log(`Saved image for faceId: ${objectId}`);
           }
         }
       }
 
       setFaceImages(faceImagesMap);
-      console.log("Face Images Map:", faceImagesMap);
     } catch (error) {
       console.error("Error fetching detection data:", error);
     }
@@ -661,9 +651,6 @@ const handleEditComplete = async () => {
     }
   };
 
-  // 로그 찍기
-  console.log('전송할 설정:', settingsToSend);
-
   // 제목을 Spring API에 전송
   try {
     axiosInstance.put(`/edit/${editNum}`, {
@@ -673,7 +660,6 @@ const handleEditComplete = async () => {
           'Content-Type': 'application/json'
       }
     });
-    console.log('제목 업데이트 완료');
   } catch (error) {
     console.error('제목 업데이트 실패:', error);
     return; // 제목 업데이트에 실패하면 이후 로직을 중단

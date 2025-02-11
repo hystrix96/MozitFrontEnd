@@ -1,5 +1,4 @@
 import axiosInstance from "./axiosInstance";
-import axios from 'axios';
 import { useEffect, useState } from "react";
 
 export const getAzureToken = async () => {
@@ -16,7 +15,6 @@ export const getAzureToken = async () => {
 export const fetchAzureMetrics = async () => {
   try {
     const response = await axiosInstance.get("/api/azure/metrics");
-    console.log("Raw API Response:", response.data);
 
       // 데이터를 JSON 배열로 변환
     const jsonData = response.data
@@ -24,7 +22,6 @@ export const fetchAzureMetrics = async () => {
       .split("\n") // 개행 문자 기준으로 분할
       .map((line) => JSON.parse(line)); // 각 줄을 JSON 객체로 변환
 
-    console.log("Parsed Data:", jsonData);
 
     return jsonData;
   } catch (error) {

@@ -9,11 +9,9 @@ export const attachAuthInterceptors = (getAccessToken, setAccessToken, setUserNa
     axiosInstance.interceptors.request.use(
       (config) => {
         const accessToken = getAccessToken(); 
-        console.log('Access Token in Axios Interceptor:', accessToken);
         if (accessToken) {
           config.headers['Authorization'] = `${accessToken}`;
         }
-        console.log('Authorization Header:', config.headers['Authorization']);
         return config;
       },
       (error) => Promise.reject(error)
@@ -38,8 +36,6 @@ export const attachAuthInterceptors = (getAccessToken, setAccessToken, setUserNa
 
           try {
             const response = await axios.post('/auth/refresh', null, { withCredentials: true });
-            console.log('Refresh Token Response:', response.headers['authorization']); // 디버깅용
-            console.log(response.data.username)
             setUserName(response.data.username);
             
             const newAccessToken = response.headers['authorization'];
@@ -47,7 +43,6 @@ export const attachAuthInterceptors = (getAccessToken, setAccessToken, setUserNa
               setAccessToken(newAccessToken); // Context에 저장
               
               originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-              console.log('New Access Token:', newAccessToken); // 디버깅용
               return axiosInstance(originalRequest); // 요청 재시도
             }
           } catch (refreshError) {

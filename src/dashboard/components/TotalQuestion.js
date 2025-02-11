@@ -64,11 +64,9 @@ export default function TotalQuestion() {
                 setUnansweredCount(unansweredItems.length);
                 setQuestions(questionData);
                 setUnansweredList(unansweredItems);
-                console.log("questionData:", questionData)
                 // ✅ questionType으로 카테고리 목록 생성 (중복 제거)
                 const uniqueCategories = [...new Set(questionData.map(q => q.questionType))];
                 setCategoryList(uniqueCategories);
-                console.log("categoryList:", uniqueCategories); // categoryList 확인
             } catch (error) {
                 console.error('문의 데이터 가져오기 실패:', error);
             }

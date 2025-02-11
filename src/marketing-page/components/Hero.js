@@ -7,43 +7,6 @@ import { styled, useTheme } from "@mui/material/styles";
 import SitemarkIcon from '../../components/SitemarkIcon';
 import "@img-comparison-slider/react";
 
-const StyledButton = styled("button")({
-  padding: "10px 20px", // 패딩 줄이기
-  border: "unset",
-  borderRadius: "10px", // 테두리 곡률 줄이기
-  color: "#212121",
-  zIndex: 1,
-  background: "#e8e8e8",
-  position: "relative",
-  fontWeight: "700", // 글꼴 두께 조정
-  fontSize: "14px", // 글자 크기 줄이기
-  WebkitBoxShadow: "3px 6px 15px -3px rgba(0,0,0,0.2)",
-  boxShadow: "3px 6px 15px -3px rgba(0,0,0,0.2)",
-  transition: "all 250ms",
-  overflow: "hidden",
-  cursor: "pointer",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    height: "100%",
-    width: 0,
-    borderRadius: "10px",
-    backgroundColor: "#212121",
-    zIndex: -1,
-    WebkitBoxShadow: "3px 6px 15px -3px rgba(0,0,0,0.2)",
-    boxShadow: "3px 6px 15px -3px rgba(0,0,0,0.2)",
-    transition: "all 250ms",
-  },
-  "&:hover": {
-    color: "#e8e8e8",
-  },
-  "&:hover::before": {
-    width: "100%",
-  },
-});
-
 const StyledLearnMoreButton = styled("button")(({ theme }) => ({
   position: "relative",
   display: "inline-block",

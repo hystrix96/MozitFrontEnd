@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, CssBaseline, Divider, Stack, styled, Checkbox } from '@mui/material';
+import { Button, CssBaseline,Stack, styled, Checkbox } from '@mui/material';
 import { FormControlLabel, FormControl, FormLabel, TextField, Box, Typography, Link } from '@mui/material';
 import MuiCard from '@mui/material/Card';
 import { useAuth } from '../Context/AuthContext';
@@ -97,7 +97,6 @@ export default function SignIn(props) {
         withCredentials: true,
       });
 
-      console.log(response.headers.get('Authorization'));
       // 응답 처리
       if (response.status === 200) {
         setAccessToken(response.headers.get('Authorization'));

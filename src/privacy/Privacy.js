@@ -21,7 +21,7 @@ export default function Privacy(props) {
         Mozit 개인정보 처리방침
       </Typography>
       <Typography variant="body2" color="text.secondary" align="right">
-                    마지막 업데이트: 2025년 1월 22일
+                    마지막 업데이트: 2025년 2월 10일
         </Typography>
       </Box>
         

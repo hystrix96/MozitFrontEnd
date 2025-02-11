@@ -6,14 +6,13 @@ import {
   Card,
   CardActions,
   CardContent,
-  Chip,
   Container,
   Divider,
   Fab,
   Typography
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { AutoAwesome as AutoAwesomeIcon, Check as CheckIcon } from '@mui/icons-material';
+import { Check as CheckIcon } from '@mui/icons-material';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
