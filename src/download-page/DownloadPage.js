@@ -414,6 +414,7 @@ const handleReEdit = async () => {
 
 
 const handleDownload = async () => {
+  setLoading(true);
   const { person } = settings || {};
   const { intensity: personIntensity = 50, size: personSize = 50, checkedPeople = [] } = person || {};
   const { harmfulElements } = settings || {};
@@ -482,6 +483,7 @@ try {
       document.body.removeChild(a); // 다운로드 후 링크 요소 제거
     }
     
+    
     // 두 번째 요청: download로 downloadInfo 전송
     const downloadResponse = await fetch('https://mozit-spring-leo8071004-e7b9gwh9cuayc2gf.koreacentral-01.azurewebsites.net/edit/download', {
       method: 'POST',
@@ -498,15 +500,11 @@ try {
 
   } catch (error) {
     console.error('오류 발생:', error);
-  }
+  } finally {
+      setLoading(false);
+    }
 };
 ///////////////////////////////////////////////////////////////////
-
-
-  ///팝업창 
-  const handleClosePopover = () => {
-    setAnchorEl(null); // Popover 닫기
-  };
 
   return (
     <AppTheme {...props} sx={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
@@ -607,31 +605,10 @@ try {
         </Button>
       </Stack>
 
-      {/* Popover 추가 */}
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleClosePopover}
-        anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'right', // 오른쪽으로 띄우기
-        }}
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
-        PaperProps={{
-          style: {
-            marginLeft: '8px', // 버튼과 Popover 사이의 간격 추가
-          },
-        }}
-      >
-      </Popover>
-
       {/* 영상 처리 중 메시지 추가 */}
       {loading && (
         <Typography variant="h6" sx={{ textAlign: 'center', color: 'primary.main', marginTop: 2 }}>
-          영상 처리 중입니다. 대기해주세요...
+          영상 다운로드 중입니다. 대기해주세요...
         </Typography>
       )}
     </AppTheme>
