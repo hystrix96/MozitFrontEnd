@@ -27,20 +27,19 @@ export default function Pricing() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.userSub) {
-      setUser(user);
-      setLoading(false);
+    if (!user?.userSub) {
+        axiosInstance.get('/my')
+            .then((response) => {
+                setUser(response.data);
+            })
+            .catch((error) => {
+                console.error('구독 정보 가져오기 실패:', error);
+            })
+            .finally(() => setLoading(false));
     } else {
-      axiosInstance.get('/my')
-        .then((response) => {
-          setUser(response.data.userSub);
-        })
-        .catch((error) => {
-          console.error('구독 정보 가져오기 실패:', error);
-        })
-        .finally(() => setLoading(false));
+        setLoading(false);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     const tiers = [
