@@ -85,6 +85,7 @@ export default function MyPageCheck(props) {
       setIsPasswordVerified(false);
       setError('비밀번호가 일치하지 않습니다.');
       setOpenDialog(true);
+      return;
     }
   };
 
