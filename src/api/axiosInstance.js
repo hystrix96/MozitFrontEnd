@@ -47,7 +47,6 @@ export const attachAuthInterceptors = (getAccessToken, setAccessToken, setUserNa
             }
           } catch (refreshError) {
             console.error('Refresh Token Error:', refreshError);
-            window.location.href = '/sign-in';
             return Promise.reject(refreshError);
           }
         }
