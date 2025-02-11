@@ -109,6 +109,32 @@ export default function Pricing() {
     }
   };
 
+  const handleSubscriptionChange = async (newSub) => {
+    try {
+      const response = await axiosInstance.patch('/my', { userSub: newSub });
+      if (response.status === 200) {
+        setUser((prevUser) => ({ ...prevUser, userSub: newSub }));
+        navigate('/mysubpage');
+      }
+    } catch (error) {
+      console.error('구독 변경 오류:', error);
+      alert('구독 변경 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    try {
+      const response = await axiosInstance.patch('/my', { userSub: null });
+      if (response.status === 200) {
+        setUser((prevUser) => ({ ...prevUser, userSub: null }));
+        navigate('/mysubpage');
+      }
+    } catch (error) {
+      console.error('구독 해지 오류:', error);
+      alert('구독 해지 중 오류가 발생했습니다.');
+    }
+  };
+
   const handleToggle = (value) => {
     setIsYearly(value);
   };
@@ -340,7 +366,7 @@ export default function Pricing() {
                               ? tier.buttonColor // 다른 플랜을 구독 중인 경우 원래 색상 사용
                                   : 'secondary' // 구독하지 않은 경우 secondary 색상 사용
                       }
-                        onClick={handleBottonClick}
+                        onClick={tier.subscribed ? handleCancelSubscription() : handleSubscriptionChange(tier.title)}
                       >
                         {tier.subscribed
                             ? '플랜 해지하기'
