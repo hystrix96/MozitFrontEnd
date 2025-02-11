@@ -366,7 +366,13 @@ export default function Pricing() {
                               ? tier.buttonColor // 다른 플랜을 구독 중인 경우 원래 색상 사용
                                   : 'secondary' // 구독하지 않은 경우 secondary 색상 사용
                       }
-                        onClick={tier.subscribed ? handleCancelSubscription() : handleSubscriptionChange(tier.title)}
+                      onClick={() => {
+                        if (tier.subscribed) {
+                          handleCancelSubscription();
+                        } else {
+                          handleSubscriptionChange(tier.title);
+                        }
+                      }}
                       >
                         {tier.subscribed
                             ? '플랜 해지하기'
