@@ -1,5 +1,4 @@
-
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -15,6 +14,7 @@ import Grid from '@mui/material/Grid2';
 import { Check as CheckIcon } from '@mui/icons-material';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../api/axiosInstance'
 
 const tiers = [
   {
@@ -67,9 +67,27 @@ const tiers = [
 export default function Pricing() {
   const { accessToken, isTokenFetched } = useAuth();
   const [isYearly, setIsYearly] = React.useState(false);
-
+  const [user, setUser] = useState([]);
+  const [userSub, setUserSub] = useState([]);
   const isLoggedIn = accessToken != null && accessToken !== '';
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user?.userSub) {
+      setUserSub(user.userSub);
+      setLoading(false);
+    } else {
+      axiosInstance.get('/my')
+        .then((response) => {
+          setUserSub(response.data.userSub);
+        })
+        .catch((error) => {
+          console.error('구독 정보 가져오기 실패:', error);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [user]);
 
   const handleBottonClick = () => {
     if (isLoggedIn) {
@@ -217,7 +235,7 @@ export default function Pricing() {
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   gap: 3,
-                  ...(tier.recommended && {
+                  ...(tier.subscribed && {
                     border: '2px solid',
                     borderColor: 'secondary.main',
                     boxShadow: 4,
@@ -301,11 +319,27 @@ export default function Pricing() {
                   <CardActions sx={{ mt: 2 }}>
                     <Button
                       fullWidth
-                      variant={tier.buttonVariant}
-                      color={tier.buttonColor}
+                      variant={
+                        tier.subscribed
+                            ? tier.buttonVariant // 구독 중인 경우 원래 색상 사용
+                            : user.userSub
+                                ? tier.buttonVariant // 다른 플랜을 구독 중인 경우 원래 색상 사용
+                                : 'contained' // 구독하지 않은 경우
+                    }
+                    color={
+                        tier.subscribed
+                            ? tier.buttonColor // 구독 중인 경우 원래 색상 사용
+                            : user.userSub
+                                ? tier.buttonColor // 다른 플랜을 구독 중인 경우 원래 색상 사용
+                                : 'secondary' // 구독하지 않은 경우 secondary 색상 사용
+                    }
                       onClick={handleBottonClick}
                     >
-                      {tier.buttonText}
+                      {tier.subscribed
+                          ? '플랜 해지하기'
+                          : user.userSub
+                              ? `${tier.title} 플랜으로 변경하기`
+                              : `${tier.title} 플랜 시작하기`}
                     </Button>
                   </CardActions>
                   <Divider sx={{ my: 3 }} />
