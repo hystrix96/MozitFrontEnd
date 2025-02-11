@@ -330,9 +330,17 @@ export default function Pricing() {
                   <CardActions sx={{ mt: 2 }}>
                     <Button
                       fullWidth
-                      variant={tier.subscribed ? 'outlined' : 'contained'}
-                      color={tier.subscribed ? 'inherit' : 'primary'}
-                      onClick={handleBottonClick}
+                      variant={
+                        user.userSub
+                            ? tier.buttonVariant // 다른 플랜을 구독 중인 경우 원래 색상 사용
+                                : 'contained' // 구독하지 않은 경우
+                      }
+                      color={
+                        user.userSub
+                              ? tier.buttonColor // 다른 플랜을 구독 중인 경우 원래 색상 사용
+                                  : 'secondary' // 구독하지 않은 경우 secondary 색상 사용
+                      }
+                        onClick={handleBottonClick}
                       >
                         {tier.subscribed
                             ? '플랜 해지하기'
