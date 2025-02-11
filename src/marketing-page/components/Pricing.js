@@ -16,76 +16,88 @@ import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance'
 
-const tiers = [
-  {
-    title: 'Basic',
-    priceMonthly: '10,000',
-    priceYearly: '100,000',
-    description: [
-      '100MB 용량',
-      '유해요소 모자이크 기능',
-      '개인정보 모자이크 기능',
-    ],
-    buttonText: 'Basic 플랜 시작하기',
-    buttonVariant: 'contained',
-    buttonColor: 'secondary',
-    recommended: false,
-    userType: ['일반 사용자', '소규모 개인 콘텐츠 크리에이터'],
-  },
-  {
-    title: 'Pro',
-    priceMonthly: '40,000',
-    priceYearly: '400,000',
-    description: [
-      '2GB 용량',
-      '모든 모자이크 기능\n(유해요소, 개인정보, 사람 얼굴)',
-      '라이브 스트리밍 기능',
-    ],
-    buttonText: 'Pro 플랜 시작하기',
-    buttonVariant: 'contained',
-    buttonColor: 'secondary',
-    recommended: false,
-    userType: ['비즈니스 고객', '영상 컨텐츠 크리에이터'],
-  },
-  {
-    title: 'Premium',
-    priceMonthly: '110,000',
-    priceYearly: '1,100,000',
-    description: [
-      '30GB 용량',
-      '모든 모자이크 기능\n(유해요소, 개인정보, 사람 얼굴)',
-      '라이브 스트리밍 기능',
-    ],
-    buttonText: 'Premium 플랜 시작하기',
-    buttonVariant: 'contained',
-    buttonColor: 'secondary',
-    recommended: false,
-    userType: ['영상 제작 프로덕션', '대형 콘텐츠 제작업체'],
-  },
-];
 
 export default function Pricing() {
   const { accessToken, isTokenFetched } = useAuth();
   const [isYearly, setIsYearly] = React.useState(false);
   const [user, setUser] = useState([]);
-  const [userSub, setUserSub] = useState([]);
+  const [tiers, setTiers] = useState([]);
   const isLoggedIn = accessToken != null && accessToken !== '';
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user?.userSub) {
-      setUserSub(user.userSub);
+      setUser(user);
       setLoading(false);
     } else {
       axiosInstance.get('/my')
         .then((response) => {
-          setUserSub(response.data.userSub);
+          setUser(response.data.userSub);
         })
         .catch((error) => {
           console.error('구독 정보 가져오기 실패:', error);
         })
         .finally(() => setLoading(false));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const tiers = [
+      {
+        title: 'Basic',
+        priceMonthly: '10,000',
+        priceYearly: '100,000',
+        description: [
+          '100MB 용량',
+          '유해요소 모자이크 기능',
+          '개인정보 모자이크 기능',
+        ],
+        buttonText: 'Basic 플랜 시작하기',
+        buttonVariant: 'contained',
+        buttonColor: 'secondary',
+        recommended: false,
+        userType: ['일반 사용자', '소규모 개인 콘텐츠 크리에이터'],
+      },
+      {
+        title: 'Pro',
+        priceMonthly: '40,000',
+        priceYearly: '400,000',
+        description: [
+          '2GB 용량',
+          '모든 모자이크 기능\n(유해요소, 개인정보, 사람 얼굴)',
+          '라이브 스트리밍 기능',
+        ],
+        buttonText: 'Pro 플랜 시작하기',
+        buttonVariant: 'contained',
+        buttonColor: 'secondary',
+        recommended: false,
+        userType: ['비즈니스 고객', '영상 컨텐츠 크리에이터'],
+      },
+      {
+        title: 'Premium',
+        priceMonthly: '110,000',
+        priceYearly: '1,100,000',
+        description: [
+          '30GB 용량',
+          '모든 모자이크 기능\n(유해요소, 개인정보, 사람 얼굴)',
+          '라이브 스트리밍 기능',
+        ],
+        buttonText: 'Premium 플랜 시작하기',
+        buttonVariant: 'contained',
+        buttonColor: 'secondary',
+        recommended: false,
+        userType: ['영상 제작 프로덕션', '대형 콘텐츠 제작업체'],
+      },
+    ];
+    if (user) {
+      const updatedTiers = tiers.map((tier) => ({
+        ...tier,
+        subscribed: tier.title === user.userSub, // 현재 사용자의 구독 상태 비교
+      }));
+      setTiers(updatedTiers);
+    } else {
+      setTiers(tiers);
     }
   }, [user]);
 
