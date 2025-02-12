@@ -40,8 +40,33 @@ export default function MozaicPage() {
   const [faceImages, setFaceImages] = useState({}); // 각 faceId에 해당하는 이미지를 저장할 상태
   const [title, setTitle] = useState('');
   const [isReady, setIsReady] = useState(false); 
-
+  const [canAccess, setCanAccess] = useState(false);
   const [fps,setFps]=useState();
+
+
+  useEffect(() => {
+    const fetchSub = async () => {
+      try {
+        const response = await axiosInstance.get('/my');
+        if (!response.data.userSub) {
+          alert("구독자 전용 서비스입니다.");
+          navigate("/mysubpage");
+        } else if (response.data.userSub === 'Basic') {
+          alert("Pro, Premium 구독자 전용 서비스입니다.");
+          navigate("/mysubpage");
+        } else {
+          setCanAccess(true); // 접근 가능
+        }
+      } catch (error) {
+        console.error('구독 정보 가져오는 중 오류 발생:', error);
+        alert("구독 정보 가져오는 중 오류가 발생했습니다.");
+        navigate("/mysubpage");
+      }
+    };
+
+    fetchSub();
+  }, [navigate]);
+
 
  //fps 설정
 useEffect(() => {
@@ -918,7 +943,7 @@ const handleEditComplete = async () => {
       )}
 
       {/* 사람 탭 */}
-      {tab === "person" && (
+      {tab === "person" && canAccess && (
         <Box sx={{ border: "1px solid #ddd", borderRadius: 2, padding: 2 }}>
           <Typography variant="h6" sx={{ borderBottom: "1px solid #ddd", paddingBottom: 1 }}>
             마스크 체크
