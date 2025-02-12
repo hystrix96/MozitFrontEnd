@@ -73,7 +73,7 @@ export default function DownloadPage(props) {
   const navigate = useNavigate(); // useNavigate를 호출하여 navigate 함수 정의
   const { accessToken } = useAuth();
   const location = useLocation();
-  const { settings , editNum, fps, uploadedVideoUrl,detection_data } = location.state || {}; // 전달된 마스크 상태 가져오기
+  const { settings , editNum, fps, uploadedVideoUrl,detection_data, title } = location.state || {}; // 전달된 마스크 상태 가져오기
   const savedFileName=uploadedVideoUrl;
   const videoUrl = uploadedVideoUrl;
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
@@ -452,6 +452,7 @@ const payload = {
   path_request: {
       video_path: savedFileName,  // 실제 경로로 수정
       output_path: outputPath,     // 실제 경로로 수정 이거 바꿔야 함 배포 !!
+      video_title: title,
   }
 };
 try {
