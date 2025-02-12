@@ -287,7 +287,7 @@ useEffect(() => {
       const { intensity: harmfulIntensity = 50, size: harmfulSize = 50 } = harmfulElements || {};
       const { checkedItems = [] } = harmfulElements || {};
       const { personalInfo } = settings || {}; // 개인정보 설정 추가
-      const { intensity: privacyIntensity = 50, size: privacySize = 50, privacyElements= [] } = personalInfo || {};
+      const { intensity: privacyIntensity = 50, size: privacySize = 50, checkedItems: privacyElements= [] } = personalInfo || {};
 
       currentDetections.forEach(({ x, y, width, height, objectId, className }) => {
         const maskSize = personSize; // 사람 관련 크기 설정
