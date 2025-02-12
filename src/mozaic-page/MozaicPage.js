@@ -44,28 +44,24 @@ export default function MozaicPage() {
   const [fps,setFps]=useState();
 
 
-  useEffect(() => {
-    const fetchSub = async () => {
-      try {
-        const response = await axiosInstance.get('/my');
-        if (!response.data.userSub) {
-          alert("구독자 전용 서비스입니다.");
-          navigate("/mysubpage");
-        } else if (response.data.userSub === 'Basic') {
-          alert("Pro, Premium 구독자 전용 서비스입니다.");
-          navigate("/mysubpage");
-        } else {
-          setCanAccess(true); // 접근 가능
-        }
-      } catch (error) {
-        console.error('구독 정보 가져오는 중 오류 발생:', error);
-        alert("구독 정보 가져오는 중 오류가 발생했습니다.");
+  const checkSubscription = async () => {
+    try {
+      const response = await axiosInstance.get('/my');
+      if (!response.data.userSub) {
+        alert("구독자 전용 서비스입니다.");
         navigate("/mysubpage");
+      } else if (response.data.userSub === 'Basic') {
+        alert("Pro, Premium 구독자 전용 서비스입니다.");
+        navigate("/mysubpage");
+      } else {
+        setCanAccess(true); // 접근 가능
       }
-    };
-
-    fetchSub();
-  }, [navigate]);
+    } catch (error) {
+      console.error('구독 정보 가져오는 중 오류 발생:', error);
+      alert("구독 정보 가져오는 중 오류가 발생했습니다.");
+      navigate("/mysubpage");
+    }
+  };
 
 
  //fps 설정
@@ -265,7 +261,13 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
   });
 };
 
-  const handleTabChange2 = (_, newValue) =>  setValue(newValue);
+const handleTabChange2 = (event, newValue) => {
+  setValue(newValue); // 탭 상태 변경
+  if (newValue === 2) { // "사람" 탭인 경우
+    checkSubscription(); // 구독 여부 확인
+  }
+};
+
 
   //메타데이터 들어오지 않았으면 메타데이터 먼저 들어오도록
 const handleLoadedMetadata = () => {
