@@ -48,20 +48,25 @@ export default function MozaicPage() {
     try {
       const response = await axiosInstance.get('/my');
       if (!response.data.userSub) {
-        alert("구독자 전용 서비스입니다.");
-        navigate("/mysubpage");
+        alert("구독자 전용 서비스입니다."); // 알림 표시
+        setValue(0); // 첫 번째 탭으로 이동
+        return false; // 접근 불가
       } else if (response.data.userSub === 'Basic') {
-        alert("Pro, Premium 구독자 전용 서비스입니다.");
-        navigate("/mysubpage");
+        alert("Pro, Premium 구독자 전용 서비스입니다."); // 알림 표시
+        setValue(0); // 첫 번째 탭으로 이동
+        return false; // 접근 불가
       } else {
         setCanAccess(true); // 접근 가능
+        return true; // 접근 가능
       }
     } catch (error) {
       console.error('구독 정보 가져오는 중 오류 발생:', error);
-      alert("구독 정보 가져오는 중 오류가 발생했습니다.");
-      navigate("/mysubpage");
+      alert("구독 정보 가져오는 중 오류가 발생했습니다."); // 알림 표시
+      setValue(0); // 첫 번째 탭으로 이동
+      return false; // 접근 불가
     }
   };
+  
 
 
  //fps 설정
@@ -261,12 +266,16 @@ const handleHarmfulCheck = (itemClass, isChecked) => {
   });
 };
 
-const handleTabChange2 = (event, newValue) => {
-  setValue(newValue); // 탭 상태 변경
+const handleTabChange2 = async (event, newValue) => {
   if (newValue === 2) { // "사람" 탭인 경우
-    checkSubscription(); // 구독 여부 확인
+    const accessGranted = await checkSubscription(); // 구독 여부 확인
+    if (!accessGranted) {
+      return; // 접근 불가능 시 탭 전환을 막음
+    }
   }
+  setValue(newValue); // 탭 상태 변경
 };
+
 
 
   //메타데이터 들어오지 않았으면 메타데이터 먼저 들어오도록
