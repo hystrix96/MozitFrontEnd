@@ -464,10 +464,6 @@ const drawMosaicOrBlur = () => {
             ctx.fillRect(i, j, blockSize, blockSize);
         }
     }
-    // 📌 테두리를 모자이크 크기에 맞게 조정
-    // ctx.strokeStyle = "black";
-    // ctx.lineWidth = Math.max(blockSize / 4, 5);
-    // ctx.strokeRect(startX, startY, width, height);
   };
 
   // ✅ 블러 처리 함수 추가

@@ -67,7 +67,7 @@ const ControlBox = styled(Box)(({ showControls }) => ({
 
 
 export default function DownloadPage(props) {
-  const [videoSrc, setVideoSrc] = useState(null);
+  // const [videoSrc, setVideoSrc] = useState(null);
   const [loading, setLoading] = useState(false); // 영상 처리 중 상태 추가
   const editButtonRef = useRef(null); // 편집 시작 버튼 참조 추가
   const videoRef = useRef(null); // 비디오 참조 추가
@@ -108,35 +108,53 @@ export default function DownloadPage(props) {
 
 
 
-////////////////////비디오 컨트롤///////////////////////
-  // 비디오 로드 후 캔버스 크기 설정
-  useEffect(() => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
+// ////////////////////비디오 컨트롤///////////////////////
+//   // 비디오 로드 후 캔버스 크기 설정
+//   useEffect(() => {
+//     if (videoRef.current && canvasRef.current) {
+//       const video = videoRef.current;
+//       const canvas = canvasRef.current;
+//       const ctx = canvas.getContext('2d');
 
-      // 비디오 메타데이터가 로드된 후 캔버스 크기 조정
-      video.addEventListener('loadedmetadata', () => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height); // 초기 비디오 그리기
-      });
-    }
-  }, [videoSrc]); // videoSrc가 변경될 때마다 실행
+//       // 비디오 메타데이터가 로드된 후 캔버스 크기 조정
+//       video.addEventListener('loadedmetadata', () => {
+//         canvas.width = video.videoWidth;
+//         canvas.height = video.videoHeight;
+//         ctx.drawImage(video, 0, 0, canvas.width, canvas.height); // 초기 비디오 그리기
+//       });
+//     }
+//   }, [videoSrc]); // videoSrc가 변경될 때마다 실행
 
+  // const handleLoadedMetadata = () => {
+  //   const video = videoRef.current;
+  //   if (video) {
+  //     setCanvasSize({
+  //       width: video.videoWidth,
+  //       height: video.videoHeight,
+  //     });
+  //     setVideoDuration(video.duration); // 비디오 길이 설정
+  //   }
+  // };
+
+    //메타데이터 들어오지 않았으면 메타데이터 먼저 들어오도록
   const handleLoadedMetadata = () => {
-    const video = videoRef.current;
-    if (video) {
+  const video = videoRef.current;
+  if (video) {
+    // readyState가 2 (HAVE_METADATA) 이상인지 확인
+    if (video.readyState >= 2) {
       setCanvasSize({
         width: video.videoWidth,
         height: video.videoHeight,
       });
       setVideoDuration(video.duration); // 비디오 길이 설정
+    } else {
+      console.warn("Metadata not ready, retrying...");
+      setTimeout(handleLoadedMetadata, 100); // 100ms 후 다시 시도
     }
+  }
   };
-
-   // 비디오 재생 시 모자이크 또는 블러 적용
+   
+  // 비디오 재생 시 모자이크 또는 블러 적용
    useEffect(() => {
     const video = videoRef.current;
     let animationFrameId;
@@ -153,7 +171,7 @@ export default function DownloadPage(props) {
       video.removeEventListener("play", render);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [canvasSize, detectionData, settings]);   
+  }, [canvasSize, detectionData, settings,isReady]);   
 ////////////////////////////////////////////////////////////
 
 
@@ -221,24 +239,23 @@ export default function DownloadPage(props) {
   };
 
 
-  // 비디오 시간 업데이트 시 슬라이더 값 갱신
-useEffect(() => {
-  const video = videoRef.current;
+  // 재생바 처리
+  useEffect(() => {
 
-  const updateSliderValue = () => {
+    const video = videoRef.current;
+    if(videoDuration===0) return;
     if (video) {
-      const currentTime = video.currentTime;
-      const newValue = (currentTime / videoDuration) * 100; // 비디오 길이에 비례하여 슬라이더 값 계산
-      setSliderValue(newValue);
+      const updateSlider = () => {
+        const currentSliderValue = (video.currentTime / videoDuration) * 100; // 비디오 현재 시간 비율
+        setSliderValue(currentSliderValue); // 슬라이더 값 업데이트
+      };
+
+      video.addEventListener('timeupdate', updateSlider);
+      return () => {
+        video.removeEventListener('timeupdate', updateSlider);
+      };
     }
-  };
-
-  video.addEventListener('timeupdate', updateSliderValue);
-
-  return () => {
-    video.removeEventListener('timeupdate', updateSliderValue);
-  };
-}, [videoDuration]);
+  }, [videoDuration]);
 
 ///////////////////////////////////////////////////////////////////
 
@@ -253,6 +270,8 @@ useEffect(() => {
 ///////////////////모자이크 처리/////////////////////////////////
 //모자이크 처리할 json정보 요청
   useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return; // 비디오가 없으면 실행하지 않음
     const fetchDetections = async () => {
       try {
       const flattenedDetections = detection_data.frames.map(frame => ({
@@ -266,7 +285,16 @@ useEffect(() => {
       }
     };
   
+    if (video.readyState >= 1) {
+    // 비디오가 이미 로드된 경우 즉시 실행
     fetchDetections();
+  } else {
+    // 비디오가 아직 로드되지 않았다면 loadedmetadata 이벤트 후 실행
+    video.addEventListener("loadedmetadata", fetchDetections);
+    return () => {
+      video.removeEventListener("loadedmetadata", fetchDetections);
+    };
+  }
   }, [savedFileName]);
 
 
