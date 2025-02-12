@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
+import Popover from '@mui/material/Popover'; // Popover 추가
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import SitemarkIcon from '../components/SitemarkIcon';
@@ -15,9 +16,6 @@ import PauseIcon from '@mui/icons-material/Pause';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
 import { useLocation } from 'react-router-dom';
-
-
-
 
 //비디오 테두리 스타일
 const StyledBox = styled('div')(({ theme }) => ({
@@ -67,7 +65,7 @@ const ControlBox = styled(Box)(({ showControls }) => ({
 
 
 export default function DownloadPage(props) {
-  // const [videoSrc, setVideoSrc] = useState(null);
+  const [videoSrc, setVideoSrc] = useState(null);
   const [loading, setLoading] = useState(false); // 영상 처리 중 상태 추가
   const editButtonRef = useRef(null); // 편집 시작 버튼 참조 추가
   const videoRef = useRef(null); // 비디오 참조 추가
@@ -84,7 +82,6 @@ export default function DownloadPage(props) {
   const [sliderValue, setSliderValue] = useState(0); // 슬라이더 값을 상태로 관리
   const [showControls, setShowControls] = useState(false); // 컨트롤 표시 상태
   const [detectionData, setDetectionData] = useState([]);
-  const [isReady, setIsReady] = useState(false); 
  
  
 
@@ -108,53 +105,35 @@ export default function DownloadPage(props) {
 
 
 
-// ////////////////////비디오 컨트롤///////////////////////
-//   // 비디오 로드 후 캔버스 크기 설정
-//   useEffect(() => {
-//     if (videoRef.current && canvasRef.current) {
-//       const video = videoRef.current;
-//       const canvas = canvasRef.current;
-//       const ctx = canvas.getContext('2d');
+////////////////////비디오 컨트롤///////////////////////
+  // 비디오 로드 후 캔버스 크기 설정
+  useEffect(() => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
 
-//       // 비디오 메타데이터가 로드된 후 캔버스 크기 조정
-//       video.addEventListener('loadedmetadata', () => {
-//         canvas.width = video.videoWidth;
-//         canvas.height = video.videoHeight;
-//         ctx.drawImage(video, 0, 0, canvas.width, canvas.height); // 초기 비디오 그리기
-//       });
-//     }
-//   }, [videoSrc]); // videoSrc가 변경될 때마다 실행
+      // 비디오 메타데이터가 로드된 후 캔버스 크기 조정
+      video.addEventListener('loadedmetadata', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height); // 초기 비디오 그리기
+      });
+    }
+  }, [videoSrc]); // videoSrc가 변경될 때마다 실행
 
-  // const handleLoadedMetadata = () => {
-  //   const video = videoRef.current;
-  //   if (video) {
-  //     setCanvasSize({
-  //       width: video.videoWidth,
-  //       height: video.videoHeight,
-  //     });
-  //     setVideoDuration(video.duration); // 비디오 길이 설정
-  //   }
-  // };
-
-    //메타데이터 들어오지 않았으면 메타데이터 먼저 들어오도록
   const handleLoadedMetadata = () => {
-  const video = videoRef.current;
-  if (video) {
-    // readyState가 2 (HAVE_METADATA) 이상인지 확인
-    if (video.readyState >= 2) {
+    const video = videoRef.current;
+    if (video) {
       setCanvasSize({
         width: video.videoWidth,
         height: video.videoHeight,
       });
       setVideoDuration(video.duration); // 비디오 길이 설정
-    } else {
-      console.warn("Metadata not ready, retrying...");
-      setTimeout(handleLoadedMetadata, 100); // 100ms 후 다시 시도
     }
-  }
   };
-   
-  // 비디오 재생 시 모자이크 또는 블러 적용
+
+   // 비디오 재생 시 모자이크 또는 블러 적용
    useEffect(() => {
     const video = videoRef.current;
     let animationFrameId;
@@ -171,7 +150,7 @@ export default function DownloadPage(props) {
       video.removeEventListener("play", render);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [canvasSize, detectionData, settings,isReady]);   
+  }, [canvasSize, detectionData, settings]);   
 ////////////////////////////////////////////////////////////
 
 
@@ -239,23 +218,24 @@ export default function DownloadPage(props) {
   };
 
 
-  // 재생바 처리
-  useEffect(() => {
+  // 비디오 시간 업데이트 시 슬라이더 값 갱신
+useEffect(() => {
+  const video = videoRef.current;
 
-    const video = videoRef.current;
-    if(videoDuration===0) return;
+  const updateSliderValue = () => {
     if (video) {
-      const updateSlider = () => {
-        const currentSliderValue = (video.currentTime / videoDuration) * 100; // 비디오 현재 시간 비율
-        setSliderValue(currentSliderValue); // 슬라이더 값 업데이트
-      };
-
-      video.addEventListener('timeupdate', updateSlider);
-      return () => {
-        video.removeEventListener('timeupdate', updateSlider);
-      };
+      const currentTime = video.currentTime;
+      const newValue = (currentTime / videoDuration) * 100; // 비디오 길이에 비례하여 슬라이더 값 계산
+      setSliderValue(newValue);
     }
-  }, [videoDuration]);
+  };
+
+  video.addEventListener('timeupdate', updateSliderValue);
+
+  return () => {
+    video.removeEventListener('timeupdate', updateSliderValue);
+  };
+}, [videoDuration]);
 
 ///////////////////////////////////////////////////////////////////
 
@@ -270,8 +250,6 @@ export default function DownloadPage(props) {
 ///////////////////모자이크 처리/////////////////////////////////
 //모자이크 처리할 json정보 요청
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return; // 비디오가 없으면 실행하지 않음
     const fetchDetections = async () => {
       try {
       const flattenedDetections = detection_data.frames.map(frame => ({
@@ -285,110 +263,52 @@ export default function DownloadPage(props) {
       }
     };
   
-    if (video.readyState >= 1) {
-    // 비디오가 이미 로드된 경우 즉시 실행
     fetchDetections();
-  } else {
-    // 비디오가 아직 로드되지 않았다면 loadedmetadata 이벤트 후 실행
-    video.addEventListener("loadedmetadata", fetchDetections);
-    return () => {
-      video.removeEventListener("loadedmetadata", fetchDetections);
-    };
-  }
   }, [savedFileName]);
 
-
-  //비디오랑 캔버스가 준비되어있는지 확인
-  useEffect(() => {
+    // 모자이크 처리 함수 수정
+    const drawMosaicOrBlur = () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-  
-      // video와 canvas가 준비되지 않으면 리턴
-      if (video === null || canvas === null || canvasSize.width === 0 || canvasSize.height === 0) {
-        setIsReady(false);  // video나 canvas가 준비되지 않으면 isReady를 false로 설정
-        return;
-      }
-  
-      // video와 canvas가 준비되면 실행
-      setIsReady(true);  // video와 canvas가 준비되면 isReady를 true로 설정
-    }, [canvasSize, videoRef.current, canvasRef.current]);  // 상태가 변경될 때마다 다시 확인
-
-
-
-   //모자이크 처리
-const drawMosaicOrBlur = () => {
-  const video = videoRef.current;
-  const canvas = canvasRef.current;
-
- if (!isReady) {
-      return;  // 준비되지 않으면 실행하지 않음
-    }
-    const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        console.warn("Canvas context is null! Canvas might not be rendered yet.");
-        return;
-      }
-
+      const ctx = canvas.getContext("2d");
+    
+      if (!video || !ctx || canvasSize.width === 0 || canvasSize.height === 0) return;
+    
+      canvas.width = canvasSize.width;
+      canvas.height = canvasSize.height;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+      const currentFrame = Math.floor(video.currentTime * fps); // 현재 프레임 계산
+      const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || []; // 현재 프레임의 detections 가져오기
+    
+      const { person } = settings || {};
+      const { intensity: personIntensity = 50, size: personSize = 50, checkedPeople = [] } = person || {};
+      const { harmfulElements } = settings || {};
+      const { intensity: harmfulIntensity = 50, size: harmfulSize = 50 } = harmfulElements || {};
+      const { checkedItems = [] } = harmfulElements || {};
+      const { personalInfo } = settings || {}; // 개인정보 설정 추가
+      const { intensity: privacyIntensity = 50, size: privacySize = 50, privacyElements= [] } = personalInfo || {};
 
-      const currentFrame = Math.floor(video.currentTime * fps);
-      const currentDetections = detectionData.find(d => d.frame === currentFrame)?.detections || [];
-
-      currentDetections.forEach(({ x, y, width, height, objectId, className, confidence }) => {
-        let maskSize, newWidth, newHeight;
-
+      currentDetections.forEach(({ x, y, width, height, objectId, className }) => {
+        const maskSize = personSize; // 사람 관련 크기 설정
+        const newWidth = width * (maskSize / 50);
+        const newHeight = height * (maskSize / 50);
+    
         if (className === "face") {
-          maskSize = settings.person.size;
-          newWidth = width * (maskSize / 50);
-          newHeight = height * (maskSize / 50);
-
-          if (settings.person.checkedPeople.includes(objectId)) {
-            if (settings.mosaic) {
-              applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
-            } else if (settings.blur) {
-              applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.person.intensity);
-            }
+          // 얼굴인 경우, checkedPeople에 포함된 objectId에 대해서만 모자이크 적용
+          if (checkedPeople.includes(objectId)) {
+            applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, personIntensity); // 사람 강도 사용
           }
-          ctx.fillStyle = "red";
-          ctx.strokeStyle = "red";
-        } else if (["ID_card", "address_sign", "license_plate"].includes(className)) {
-          maskSize = settings.privacy.size;
-          newWidth = width * (maskSize / 50);
-          newHeight = height * (maskSize / 50);
-
-          if (settings.privacy.checkedItems.includes(className)) {
-            if (settings.mosaic) {
-              applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
-            } else if (settings.blur) {
-              applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.privacy.intensity);
-            }
-          }
-          ctx.fillStyle = "blue";
-          ctx.strokeStyle = "blue";
-        } else if (["blood", "gun", "knife", "cigarette", "alcohol"].includes(className)) {
-          maskSize = settings.harmful.size;
-          newWidth = width * (maskSize / 50);
-          newHeight = height * (maskSize / 50);
-
-          if (settings.harmful.checkedItems.includes(className)) {
-            if (settings.mosaic) {
-              applyMosaic(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
-            } else if (settings.blur) {
-              applyBlur(ctx, x, y, newWidth, newHeight, maskSize, settings.harmful.intensity);
-            }
-          }
-          ctx.fillStyle = "green";
-          ctx.strokeStyle = "green";
+        }// 유해 요소 처리 
+        else if (checkedItems.includes(className)) {
+          applyMosaic(ctx, x, y, newWidth, newHeight, harmfulSize, harmfulIntensity); // 유해 요소 강도 사용
+        } 
+        // 개인정보 처리
+        else if (privacyElements.includes(className)) {
+          applyMosaic(ctx, x, y, newWidth, newHeight, privacySize, privacyIntensity); // 개인정보 강도 사용
         }
-
-        ctx.font = "bold 14px Arial";
-        ctx.fillText(`ID: ${objectId}`, x + width + 5, y + 10);
-        ctx.fillText(`Class: ${className}`, x + width + 5, y + 30);
-        ctx.fillText(`Confidence: ${confidence}`, x + width + 5, y + 50);
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, width, height);
       });
-};
+    };
     
     
 
