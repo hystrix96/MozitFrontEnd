@@ -182,6 +182,8 @@ function ForgotPassword({ open, handleClose }) {
         throw new Error('인증 실패');
       }
     } catch (error) {
+      setCodeError(true);
+      setCodeErrorMessage('유효하지 않은 인증코드입니다.');
       console.error('Error verifying code:', error);
     }
   };
